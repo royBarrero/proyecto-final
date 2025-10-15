@@ -25,8 +25,8 @@ class RegistroControlador extends Controlador
             'apellido'  => ['required', 'string', 'max:150'],
             'email'     => ['required', 'email', 'unique:usuarios,email'], // validación única en la columna correo
             'password'  => ['required', 'confirmed', 'min:6'], // confirmado
-            'direccion' => ['required', 'string', 'max:255'],
-            'telefono'  => ['required', 'string', 'max:20'],
+            'direccion' => ['nullable', 'string', 'max:255'],
+            'telefono'  => ['nullable', 'string', 'max:20'],
         ]);
         $cliente = Cliente::create([
             'nombre'    => $request->nombre . ' ' . $request->apellido,

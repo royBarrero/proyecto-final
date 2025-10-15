@@ -84,60 +84,31 @@ class UsuarioControlador extends Controlador
         $roles = Rol::all();
         return view('vendedores.editar-usuario', compact('usuario','roles'));
     }
+
     public function actualizarUsuario(Request $request, $id)
-{
-    $usuario = Usuario::findOrFail($id);
-
-    // 🔹 Validación (nota: el email debe permitir el actual)
-    $request->validate([
-        'nombre' => 'required|string|max:150',
-        'email' => 'required|email|unique:usuarios,email,' . $usuario->id,
-        'contrasenia' => 'nullable|min:6',
-        'idrols' => 'required|exists:rols,id', // ahora usas FK de la tabla rols
+    {
+        // Validación
+        $request->validate([
+        'nombre'    => 'required|string|max:150',
+        'email'     => 'required|email|unique:usuarios,email,' . $id,
+        'idrols'    => 'required|exists:rols,id',
         'direccion' => 'nullable|string|max:250',
-        'telefono' => 'nullable|string|max:30',
-    ]);
+        'telefono'  => 'nullable|string|max:30',
+        ]);
 
-    // 🔹 Actualizamos usuario
-    $usuario->nombre = $request->nombre;
-    $usuario->email = $request->email;
-    /*if ($request->filled('contrasenia')) {
-        $usuario->contrasenia = Hash::make($request->contrasenia);
-    }*/
-    $usuario->idrols = $request->idrols;
+        // Llamar al procedimiento almacenado desde el modelo
+        Usuario::actualizarUsuarioCompleto(
+            $id,
+            $request->nombre,
+            $request->email,
+            $request->idrols,
+            $request->direccion,
+            $request->telefono
+        );
 
-    // 🔹 Si es cliente
-    if ($usuario->idclientes) {
-        $cliente = $usuario->cliente;
-        if ($cliente) {
-            $cliente->nombre = $request->nombre;
-            $cliente->direccion = $request->direccion ?: null;
-            $cliente->telefono = $request->telefono ?: null;
-            $cliente->save();
-        }
-        // eliminamos referencia a vendedor por seguridad
-        $usuario->idvendedors = null;
+        return redirect()->route('mostrarDatosDeTodosLosUsuarios')->with('success', 'Usuario actualizado correctamente.');
     }
 
-    // 🔹 Si es vendedor
-    if ($usuario->idvendedors) {
-        $vendedor = $usuario->vendedor;
-        if ($vendedor) {
-            $vendedor->nombre = $request->nombre;
-            $vendedor->direccion = $request->direccion ?: null;
-            $vendedor->telefono = $request->telefono ?: null;
-            $vendedor->email = $request->email;
-            $vendedor->save();
-        }
-        // eliminamos referencia a cliente por seguridad
-        $usuario->idclientes = null;
-    }
-
-    $usuario->save();
-
-    return redirect()->route('mostrarDatosDeTodosLosUsuarios')
-                     ->with('success', 'Usuario actualizado correctamente.');
-}
 
 
 public function eliminarUsuario($id)

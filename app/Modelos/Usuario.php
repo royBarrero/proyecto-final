@@ -89,4 +89,13 @@ class Usuario extends Authenticatable
     {
         return DB::selectOne("SELECT * FROM obtener_usuario_por_id(?)", [$id]);
     }
+    // Método para llamar al procedimiento almacenado
+    public static function actualizarUsuarioCompleto($id, $nombre, $email, $idrols, $direccion = null, $telefono = null): void
+{
+    DB::statement(
+        "CALL actualizar_usuario_completo(?, ?, ?, ?, ?, ?)",
+        [$id, $nombre, $email, $idrols, $direccion, $telefono]
+    );
+}
+
 }

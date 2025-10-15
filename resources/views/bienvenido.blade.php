@@ -67,14 +67,15 @@
     <div class="category">
         <h2>🐔 Pollitos</h2>
         <div class="bird-grid">
+            
             @for ($i = 0; $i < 10; $i++)
                 <div class="bird-card">
-                <img src="https://via.placeholder.com/300x150" alt="Gallina Autóctona">
-                <div class="info">
-                    <h3>Gallina Autóctona</h3>
-                    <p>Especie local adaptada a nuestro clima y condiciones.</p>
+                    <img src="https://via.placeholder.com/300x150" >
+                    <div class="info">
+                        <h3>Gallina Autóctona</h3>
+                        <p>Especie local adaptada a nuestro clima y condiciones.</p>
+                    </div>
                 </div>
-            </div>
             @endfor
             
             <!-- Agrega más aves aquí -->
