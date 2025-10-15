@@ -49,7 +49,7 @@
 
     <div class="form-group">
         <label for="direccion">Dirección</label>
-        <input id="direccion" type="text" name="direccion" value="{{ old('direccion') }}" required>
+        <input id="direccion" type="text" name="direccion" value="{{ old('direccion') }}" >
         @error('direccion')
             <p style="color:red; font-size: 0.9em;">{{ $message }}</p>
         @enderror
@@ -57,7 +57,7 @@
 
     <div class="form-group">
         <label for="telefono">Teléfono</label>
-        <input id="telefono" type="text" name="telefono" value="{{ old('telefono') }}" required>
+        <input id="telefono" type="text" name="telefono" value="{{ old('telefono') }}" >
         @error('telefono')
             <p style="color:red; font-size: 0.9em;">{{ $message }}</p>
         @enderror

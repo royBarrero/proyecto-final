@@ -83,6 +83,13 @@
                     <h3>Gallina Autóctona</h3>
                     <p>Especie local adaptada a nuestro clima y condiciones.</p>
                 </div>
+                @auth
+                    @if (auth::user()->idrols==1)
+                        <div class="header-buttons" style="display:flex; gap:10px;">
+                            <a href="{{ route('formularioParaCrearNuevoUsuario') }}" >Ver más</a>
+                        </div>
+                    @endif
+                @endauth
             </div>
             @endfor
             
@@ -94,20 +101,22 @@
     <div class="category">
         <h2>🥚 Huevos</h2>
         <div class="bird-grid">
-            <div class="bird-card">
-                <img src="https://via.placeholder.com/300x150" alt="Pato Mandarín">
+            @for ($i = 0; $i < 5; $i++)
+                <div class="bird-card">
+                <img src="https://via.placeholder.com/300x150" alt="Gallina Autóctona">
                 <div class="info">
-                    <h3>Pato Mandarín</h3>
-                    <p>Especie ornamental de colores vibrantes.</p>
+                    <h3>Gallina Autóctona</h3>
+                    <p>Especie local adaptada a nuestro clima y condiciones.</p>
                 </div>
+                @auth
+                    @if (auth::user()->idrols==1)
+                        <div class="header-buttons" style="display:flex; gap:10px;">
+                            <a href="{{ route('formularioParaCrearNuevoUsuario') }}" >Ver más</a>
+                        </div>
+                    @endif
+                @endauth
             </div>
-            <div class="bird-card">
-                <img src="https://via.placeholder.com/300x150" alt="Cerceta">
-                <div class="info">
-                    <h3>Cerceta</h3>
-                    <p>Pequeño y activo, ideal para estanques.</p>
-                </div>
-            </div>
+            @endfor
             <!-- Agrega más patos aquí -->
         </div>
     </div>

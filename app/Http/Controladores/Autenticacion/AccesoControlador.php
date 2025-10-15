@@ -40,7 +40,7 @@ class AccesoControlador extends Controlador
         $request->session()->regenerate();
 
         $rol = Auth::user()->idrols;   // gracias a la relación belongsTo
-        if($rol === 1){
+        if($rol === 1 || $rol === 3 ){
            return redirect()->route('bienvenido.usuarios.vendedor'); 
         }
         return redirect()->intended('/');
