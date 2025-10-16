@@ -16,19 +16,17 @@
         <tbody>
         @foreach($categorias as $categoria)
             <tr>
-                <td>{{ $categoria->id }}</td>
-                <td>{{ $categoria->nombre }}</td>
-                <td>{{ $categoria->descripcion }}</td>
-                <td>
+                <td data-label="ID">{{ $categoria->id }}</td>
+                <td data-label="Nombre">{{ $categoria->nombre }}</td>
+                <td data-label="Descripción">{{ $categoria->descripcion }}</td>
+                <td data-label="Acciones">
                     <div class="div-botones">
                         <a href="{{ route('categorias.edit',$categoria->id) }}" class="btn-editar">Editar</a>
-                        <form action="{{ route('categorias.destroy',$categoria->id) }}" method="POST">
+                        <form action="{{ route('categorias.destroy',$categoria->id) }}" method="POST" style="display:inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn-eliminar"
-                                onclick="return confirm('¿Eliminar esta categoría?')">Eliminar</button>
+                            <button type="submit" class="btn-eliminar" onclick="return confirm('¿Eliminar esta categoría?')">Eliminar</button>
                         </form>
-                        
                     </div>
                 </td>
             </tr>
@@ -39,6 +37,5 @@
         <a href="{{ route('categorias.create') }}" class="btn-editar">Nueva Categoría</a>
         <a href="{{ route('bienvenido.usuarios.vendedor') }}" class="btn-eliminar">Volver</a>
     </div>
-    
 </div>
 @endsection
