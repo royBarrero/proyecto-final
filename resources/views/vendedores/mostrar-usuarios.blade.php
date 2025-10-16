@@ -49,7 +49,7 @@
                 <p><strong>Nombre:</strong> {{ $usuario->nombre }}</p>
                 <p><strong>Correo:</strong> {{ $usuario->correo }}</p>
                 <p><strong>Rol:</strong> {{ $usuario->rol }}</p>
-                <p><strong>Dieccion:</strong> {{ $usuario->direcion }}</p>
+                <p><strong>Dieccion:</strong> {{ $usuario->direccion }}</p>
                 <p><strong>Telefono:</strong> {{ $usuario->telefono }}</p>
                 <div class="div-botones">
                     <a href="{{ route('editar.usuario',$usuario->id) }}" class="btn-editar">Editar</a>
