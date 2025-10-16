@@ -24,7 +24,7 @@
                     <td>{{ $usuario->descripcion }}</td>
                     <td>
                         <div class="div-botones">
-                            <a href="{{ route('usuarios.edit',$usuario->id) }}" class="btn-editar">Editar</a>
+                            <a href="{{ route('editar.usuario',$usuario->id) }}" class="btn-editar">Editar</a>
                             <form action="{{ route('eliminar.usuario',$usuario->id) }}" method="POST" style="display:inline">
                                 @csrf
                                 @method('DELETE')
@@ -46,8 +46,8 @@
                 <p><strong>Nombre:</strong> {{ $usuario->nombre }}</p>
                 <p><strong>Descripción:</strong> {{ $usuario->descripcion }}</p>
                 <div class="div-botones">
-                    <a href="{{ route('usuarios.edit',$usuario->id) }}" class="btn-editar">Editar</a>
-                    <form action="{{ route('usuarios.destroy',$usuario->id) }}" method="POST" style="display:inline">
+                    <a href="{{ route('editar.usuario',$usuario->id) }}" class="btn-editar">Editar</a>
+                    <form action="{{ route('eliminar.usuario',$usuario->id) }}" method="POST" style="display:inline">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn-eliminar" onclick="return confirm('¿Eliminar esta categoría?')">Eliminar</button>
