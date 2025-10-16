@@ -3,20 +3,28 @@
 namespace App\Modelos;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\DB;;
 use Illuminate\Database\Eloquent\Model;
 
-class Rol extends Model
+class ProductoAve extends Model
 {
-    protected $table = 'rols';   // 👈 tu tabla
-    protected $primaryKey = 'id';
-    public $timestamps = false;
+    use HasFactory;
 
-    protected $fillable = ['descripcion'];
-    public function usuarios()
-    {
-        return $this->hasMany(Usuario::class, 'idrols');
+    protected $table = 'productoAves';
+
+    protected $fillable = [
+        'nombre',
+        'precio',
+        'idcategorias',
+        'iddetalleAves',
+        'cantidad'
+    ];
+
+    // Relaciones (si deseas)
+    public function categoria() {
+        return $this->belongsTo(Categoria::class, 'idcategorias');
     }
 
+    public function detalleAve() {
+        return $this->belongsTo(DetalleAve::class, 'iddetalleAves');
+    }
 }
