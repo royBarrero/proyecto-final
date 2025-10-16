@@ -15,7 +15,7 @@
             </tr>
         </thead>
         <tbody>
-        @foreach($categorias as $categoria)
+        @foreach($categorias ?? [] as $categoria)
             <tr>
                 <td data-label="ID">{{ $categoria->id }}</td>
                 <td data-label="Nombre">{{ $categoria->nombre }}</td>
