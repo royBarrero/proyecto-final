@@ -21,7 +21,10 @@
                 <tr>
                     <td>{{ $usuario->id }}</td>
                     <td>{{ $usuario->nombre }}</td>
-                    <td>{{ $usuario->descripcion }}</td>
+                    <td>{{ $usuario->correo }}</td>
+                    <td>{{ $usuario->rol }}</td>
+                    <td>{{ $usuario->direccion }}</td>
+                    <td>{{ $usuario->telefono }}</td>
                     <td>
                         <div class="div-botones">
                             <a href="{{ route('editar.usuario',$usuario->id) }}" class="btn-editar">Editar</a>
@@ -44,7 +47,10 @@
             <div class="card-usuario">
                 <p><strong>ID:</strong> {{ $usuario->id }}</p>
                 <p><strong>Nombre:</strong> {{ $usuario->nombre }}</p>
-                <p><strong>Descripción:</strong> {{ $usuario->descripcion }}</p>
+                <p><strong>Correo:</strong> {{ $usuario->correo }}</p>
+                <p><strong>Rol:</strong> {{ $usuario->rol }}</p>
+                <p><strong>Dieccion:</strong> {{ $usuario->direcion }}</p>
+                <p><strong>Telefono:</strong> {{ $usuario->telefono }}</p>
                 <div class="div-botones">
                     <a href="{{ route('editar.usuario',$usuario->id) }}" class="btn-editar">Editar</a>
                     <form action="{{ route('eliminar.usuario',$usuario->id) }}" method="POST" style="display:inline">
