@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "vite build",
+    "prebuild": "npm install --include=dev && chmod +x ./node_modules/.bin/vite",
+    "build": "node ./node_modules/vite/bin/vite.js build",
     "dev": "vite"
   },
   "dependencies": {
@@ -16,6 +17,5 @@
     "concurrently": "^9.0.1",
     "tailwindcss": "^4.0.0"
   }
-  
 }
 

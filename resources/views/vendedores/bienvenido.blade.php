@@ -86,7 +86,7 @@
                 @auth
                     @if (auth::user()->idrols==1)
                         <div class="header-buttons" style="display:flex; gap:10px;">
-                            <a href="{{ route('formularioParaCrearNuevoUsuario') }}" >Ver más</a>
+                            <a href="{{ route('productoAves.index') }}" >Ver más</a>
                         </div>
                     @endif
                 @endauth
