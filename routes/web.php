@@ -64,6 +64,6 @@ Route::resource('categorias', CategoriaControlador::class)->middleware('auth');
 
 Route::resource('rols', RolControlador::class)->middleware('auth');
 
-Route::resource('rols', ProductoAveControlador::class)->middleware('auth');
+Route::resource('productoAves', ProductoAveControlador::class)->middleware('auth');
 
 
