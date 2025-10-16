@@ -11,7 +11,7 @@ class CategoriaControlador extends Controlador
     {
         $categorias = Categoria::all();
         return response()
-    ->view('categorias.index', compact('categorias'))
+    ->view('categorias.mostrar', compact('categorias'))
     ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
     ->header('Pragma', 'no-cache')
     ->header('Expires', '0');
