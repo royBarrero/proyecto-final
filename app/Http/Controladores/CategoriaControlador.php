@@ -21,7 +21,9 @@ class CategoriaControlador extends Controlador
     // Mostrar formulario de crear
     public function create()
     {
-        return view('vendedores.categorias.crear');
+        return response()->view('vendedores.categorias.crear')->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+    ->header('Pragma', 'no-cache')
+    ->header('Expires', '0');
     }
 
     // Guardar
@@ -39,13 +41,17 @@ class CategoriaControlador extends Controlador
     // Mostrar detalle
     public function show(Categoria $categoria)
     {
-        return view('vendedores.categorias.mostrar', compact('categoria'));
+        return reponse()->view('vendedores.categorias.mostrar', compact('categoria'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+    ->header('Pragma', 'no-cache')
+    ->header('Expires', '0');
     }
 
     // Formulario editar
     public function edit(Categoria $categoria)
     {
-        return view('vendedores.categorias.editar', compact('categoria'));
+        return response()->view('vendedores.categorias.editar', compact('categoria'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+    ->header('Pragma', 'no-cache')
+    ->header('Expires', '0');
     }
 
     // Actualizar

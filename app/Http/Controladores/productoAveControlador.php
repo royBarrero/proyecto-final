@@ -11,14 +11,18 @@ class ProductoAveControlador extends Controlador
     public function index()
     {
         $aves = ProductoAve::with(['categoria', 'detalleAve'])->get();
-        return view('productoAves.principal', compact('aves'));
+        return response()->view('productoAves.principal', compact('aves'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+    ->header('Pragma', 'no-cache')
+    ->header('Expires', '0');
     }
 
     public function create()
     {
         $categorias = Categoria::all();
         $detalles = DetalleAve::all();
-        return view('productoAves.create', compact('categorias', 'detalles'));
+        return response()->view('productoAves.create', compact('categorias', 'detalles'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+    ->header('Pragma', 'no-cache')
+    ->header('Expires', '0');
     }
 
     public function store(Request $request)
@@ -37,14 +41,18 @@ class ProductoAveControlador extends Controlador
 
     public function show(ProductoAve $productoAve)
     {
-        return view('productoAves.mostrar', compact('productoAve'));
+        return response()->view('productoAves.mostrar', compact('productoAve'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+    ->header('Pragma', 'no-cache')
+    ->header('Expires', '0');
     }
 
     public function edit(ProductoAve $productoAve)
     {
         $categorias = Categoria::all();
         $detalles = DetalleAve::all();
-        return view('productoAves.editar', compact('productoAve', 'categorias', 'detalles'));
+        return response()->view('productoAves.editar', compact('productoAve', 'categorias', 'detalles'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+    ->header('Pragma', 'no-cache')
+    ->header('Expires', '0');
     }
 
     public function update(Request $request, ProductoAve $productoAve)

@@ -13,21 +13,29 @@ class UsuarioControlador extends Controlador
 {
     public function bienvenido()
     {
-        return view('vendedores.bienvenido');
+        return response()->view('vendedores.bienvenido')->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+    ->header('Pragma', 'no-cache')
+    ->header('Expires', '0');
     }
     public function mostrarDatosPersonales()
     {
-        return view('vendedores.bienvenido');
+        return response()->view('vendedores.bienvenido')->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+    ->header('Pragma', 'no-cache')
+    ->header('Expires', '0');
     }
     public function mostrarDatosDeTodosLosUsuarios()
     {
         $usuarios = Usuario::obtenerUsuariosCompleto();
-        return view('vendedores.mostrar-usuarios', compact('usuarios'));
+        return response()->view('vendedores.mostrar-usuarios', compact('usuarios'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+    ->header('Pragma', 'no-cache')
+    ->header('Expires', '0');
     }
     public function formularioParaCrearNuevoUsuario()
     {
         $roles = Rol::all(); // obtenemos roles para el dropdown
-        return view('vendedores.crear-usuario', compact('roles'));
+        return response()->view('vendedores.crear-usuario', compact('roles'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+    ->header('Pragma', 'no-cache')
+    ->header('Expires', '0');
     }
     public function crearNuevoUsuario(Request $request)
     {
@@ -82,7 +90,9 @@ class UsuarioControlador extends Controlador
     {
         $usuario = Usuario::obtenerUsuario($id);
         $roles = Rol::all();
-        return view('vendedores.editar-usuario', compact('usuario','roles'));
+        return response()->view('vendedores.editar-usuario', compact('usuario','roles'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+    ->header('Pragma', 'no-cache')
+    ->header('Expires', '0');
     }
 
     public function actualizarUsuario(Request $request, $id)
