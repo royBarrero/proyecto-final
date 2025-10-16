@@ -308,6 +308,39 @@
     background: blue;           /* fondo azul */
     color: white;               /* letra blanca */
 }
+/*-----------------------------------------*/
+@media screen and (max-width: 768px) {
+    .styled-table thead {
+        display: none;
+    }
+    .styled-table, .styled-table tbody, .styled-table tr, .styled-table td {
+        display: block;
+        width: 100%;
+    }
+    .styled-table tr {
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 10px;
+        background: white;
+    }
+    .styled-table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+        border: none;
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+    .styled-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        width: 45%;
+        font-weight: bold;
+        text-align: left;
+    }
+}
 
 </style>
 

@@ -5,57 +5,35 @@
 <div class="container">
     <h2>Lista de Categorías</h2>
 
-    {{-- Versión de escritorio: tabla --}}
-    <div class="tabla-escritorio">
-        <table class="styled-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Descripción</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-            @foreach($categorias as $categoria)
-                <tr>
-                    <td>{{ $categoria->id }}</td>
-                    <td>{{ $categoria->nombre }}</td>
-                    <td>{{ $categoria->descripcion }}</td>
-                    <td>
-                        <div class="div-botones">
-                            <a href="{{ route('categorias.edit',$categoria->id) }}" class="btn-editar">Editar</a>
-                            <form action="{{ route('categorias.destroy',$categoria->id) }}" method="POST" style="display:inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn-eliminar" onclick="return confirm('¿Eliminar esta categoría?')">Eliminar</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
-    </div>
-
-    {{-- Versión móvil: tarjetas --}}
-    <div class="grid-categorias">
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
         @foreach($categorias as $categoria)
-            <div class="card-categoria">
-                <h3>{{ $categoria->nombre }}</h3>
-                <p><strong>ID:</strong> {{ $categoria->id }}</p>
-                <p><strong>Descripción:</strong> {{ $categoria->descripcion }}</p>
-                <div class="div-botones">
-                    <a href="{{ route('categorias.edit',$categoria->id) }}" class="btn-editar">Editar</a>
-                    <form action="{{ route('categorias.destroy',$categoria->id) }}" method="POST" style="display:inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn-eliminar" onclick="return confirm('¿Eliminar esta categoría?')">Eliminar</button>
-                    </form>
-                </div>
-            </div>
+            <tr>
+                <td data-label="ID">{{ $categoria->id }}</td>
+                <td data-label="Nombre">{{ $categoria->nombre }}</td>
+                <td data-label="Descripción">{{ $categoria->descripcion }}</td>
+                <td data-label="Acciones">
+                    <div class="div-botones">
+                        <a href="{{ route('categorias.edit',$categoria->id) }}" class="btn-editar">Editar</a>
+                        <form action="{{ route('categorias.destroy',$categoria->id) }}" method="POST" style="display:inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn-eliminar" onclick="return confirm('¿Eliminar esta categoría?')">Eliminar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
         @endforeach
-    </div>
+        </tbody>
+    </table>
 
     <div class="div-botones2">
         <a href="{{ route('categorias.create') }}" class="btn-editar">Nueva Categoría</a>
