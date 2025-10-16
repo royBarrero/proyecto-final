@@ -309,6 +309,48 @@
     color: white;               /* letra blanca */
 }
 /*-----------------------------------------*/
+/* Ocultar grid en escritorio */
+.grid-categorias {
+    display: none;
+}
+
+/* Tabla estilizada para escritorio (ya la tenías) */
+
+/* Responsive: mostrar grid en móviles y ocultar tabla */
+@media screen and (max-width: 768px) {
+    .tabla-escritorio {
+        display: none;
+    }
+
+    .grid-categorias {
+        display: grid;
+        grid-template-columns: 1fr; /* Una columna por tarjeta */
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .card-categoria {
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .card-categoria p {
+        margin: 5px 0;
+        font-size: 0.95em;
+        color: #333;
+    }
+
+    .card-categoria .div-botones {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+}
+
+/*------------------------------------------*/
 @media screen and (max-width: 768px) {
     .styled-table thead {
         display: none;
