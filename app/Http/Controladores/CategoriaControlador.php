@@ -10,12 +10,12 @@ class CategoriaControlador extends Controlador
     public function index()
     {
         $categorias = Categoria::all();
-        return response()
-    ->view('categorias.mostrar', compact('categorias'))
+        //return view('vendedores.categorias.mostrar', compact('categorias'));
+         return response()
+    ->view('vendedores.categorias.mostrar', compact('categorias'))
     ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
     ->header('Pragma', 'no-cache')
     ->header('Expires', '0');
-
     }
 
     // Mostrar formulario de crear
