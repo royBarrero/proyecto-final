@@ -325,20 +325,25 @@
         background: white;
     }
     .styled-table td {
-        text-align: right;
-        padding-left: 50%;
+        text-align: left; /* cambiar de right a left */
+        padding-left: 45%; /* espacio para el label */
         position: relative;
         border: none;
         padding-top: 8px;
         padding-bottom: 8px;
+        min-height: 40px; /* asegura suficiente espacio para botones */
     }
     .styled-table td::before {
         content: attr(data-label);
         position: absolute;
-        left: 15px;
-        width: 45%;
+        left: 10px;
+        width: 40%; /* suficiente para mostrar la etiqueta */
         font-weight: bold;
         text-align: left;
+    }
+    .div-botones {
+        justify-content: flex-start; /* que los botones no se alineen a la derecha */
+        gap: 10px;
     }
 }
 
