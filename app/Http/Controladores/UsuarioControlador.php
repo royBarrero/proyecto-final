@@ -97,6 +97,7 @@ class UsuarioControlador extends Controlador
 
     public function actualizarUsuario(Request $request, $id)
     {
+        //dd($request->all);
         // Validación
         $request->validate([
         'nombre'    => 'required|string|max:150',

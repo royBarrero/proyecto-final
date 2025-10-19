@@ -4,6 +4,7 @@
 @section('contenido')
 <div class="container">
     <h2>Lista de Roles</h2>
+
     <table class="styled-table">
         <thead>
             <tr>
@@ -13,18 +14,18 @@
             </tr>
         </thead>
         <tbody>
-        @foreach($roles as $rol)
+        
+        @foreach($roles ?? [] as $rol)
             <tr>
-                <td>{{ $rol->id }}</td>
-                <td>{{ $rol->descripcion }}</td>
-                <td>
+                <td data-label="ID">{{ $rol->id }}</td>
+                <td data-label="Descripcion">{{ $rol->descripcion }}</td>
+                <td data-label="Aciones">
                     <div class="div-botones">
                         <a href="{{ route('rols.edit',$rol->id) }}" class="btn-editar">Editar</a>
-                        <form action="{{ route('rols.destroy',$rol->id) }}" method="POST">
+                        <form action="{{ route('rols.destroy',$rol->id) }}" method="POST" style="display: inline;">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn-eliminar"
-                                onclick="return confirm('¿Eliminar este rol?')">Eliminar</button>
+                            <button type="submit" class="btn-eliminar" onclick="return confirm('¿Eliminar este rol?\nTipo de Rol: {{ $rol->descripcion }}')">Eliminar</button>
                         </form>
                     </div>
                 </td>

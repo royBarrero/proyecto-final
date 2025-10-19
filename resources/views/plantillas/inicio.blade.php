@@ -25,7 +25,7 @@
         padding: 20px 20px;
         text-align: center;
         display: flex;
-        justify-content: space-between; /* título a la izquierda, botones a la derecha */
+        justify-content: space-between;
         align-items: center;
         }
         header h1 {
@@ -100,90 +100,92 @@
         font-size: 0.95em;
         color: #666;
         }
-        .textarea-controlado {
-    width: 100%;                /* Ocupa todo el ancho del contenedor del formulario */
-    max-width: 100%;            /* Evita que sobresalga */
-    height: 150px;              /* Altura cómoda */
-    min-height: 100px;          /* Altura mínima */
-    padding: 12px;              /* Espacio interno */
-    margin-top: 10px;           /* Espacio arriba */
-    margin-bottom: 20px;        /* Espacio abajo */
-    border: 1px solid #ccc;     /* Borde suave */
-    border-radius: 5px;         /* Bordes redondeados */
-    resize: vertical;           /* Permite cambiar altura */
-    font-size: 1em;             /* Tamaño de texto legible */
+
+.textarea-controlado {
+    width: 100%;
+    max-width: 100%;
+    height: 150px;
+    min-height: 100px;
+    padding: 12px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: vertical;
+    font-size: 1em;
     font-family: Arial, sans-serif;
-    box-sizing: border-box;     /* Incluye padding dentro del ancho */
+    box-sizing: border-box;
 }
 
-    /* Formularios */
-    .form-box {
-        width: 90%;
-        max-width: 400px;
-        margin: 50px auto;
-        background: white;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    h2 {
-        color: #ef8504;
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .form-group {
-        margin-bottom: 20px;
-    }
-    label {
-        display: block;
-        font-weight: bold;
-        margin-bottom: 5px;
-    }
-    input {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        outline: none;
-    }
-    input:focus {
-        border-color: #ef8504;
-    }
-    .btn {
-        width: 100%;
-        background: #ef8504;
-        color: white;
-        border: none;
-        padding: 12px;
-        border-radius: 5px;
-        font-size: 1em;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
-    .btn:hover {
-        background: #a75407;
-    }
-    .extra-links {
-        text-align: center;
-        margin-top: 15px;
-    }
-    .extra-links a {
-        color: #ef8504;
-        text-decoration: none;
-    }
-    .extra-links a:hover {
-        text-decoration: underline;
-    }
+/* Formularios */
+.form-box {
+    width: 90%;
+    max-width: 400px;
+    margin: 50px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+h2 {
+    color: #ef8504;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.form-group {
+    margin-bottom: 20px;
+}
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+}
+input:focus {
+    border-color: #ef8504;
+}
+.btn {
+    width: 100%;
+    background: #ef8504;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.btn:hover {
+    background: #a75407;
+}
+.extra-links {
+    text-align: center;
+    margin-top: 15px;
+}
+.extra-links a {
+    color: #ef8504;
+    text-decoration: none;
+}
+.extra-links a:hover {
+    text-decoration: underline;
+}
 
-    footer {
-        background: #333;
-        color: white;
-        text-align: center;
-        padding: 20px 0;
-        margin-top: 50px;
-    }
-    /* Tabla estilizada */
-    .styled-table {
+footer {
+    background: #333;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 50px;
+}
+
+/* Tabla estilizada */
+.styled-table {
     border-collapse: collapse;
     font-size: 0.95em;
     font-family: Arial, sans-serif;
@@ -191,90 +193,43 @@
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 2px 8px #f76104ed;
-    }
+}
 
-    .styled-table thead tr {
+.styled-table thead tr {
     background-color: #ef8504;
     color: #ffffff;
     text-align: left;
     font-weight: bold;
-    }
+}
 
-    .styled-table th,
-    .styled-table td {
+.styled-table th,
+.styled-table td {
     padding: 12px 15px;
     border-bottom: 1px solid #dddddd;
-    }
+}
 
-    .styled-table tbody tr:nth-of-type(even) {
-        background-color: #f3f3f3;
-    }
+.styled-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
 
-    .styled-table tbody tr:hover {
-        background-color: #ffe6c2;
-        transition: background 0.3s;
-    }
+.styled-table tbody tr:hover {
+    background-color: #ffe6c2;
+    transition: background 0.3s;
+}
 
-    .styled-table tbody tr td .header-buttons {
-        padding: 5px 10px;
-        font-size: 0.85em;
-    }
-
-    /* Responsive */
-    @media screen and (max-width: 768px) {
-    .styled-table thead {
-        display: none;
-    }
-    .styled-table, .styled-table tbody, .styled-table tr, .styled-table td {
-        display: block;
-        width: 100%;
-    }
-    .styled-table tr {
-        margin-bottom: 15px;
-    }
-    .styled-table td {
-        text-align: right;
-        padding-left: 50%;
-        position: relative;
-    }
-    .styled-table td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 15px;
-        width: 50%;
-        padding-left: 10px;
-        font-weight: bold;
-        text-align: left;
-    }
-    } /* ← aquí cerramos el media query */
-    .header-buttons .btn-cerrar {
-    background: white;
-    color: #ef8504;
-    border: 1px solid #ef8504;
-    padding: 8px 15px;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.3s, color 0.3s;
-    }
-
-    .header-buttons .btn-cerrar:hover {
-    background: #ff4c4c; /* rojo suave */
-    color: white;
-    }
+/* Botones */
 .div-botones {
     display: flex;
-    gap: 10px; /* espacio entre los botones */
+    gap: 10px;
 }
-.div-botones2{
+.div-botones2 {
     display: flex;
-    gap: 10px; /* espacio entre los botones */
-    margin-top: 20px; /* separación hacia abajo */
+    gap: 10px;
+    margin-top: 20px;
 }
-    /* Estilo para eliminar */
 .btn-eliminar {
-    color: red;                 /* letra roja */
-    background: #f9f9f9;        /* gris muy claro */
+    color: red;
+    background: #f9f9f9;
     padding: 3px 9px;
     border-radius: 5px;
     text-decoration: none;
@@ -283,18 +238,13 @@
     border: none;
     cursor: pointer;
 }
-.volver-btn {
-    margin-top: 50px; /* separa el botón hacia abajo */
-}
 .btn-eliminar:hover {
-    background: red;            /* fondo rojo */
-    color: white;               /* letra blanca */
+    background: red;
+    color: white;
 }
-
-/* Estilo para editar */
 .btn-editar {
-    color: blue;                /* letra azul */
-    background: #f9f9f9;        /* gris muy claro */
+    color: blue;
+    background: #f9f9f9;
     padding: 4px 10px;
     border-radius: 5px;
     text-decoration: none;
@@ -303,20 +253,17 @@
     border: none;
     cursor: pointer;
 }
-
 .btn-editar:hover {
-    background: blue;           /* fondo azul */
-    color: white;               /* letra blanca */
+    background: blue;
+    color: white;
 }
-/*-----------------------------------------*/
+
 /* Ocultar grid en escritorio */
 .grid-categorias {
     display: none;
 }
 
-/* Tabla estilizada para escritorio (ya la tenías) */
-
-/* Responsive: mostrar grid en móviles y ocultar tabla */
+/* Responsive: mostrar grid en móviles */
 @media screen and (max-width: 768px) {
     .tabla-escritorio {
         display: none;
@@ -324,7 +271,7 @@
 
     .grid-categorias {
         display: grid;
-        grid-template-columns: 1fr; /* Una columna por tarjeta */
+        grid-template-columns: 1fr;
         gap: 15px;
         margin-top: 20px;
     }
@@ -350,46 +297,63 @@
     }
 }
 
-/*------------------------------------------*/
-@media screen and (max-width: 768px) {
-    .styled-table thead {
-        display: none;
+/*-----------------------------------------*/
+/* Animaciones */
+@keyframes slideInNew {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+        background-color: #e3ffe3;
     }
-    .styled-table, .styled-table tbody, .styled-table tr, .styled-table td {
-        display: block;
-        width: 100%;
-    }
-    .styled-table tr {
-        margin-bottom: 15px;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        padding: 10px;
-        background: white;
-    }
-    .styled-table td {
-        text-align: left; /* cambiar de right a left */
-        padding-left: 45%; /* espacio para el label */
-        position: relative;
-        border: none;
-        padding-top: 8px;
-        padding-bottom: 8px;
-        min-height: 40px; /* asegura suficiente espacio para botones */
-    }
-    .styled-table td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 10px;
-        width: 40%; /* suficiente para mostrar la etiqueta */
-        font-weight: bold;
-        text-align: left;
-    }
-    .div-botones {
-        justify-content: flex-start; /* que los botones no se alineen a la derecha */
-        gap: 10px;
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        background-color: white;
     }
 }
-
+.new-item {
+    animation: slideInNew 1s ease forwards;
+}
+.fade-out {
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.highlight {
+    animation: highlightEffect 1.5s ease;
+}
+@keyframes highlightEffect {
+    0% { background-color: #fffbb1; }
+    100% { background-color: white; }
+}
 </style>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Animación al eliminar
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', e => {
+            const fila = form.closest('tr');
+            const card = form.closest('.card-categoria');
+            if (confirm('¿Eliminar esta categoría?')) {
+                e.preventDefault();
+                if (fila) fila.classList.add('fade-out');
+                if (card) card.classList.add('fade-out');
+                setTimeout(() => form.submit(), 400);
+            } else {
+                e.preventDefault();
+            }
+        });
+    });
+
+    // Resaltar nueva categoría si hay mensaje de éxito
+    @if(session('success'))
+        const ultimaFila = document.querySelector('.styled-table tbody tr:last-child');
+        const ultimaCard = document.querySelector('.grid-categorias .card-categoria:last-child');
+        if (ultimaFila) ultimaFila.classList.add('new-item');
+        if (ultimaCard) ultimaCard.classList.add('new-item');
+    @endif
+});
+</script>
 
 </head>
 

@@ -26,7 +26,7 @@
                         <form action="{{ route('categorias.destroy',$categoria->id) }}" method="POST" style="display:inline">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn-eliminar" onclick="return confirm('¿Eliminar esta categoría?')">Eliminar</button>
+                            <button type="submit" class="btn-eliminar" onclick="return confirm('¿Eliminar esta categoría?\nCategoría: {{ $categoria->nombre }}')">Eliminar</button>
                         </form>
                     </div>
                 </td>
