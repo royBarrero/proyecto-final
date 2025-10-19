@@ -46,7 +46,7 @@
             <li>
                 <form method="POST" action="{{ route('cerrarSesion') }}">
                 @csrf
-                    <button type="submit" style="width:100%; text-align:left; padding:10px; border:none; background:none; cursor:pointer; color:#333;">Cerrar Sesión</button>
+                    <button type="submit" style="width:100%; text-align:center; padding:10px; border:none; background:none; cursor:pointer; color:#333; font-weight: 510; font-size: 16px;">Cerrar Sesión</button>
                 </form>
             </li>
         </ul>
