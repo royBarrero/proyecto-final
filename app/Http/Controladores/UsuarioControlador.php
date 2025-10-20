@@ -37,54 +37,54 @@ class UsuarioControlador extends Controlador
     ->header('Pragma', 'no-cache')
     ->header('Expires', '0');
     }
-    public function crearNuevoUsuario(Request $request)
-    {
-        // 1️⃣ Validar datos
-        $request->validate([
-            'nombre' => 'required|string|max:150',
-            'email' => 'required|email|unique:usuarios,email',
-            'contrasenia' => 'required|min:6',
-            'idrols' => 'required|exists:rols,id',
-            'direccion' => 'nullable|string|max:250',
-            'telefono' => 'nullable|string|max:30',
-        ]);
-        // 2️⃣ Crear usuario nuevo
-        $usuario = new Usuario();
-        $usuario->nombre = $request->nombre;
-        $usuario->email = $request->email;
-        $usuario->contrasenia = $request->contrasenia;
-        $usuario->idrols = $request->idrols;
-        
-        
-        // 3️⃣ Crear cliente o vendedor según rol
-        $rolDescripcion = Rol::find($request->idrols)->descripcion ?? '';
+public function crearNuevoUsuario(Request $request)
+{
+    // 1️⃣ Validar datos
+    $request->validate([
+        'nombre' => 'required|string|max:150',
+        'email' => 'required|email|unique:usuarios,email',
+        'contrasenia' => 'required|min:6',
+        'idrols' => 'nullable|exists:rols,id',
+        'direccion' => 'nullable|string|max:250',
+        'telefono' => 'nullable|string|max:30',
+    ]);
 
-        if (strtolower($rolDescripcion) === 'cliente') {
-            $cliente = new Cliente();
-            $cliente->nombre = $request->nombre;
-            $cliente->direccion = $request->direccion ?: null;
-            $cliente->telefono = $request->telefono ?: null;
-            $cliente->save();
+    // 2️⃣ Crear usuario nuevo
+    $usuario = new Usuario();
+    $usuario->nombre = $request->nombre;
+    $usuario->email = $request->email;
+    $usuario->contrasenia = $request->contrasenia; // TgCrypt lo maneja
+    $usuario->idrols = $request->idrols ?? 2; // Por defecto cliente
+    $usuario->save();
 
-            $usuario->idclientes = $cliente->id;
-            $usuario->save();
+    // 3️⃣ Crear cliente o vendedor
+    $rolDescripcion = $request->idrols 
+        ? Rol::find($request->idrols)->descripcion ?? '' 
+        : '';
 
-        } elseif (strtolower($rolDescripcion) === 'vendedor') {
-            $vendedor = new Vendedor();
-            $vendedor->nombre = $request->nombre;
-            $vendedor->direccion = $request->direccion ?: null;
-            $vendedor->telefono = $request->telefono ?: null;
-            $vendedor->email = $request->email;
-            $vendedor->save();
+    if (strtolower($rolDescripcion) === 'vendedor') {
+        $vendedor = new Vendedor();
+        $vendedor->idusuarios = $usuario->id;
+        $vendedor->nombre = $request->nombre;
+        $vendedor->direccion = $request->direccion ?: null;
+        $vendedor->telefono = $request->telefono ?: null;
+        $vendedor->email = $request->email;
+        $vendedor->activo = 0; // inactivo
+        $vendedor->save();
+    } else {
+        $cliente = new Cliente();
+        $cliente->idusuarios = $usuario->id;
+        $cliente->nombre = $request->nombre;
+        $cliente->direccion = $request->direccion ?: null;
+        $cliente->telefono = $request->telefono ?: null;
+        $cliente->activo = 1; // activo
+        $cliente->save();
+    }
 
-            $usuario->idvendedors = $vendedor->id;
-            $usuario->save();
-        }
-        
-    // 4️⃣ Redirigir con mensaje de éxito
-    return redirect()->route('mostrarDatosDeTodosLosUsuarios')
-                     ->with('success', 'Usuario creado correctamente.');
+    // 4️⃣ Retornar la vista usando response()->view() con cache control
+    return redirect()->route('mostrarDatosDeTodosLosUsuarios')->with('success', 'Usuario creado correctamente.');
 }
+
 
     public function editarUsuario($id)
     {
@@ -127,7 +127,7 @@ class UsuarioControlador extends Controlador
             $request->telefono
         );
 
-        return redirect()->route('mostrarDatosDeTodosLosUsuarios')->with('success', 'Usuario actualizado correctamente.');
+        return redirect()->route('mostrarDatosDeTodosLosUsuarios')->with('warning', 'Usuario actualizado correctamente.');
     }
 
 
@@ -137,6 +137,6 @@ public function eliminarUsuario($id)
     $usuario = Usuario::findOrFail($id);
     $usuario->delete();
 
-    return redirect()->route('mostrarDatosDeTodosLosUsuarios')->with('success', 'Usuario eliminado correctamente.');
+    return redirect()->route('mostrarDatosDeTodosLosUsuarios')->with('error', 'Usuario eliminado correctamente.');
 }
 }

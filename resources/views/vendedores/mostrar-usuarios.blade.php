@@ -4,7 +4,7 @@
 @section('contenido')
 <div class="container">
     <h2>Lista de usuarios</h2>
-
+        <x-alerta />
         <table class="styled-table">
             <thead>
                 <tr>

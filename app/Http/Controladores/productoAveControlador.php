@@ -66,12 +66,12 @@ class ProductoAveControlador extends Controlador
         ]);
 
         $productoAve->update($request->all());
-        return redirect()->route('productoAves.mostrar')->with('success', 'Producto actualizado correctamente.');
+        return redirect()->route('productoAves.mostrar')->with('warning', 'Producto actualizado correctamente.');
     }
 
     public function destroy(ProductoAve $productoAve)
     {
         $productoAve->delete();
-        return redirect()->route('productoAves.mostrar')->with('success', 'Producto eliminado correctamente.');
+        return redirect()->route('productoAves.mostrar')->with('error', 'Producto eliminado correctamente.');
     }
 }

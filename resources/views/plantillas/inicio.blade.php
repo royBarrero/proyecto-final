@@ -327,7 +327,7 @@ footer {
     100% { background-color: white; }
 }
 </style>
-<script>
+<script >
 document.addEventListener('DOMContentLoaded', () => {
     // Solo formularios que tengan un botón .btn-eliminar
     document.querySelectorAll('form').forEach(form => {
@@ -360,7 +360,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ultimaCard) ultimaCard.classList.add('new-item');
     @endif
 });
+
 </script>
+
 
 </head>
 

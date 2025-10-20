@@ -53,12 +53,12 @@ class RolControlador extends Controlador
         ]);
 
         $rol->update($request->all());
-        return redirect()->route('rols.index')->with('success', 'Rol actualizado correctamente.');
+        return redirect()->route('rols.index')->with('warning', 'Rol actualizado correctamente.');
     }
 
     public function destroy(Rol $rol)
     {
         $rol->delete();
-        return redirect()->route('rols.index')->with('success', 'Rol eliminado correctamente.');
+        return redirect()->route('rols.index')->with('error', 'Rol eliminado correctamente.');
     }
 }

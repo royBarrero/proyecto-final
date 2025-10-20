@@ -63,13 +63,13 @@ class CategoriaControlador extends Controlador
         ]);
 
         $categoria->update($request->all());
-        return redirect()->route('categorias.index')->with('success','Categoría actualizada correctamente');
+        return redirect()->route('categorias.index')->with('warning','Categoría actualizada correctamente');
     }
 
     // Eliminar
     public function destroy(Categoria $categoria)
     {
         $categoria->delete();
-        return redirect()->route('categorias.index')->with('success','Categoría eliminada correctamente');
+        return redirect()->route('categorias.index')->with('error','Categoría eliminada correctamente');
     }
 }
