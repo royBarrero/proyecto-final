@@ -13,10 +13,12 @@ class Cliente extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'nombre',
+        'idusuarios',   // FK usuario
         'direccion',
         'telefono',
+        'activo',
     ];
+
 
     // Relación con usuarios (1 cliente puede tener varios usuarios, si es el caso)
     // Relación con usuarios
