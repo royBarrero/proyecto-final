@@ -329,18 +329,25 @@ footer {
 </style>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Animación al eliminar
+    // Solo formularios que tengan un botón .btn-eliminar
     document.querySelectorAll('form').forEach(form => {
+        const btnEliminar = form.querySelector('.btn-eliminar');
+        if (!btnEliminar) return; // ignorar formularios sin botón de eliminar
+
         form.addEventListener('submit', e => {
             const fila = form.closest('tr');
             const card = form.closest('.card-categoria');
+
+            // Confirmación antes de eliminar
             if (confirm('¿Eliminar esta categoría?')) {
                 e.preventDefault();
                 if (fila) fila.classList.add('fade-out');
                 if (card) card.classList.add('fade-out');
+
+                // Enviar el formulario después de la animación
                 setTimeout(() => form.submit(), 400);
             } else {
-                e.preventDefault();
+                e.preventDefault(); // cancelar envío
             }
         });
     });

@@ -71,7 +71,7 @@
     <div style="position:relative; display:inline-block; width:100%;">
         {{-- Botón que muestra el rol actual --}}
         <button type="button" id="rolMenuBtn" style="color:#ef8504; background:white; padding:10px; border-radius:5px; font-weight:bold; border:1px solid #ccc; cursor:pointer; width:100%; text-align:left;">
-            {{ $usuario->rol->descripcion ?? 'Seleccionar rol' }} ▼
+            {{ $usuario->rol ?? 'Seleccionar rol' }} ▼
         </button>
 
         {{-- Lista desplegable --}}
@@ -91,7 +91,7 @@
             @foreach($roles as $rol)
                 <li style="border-bottom:1px solid #eee;">
                     <a href="#" 
-                       onclick="event.preventDefault(); seleccionarRol({{ $rol->id }}, '{{ $rol->descripcion }}');"
+                       onclick="event.preventDefault(); seleccionarRol({{ $rol->id }}, '{{ addslashes($rol->descripcion) }}');"
                        style="display:block; padding:10px; text-decoration:none; color:#333;">
                         {{ $rol->descripcion }}
                     </a>
@@ -101,30 +101,39 @@
     </div>
 
     {{-- Input oculto que enviará el rol seleccionado --}}
-    <input type="hidden" name="idrols" id="idrols" value="{{ $usuario->rol }}">
+    <input type="hidden" name="idrols" id="idrols" value="{{ $rolIdUsuario }}">
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const boton = document.getElementById('rolMenuBtn');
-        const menu = document.getElementById('rolMenu');
+document.addEventListener('DOMContentLoaded', function () {
+    const boton = document.getElementById('rolMenuBtn');
+    const menu = document.getElementById('rolMenu');
+    const inputRol = document.getElementById('idrols');
 
-        boton.addEventListener('click', function(e) {
-            e.stopPropagation();
-            menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
-        });
+    // Inicializar el texto del botón con el rol actual
+    @if($rolIdUsuario)
+        const rolActual = @json($roles->firstWhere('id', $rolIdUsuario)->descripcion);
+        boton.innerText = rolActual + ' ▼';
+    @endif
 
-        document.addEventListener('click', function() {
-            menu.style.display = 'none';
-        });
+    boton.addEventListener('click', function(e) {
+        e.stopPropagation();
+        menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
     });
 
-    function seleccionarRol(id, descripcion) {
-        document.getElementById('idrols').value = id;
-        document.getElementById('rolMenuBtn').innerText = descripcion + ' ▼';
-        document.getElementById('rolMenu').style.display = 'none';
-    }
+    document.addEventListener('click', function() {
+        menu.style.display = 'none';
+    });
+});
+
+// Función para seleccionar rol
+function seleccionarRol(id, descripcion) {
+    document.getElementById('idrols').value = id;
+    document.getElementById('rolMenuBtn').innerText = descripcion + ' ▼';
+    document.getElementById('rolMenu').style.display = 'none';
+}
 </script>
+
 
 
         {{-- Botones --}}

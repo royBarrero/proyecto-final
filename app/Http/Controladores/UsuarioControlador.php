@@ -90,9 +90,19 @@ class UsuarioControlador extends Controlador
     {
         $usuario = Usuario::obtenerUsuario($id);
         $roles = Rol::all();
-        return response()->view('vendedores.editar-usuario', compact('usuario','roles'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-    ->header('Pragma', 'no-cache')
-    ->header('Expires', '0');
+        $rolIdUsuario = null;
+        // Recorremos los roles hasta encontrar el del usuario
+        foreach ($roles as $rol) {
+            if ($rol->descripcion == $usuario->rol) { // Asumiendo que $usuario->rol contiene el nombre del rol
+             $rolIdUsuario = $rol->id;
+            break; // Detiene el bucle cuando encuentra el rol
+            }
+        }
+        
+        return response()->view('vendedores.editar-usuario', compact('usuario','roles','rolIdUsuario'))
+                         ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                         ->header('Pragma', 'no-cache')
+                         ->header('Expires', '0');
     }
 
     public function actualizarUsuario(Request $request, $id)
