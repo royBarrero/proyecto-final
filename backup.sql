@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict eY9CiU5fJepjVnrayxrgAxb2JwTqCtdRKVDx3RyDNEy33GRnZh4vDnV6OFqvBhz
+\restrict cAN9rljgneweoK8mZdhGDZGjkpX3KaJ4hiWW0ul8ZhAM6w0moqhAS2eIvcXo6oS
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.6
@@ -116,33 +116,75 @@ CREATE PROCEDURE public.actualizar_usuario_completo(IN p_id integer, IN p_nombre
     LANGUAGE plpgsql
     AS $$
 DECLARE
-    v_idclientes INT := NULL;
-    v_idvendedors INT := NULL;
+    v_idcliente INT;
+    v_idvendedor INT;
 BEGIN
+    -- Obtener los ids asociados en clientes y vendedores
+    SELECT id INTO v_idcliente FROM clientes WHERE idusuarios = p_id;
+    SELECT id INTO v_idvendedor FROM vendedors WHERE idusuarios = p_id;
+
+    -- Manejo si el rol es CLIENTE (idrols = 2)
     IF p_idrols = 2 THEN
-        SELECT id INTO v_idclientes FROM clientes WHERE nombre = p_nombre LIMIT 1;
-        IF FOUND THEN
-            UPDATE clientes SET direccion = p_direccion, telefono = p_telefono WHERE id = v_idclientes;
+        -- Actualizar o crear cliente
+        IF v_idcliente IS NOT NULL THEN
+            UPDATE clientes
+            SET nombre = p_nombre,
+                direccion = p_direccion,
+                telefono = p_telefono,
+                activo = 1
+            WHERE id = v_idcliente;
         ELSE
-            INSERT INTO clientes(nombre, direccion, telefono) VALUES (p_nombre, p_direccion, p_telefono) RETURNING id INTO v_idclientes;
+            INSERT INTO clientes(nombre, direccion, telefono, idusuarios, activo)
+            VALUES (p_nombre, p_direccion, p_telefono, p_id, 1)
+            RETURNING id INTO v_idcliente;
         END IF;
-        DELETE FROM vendedors WHERE nombre = p_nombre;
+
+        -- Desactivar vendedor si existía
+        IF v_idvendedor IS NOT NULL THEN
+            UPDATE vendedors
+            SET activo = 0
+            WHERE id = v_idvendedor;
+        END IF;
+
+    -- Manejo si el rol es VENDEDOR (idrols != 2)
+    ELSEIF p_idrols != 2 THEN
+        -- Actualizar o crear vendedor
+        IF v_idvendedor IS NOT NULL THEN
+            UPDATE vendedors
+            SET nombre = p_nombre,
+                direccion = p_direccion,
+                telefono = p_telefono,
+                email = p_email,
+                activo = 1
+            WHERE id = v_idvendedor;
+        ELSE
+            INSERT INTO vendedors(nombre, direccion, telefono, email, idusuarios, activo)
+            VALUES (p_nombre, p_direccion, p_telefono, p_email, p_id, 1)
+            RETURNING id INTO v_idvendedor;
+        END IF;
+
+        -- Desactivar cliente si existía
+        IF v_idcliente IS NOT NULL THEN
+            UPDATE clientes
+            SET activo = 0
+            WHERE id = v_idcliente;
+        END IF;
+
+    -- Otros roles: desactivar ambos
     ELSE
-        SELECT id INTO v_idvendedors FROM vendedors WHERE nombre = p_nombre LIMIT 1;
-        IF FOUND THEN
-            UPDATE vendedors SET direccion = p_direccion, telefono = p_telefono, email = p_email WHERE id = v_idvendedors;
-        ELSE
-            INSERT INTO vendedors(nombre, direccion, telefono, email) VALUES (p_nombre, p_direccion, p_telefono, p_email) RETURNING id INTO v_idvendedors;
+        IF v_idcliente IS NOT NULL THEN
+            UPDATE clientes SET activo = 0 WHERE id = v_idcliente;
         END IF;
-        DELETE FROM clientes WHERE nombre = p_nombre;
+        IF v_idvendedor IS NOT NULL THEN
+            UPDATE vendedors SET activo = 0 WHERE id = v_idvendedor;
+        END IF;
     END IF;
 
+    -- Actualizar información básica del usuario
     UPDATE usuarios
     SET nombre = p_nombre,
         email = p_email,
-        idrols = p_idrols,
-        idclientes = v_idclientes,
-        idvendedors = v_idvendedors
+        idrols = p_idrols
     WHERE id = p_id;
 END;
 $$;
@@ -260,14 +302,18 @@ BEGIN
         u.id::INT,
         COALESCE(NULLIF(u.nombre, ''), NULLIF(c.nombre, ''), NULLIF(v.nombre, ''))::VARCHAR AS nombre,
         COALESCE(NULLIF(u.email, ''), NULLIF(v.email, ''))::VARCHAR AS correo,
-        COALESCE(NULLIF(r.descripcion, ''), 'Desconocido')::VARCHAR AS rol,
+        CASE
+            WHEN c.idusuarios IS NOT NULL THEN 'Cliente'
+            WHEN v.idusuarios IS NOT NULL THEN 'Vendedor'
+            ELSE 'Desconocido'
+        END::VARCHAR AS rol,
         COALESCE(NULLIF(c.direccion, ''), NULLIF(v.direccion, ''))::VARCHAR AS direccion,
         COALESCE(NULLIF(c.telefono, ''), NULLIF(v.telefono, ''))::VARCHAR AS telefono
     FROM usuarios u
-    LEFT JOIN clientes c ON u.idclientes = c.id
-    LEFT JOIN vendedors v ON u.idvendedors = v.id
+    LEFT JOIN clientes c ON c.idusuarios = u.id
+    LEFT JOIN vendedors v ON v.idusuarios = u.id
     LEFT JOIN rols r ON u.idrols = r.id
-    WHERE u.id = p_id   -- 👈 filtro por el parámetro
+    WHERE u.id = p_id
     ORDER BY u.id ASC;
 END;
 $$;
@@ -315,17 +361,20 @@ CREATE FUNCTION public.obtener_usuarios_completo() RETURNS TABLE(id integer, nom
 BEGIN
     RETURN QUERY
     SELECT 
-        u.id::INT,
-        COALESCE(NULLIF(u.nombre, ''), NULLIF(c.nombre, ''), NULLIF(v.nombre, ''))::VARCHAR AS nombre,
-        COALESCE(NULLIF(u.email, ''), NULLIF(v.email, ''))::VARCHAR AS correo,
-        COALESCE(NULLIF(r.descripcion, ''), 'Desconocido')::VARCHAR AS rol,
-        COALESCE(NULLIF(c.direccion, ''), NULLIF(v.direccion, ''))::VARCHAR AS direccion,
-        COALESCE(NULLIF(c.telefono, ''), NULLIF(v.telefono, ''))::VARCHAR AS telefono
+        u.id,
+        COALESCE(c.nombre::VARCHAR, v.nombre::VARCHAR, u.nombre::VARCHAR) AS nombre,
+        COALESCE(v.email::VARCHAR, u.email::VARCHAR) AS correo,
+        CASE
+            WHEN c.idusuarios IS NOT NULL THEN 'Cliente'::VARCHAR
+            WHEN v.idusuarios IS NOT NULL THEN 'Vendedor'::VARCHAR
+            ELSE 'Desconocido'::VARCHAR
+        END AS rol,
+        COALESCE(c.direccion::VARCHAR, v.direccion::VARCHAR) AS direccion,
+        COALESCE(c.telefono::VARCHAR, v.telefono::VARCHAR) AS telefono
     FROM usuarios u
-    LEFT JOIN clientes c ON u.idclientes = c.id
-    LEFT JOIN vendedors v ON u.idvendedors = v.id
-    LEFT JOIN rols r ON u.idrols = r.id
-    ORDER BY u.id ASC;
+    LEFT JOIN clientes c ON c.idusuarios = u.id
+    LEFT JOIN vendedors v ON v.idusuarios = u.id
+    ORDER BY u.id;
 END;
 $$;
 
@@ -451,7 +500,10 @@ CREATE TABLE public.clientes (
     id integer NOT NULL,
     nombre character varying(150) NOT NULL,
     direccion character varying(250),
-    telefono character varying(30)
+    telefono character varying(30),
+    idusuarios integer,
+    activo smallint DEFAULT 1 NOT NULL,
+    CONSTRAINT chk_clientes_activo CHECK ((activo = ANY (ARRAY[0, 1])))
 );
 
 
@@ -1039,10 +1091,7 @@ CREATE TABLE public.usuarios (
     email character varying(150) NOT NULL,
     contrasenia character varying(255) NOT NULL,
     idrols integer DEFAULT 2 NOT NULL,
-    idvendedors integer,
-    idclientes integer,
-    created_at timestamp without time zone DEFAULT now(),
-    CONSTRAINT chk_usuario_unico CHECK (((idvendedors IS NOT NULL) OR (idclientes IS NOT NULL)))
+    created_at timestamp without time zone DEFAULT now()
 );
 
 
@@ -1071,6 +1120,44 @@ ALTER SEQUENCE public.usuarios_id_seq OWNED BY public.usuarios.id;
 
 
 --
+-- Name: usuarios_nueva; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.usuarios_nueva (
+    id integer NOT NULL,
+    nombre character varying(150) NOT NULL,
+    email character varying(150) NOT NULL,
+    contrasenia character varying(255) NOT NULL,
+    idrols integer DEFAULT 2 NOT NULL,
+    created_at timestamp without time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.usuarios_nueva OWNER TO postgres;
+
+--
+-- Name: usuarios_nueva_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.usuarios_nueva_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.usuarios_nueva_id_seq OWNER TO postgres;
+
+--
+-- Name: usuarios_nueva_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.usuarios_nueva_id_seq OWNED BY public.usuarios_nueva.id;
+
+
+--
 -- Name: vendedors; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -1079,7 +1166,10 @@ CREATE TABLE public.vendedors (
     nombre character varying(150) NOT NULL,
     direccion character varying(250),
     telefono character varying(30),
-    email character varying(150) NOT NULL
+    email character varying(150) NOT NULL,
+    idusuarios integer,
+    activo smallint DEFAULT 0 NOT NULL,
+    CONSTRAINT chk_vendedors_activo CHECK ((activo = ANY (ARRAY[0, 1])))
 );
 
 
@@ -1234,6 +1324,13 @@ ALTER TABLE ONLY public.usuarios ALTER COLUMN id SET DEFAULT nextval('public.usu
 
 
 --
+-- Name: usuarios_nueva id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.usuarios_nueva ALTER COLUMN id SET DEFAULT nextval('public.usuarios_nueva_id_seq'::regclass);
+
+
+--
 -- Name: vendedors id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1263,28 +1360,34 @@ COPY public.categorias (id, nombre, descripcion) FROM stdin;
 -- Data for Name: clientes; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.clientes (id, nombre, direccion, telefono) FROM stdin;
-1	Ana López	Av. Libertad 123	7894561
-2	Carlos Ramos	Calle 10 #45	7458962
-4	Pedro Ortiz	Zona Norte	7894564
-5	Lucía García	Zona Sur	7894565
-6	Roberto Díaz	Calle Bolívar	7894566
-7	Sofía Vargas	Av. Cañoto 77	7894567
-8	Daniel Guzmán	Zona Central	7894568
-9	Laura Torres	Barrio Jardín	7894569
-10	Daniel Suárez	Av. Alemana 99	7894570
-11	Cristian Huari	Av. Siempre Viva 123	7133571
-3	María López	Av. Principal 22	76543210
-15	Asher Bustillos	Barrio Los Pinos, Zona arroyito	33449283
-16	Luis Huari Choque	Barrio San Martín, Zona Plan 3000, Sobre avenida Panamericana	71336373
-17	Santiago Huari Choque	Barrio San Martín, Zona Plan 3000, Sobre avenida Panamericana	71336373
-18	Yenny Jallasa Mamani	Plan 3000	67884712
-19	Daniela Belen Ancalle Sejas	Cotoca	78632222
-20	Melissa Sanchez	Barrio los Cañas	77451269
-21	Toribia Gallego	La pampa	78852246
-22	saturnino mamani	La salle	79632222
-23	Belisario Landa	\N	\N
-24	Samuel Torrico	\N	\N
+COPY public.clientes (id, nombre, direccion, telefono, idusuarios, activo) FROM stdin;
+22	saturnino mamani	La salle	79632222	24	1
+24	Samuel Torrico	\N	74559621	26	1
+23	Belisario Landa	\N	66254417	25	1
+30	Josue Vargas	\N	\N	32	1
+10	Daniel Suárez	Av. Alemana 99	7894570	\N	1
+11	Cristian Huari	Av. Siempre Viva 123	7133571	\N	1
+28	Jose Aguirre	\N	66852470	30	1
+1	Ana López	Av. Libertad 123	7894561	2	1
+2	Carlos Ramos	Calle 10 #45	7458962	3	1
+3	María López	Av. Principal 22	76543210	4	1
+4	Pedro Ortiz	Zona Norte	7894564	5	1
+5	Lucía García	Zona Sur	7894565	6	1
+6	Roberto Díaz	Calle Bolívar	7894566	7	1
+7	Sofía Vargas	Av. Cañoto 77	7894567	8	1
+8	Daniel Guzmán	Zona Central	7894568	9	1
+9	Laura Torres	Barrio Jardín	7894569	10	1
+15	Asher Bustillos	Barrio Los Pinos, Zona arroyito	33449283	15	1
+16	Luis Huari Choque	Barrio San Martín, Zona Plan 3000, Sobre avenida Panamericana	71336373	17	1
+17	Santiago Huari Choque	Barrio San Martín, Zona Plan 3000, Sobre avenida Panamericana	71336373	18	1
+19	Daniela Belen Ancalle Sejas	Cotoca	78632222	20	1
+18	Yenny Jallasa Mamani	Plan 3000	67884712	19	1
+20	Melissa Sanchez	Barrio los Cañas	77451269	22	1
+21	Toribia Gallego	La pampa	78852246	23	1
+32	Wilber Ortiz	\N	68990086	34	1
+31	Santiago Justo Huari	\N	67791098	33	1
+29	Melquiades Ancalle	\N	78556200	31	1
+33	Luis Morales	\N	\N	35	1
 \.
 
 
@@ -1568,29 +1671,63 @@ COPY public.stocks (id, cantidad, estado, fecha, idproductoaves) FROM stdin;
 -- Data for Name: usuarios; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.usuarios (id, nombre, email, contrasenia, idrols, idvendedors, idclientes, created_at) FROM stdin;
-2	Ana López	ana.lopez@gmail.com	$2a$12$xtOONtA.bdKpOibaHkD.sugIPeb3B7Vfx.TU9Hg8yoAqQOB7J8Su6	2	\N	1	2025-09-11 18:42:16.73455
-3	Carlos Ramos	carlos.ramos@gmail.com	$2a$12$4HNkVcvENLlkFzvklMn7T.BtLKAG9mJJvjVQBVIYpFPKsGRdLzFxi	2	\N	2	2025-09-11 18:42:16.73455
-4	María Suárez	maria.suarez@gmail.com	$2a$12$uGG2nMLPey64fSlfjptoR.IQeXQUA0C/J9CywDkl0iZZsJUbDO6wy	2	\N	3	2025-09-11 18:42:16.73455
-5	Pedro Ortiz	pedro.ortiz@gmail.com	$2a$12$h5hYR4euUHQgVpgYg88IEOWf0wKAxEl38pxxqYtnVx8i.Fc3HCoLG	2	\N	4	2025-09-11 18:42:16.73455
-6	Lucía García	lucia.garcia@gmail.com	$2a$12$Vo1CDmDPuRH6GS8mxyzm9OVN5S/S.tucVmdYcgc/Ihtg5AEp0PN4e	2	\N	5	2025-09-11 18:42:16.73455
-7	Roberto Díaz	roberto.diaz@gmail.com	$2a$12$pH5PY/vFriMHHMt5ZOBESOAoZJMlth6uRp4Q/LQeMUXzDVcLGT30C	2	\N	6	2025-09-11 18:42:16.73455
-8	Sofía Vargas	sofia.vargas@gmail.com	$2a$12$AphnAQInVVj0qptCBXVTzuVIhxoGNVJIGbvNYunrV2to6GLTWLnky	2	\N	7	2025-09-11 18:42:16.73455
-9	Daniel Guzmán	daniel.guzman@gmail.com	$2a$12$DMNSxHRX2sW62YY4i14GceP9.gfYT4EtDkebkDuNJpS59md97cmh2	2	\N	8	2025-09-11 18:42:16.73455
-10	Laura Torres	laura.torres@gmail.com	$2a$12$SxyMTzaZtnXU6HIruVmQq.kkDWvdhL036zPw0fPA4FLblpKwlzLim	2	\N	9	2025-09-11 18:42:16.73455
-15	Asher Bustillos	asher.bustillos@gmail.com	$2a$12$NlRCrL1UGBD25o.QiyYd2.xh4lXzfQqLbVClDNLqLqita8qHhgQu2	2	\N	15	2025-10-02 14:26:58.978121
-16	Cristian Huari	cristoteam29@gmail.com	$2a$12$PK64W2U173kk9vT.fXAMcOklNocOtZXUDVqM5.jaxXlblrSMEFbHS	1	11	\N	2025-10-02 14:32:40.421708
-17	Luis Huari Choque	luis.huari29@gmail.com	$2a$12$VO2gTNj4VSezKnmjEDh1cenC59cpPEQLuKO6tq5Dm.2oevTmKPEUC	2	\N	16	2025-10-02 15:58:15.346144
-18	Santiago Huari Choque	santiago.huari29@gmail.com	$2a$12$GXTWfpigbbDyS23Qia18oeWX06szLhDZuYN.IQ3btHSCJXBtuIMwe	2	\N	17	2025-10-02 16:00:35.222807
-20	Daniela Belen Ancalle Sejas	daniela.belen@gmail.com	$2a$12$27XHcvVfkHqsXkPZqrMbw.G//6u3sdGgBN4K9w.6ubA04PKccHZZC	1	\N	19	2025-10-02 16:24:30.543493
-19	Yenny Jallasa Mamani	yenny.jallasa@gmail.com	$2a$12$p4F/E29KsBbz8YkP1RlxSeZYWh/sSIULws7NoQWUdImmiUYYPSFVy	2	\N	18	2025-10-02 16:15:15.788487
-21	Roy Barrero	roy.barrero@gmail.com	$2a$12$AD98OAVcxWfEvBgc9sGnxu775WPhJCM7HguDWq8Jb2/1jDuuSfEG2	1	12	\N	2025-10-02 17:43:48.599009
-1	Limberg Huari	limberg.huari@gmail.com	$2a$12$CNt7HNlB3aXPpu7yvWiC2.6FiU8AFdaR.LlldMFMvUljB0va6Sydi	3	1	\N	2025-09-11 18:42:16.73455
-22	Melissa Sanchez	mely@gmail.com	$2a$12$C/e7ocYOf0k/.vzGzs8VV.RJdrNURMmgfHI8ykcwXUmAHe/H9qq1u	2	\N	20	2025-10-02 22:59:00.829061
-23	Toribia Gallego	toribia@gmail.com	$2a$12$eHkAORTD27QM..EL3a79rO2EX8TSlAZzRMFaqlLSxlLf/5ZxxDl82	2	\N	21	2025-10-02 23:01:34.720423
-24	saturnino mamani	saturno@gmail.com	$2a$12$Jty7fptW20DuQlJnWYOQP.FKW6PTOb.640onyglBZM4jYAZB85AIi	1	\N	22	2025-10-02 23:08:09.373352
-25	Belisario Landa	beli.landa@gmail.com	$2a$12$qj98N63kbD8kH6yK.VxbnOxGKPDJCSnrvM3J8CPsIKlssgYWqIduu	3	\N	23	2025-10-02 23:17:38.941907
-26	Samuel Torrico	samuel@gmail.com	$2a$12$JHi0OOK25q9weV7zKqdaTO9uYGrJFGd/sMhVqjuh3zxivFk2UQ4j2	1	\N	24	2025-10-02 23:28:41.075029
+COPY public.usuarios (id, nombre, email, contrasenia, idrols, created_at) FROM stdin;
+2	Ana López	ana.lopez@gmail.com	$2a$12$xtOONtA.bdKpOibaHkD.sugIPeb3B7Vfx.TU9Hg8yoAqQOB7J8Su6	2	2025-09-11 18:42:16.73455
+3	Carlos Ramos	carlos.ramos@gmail.com	$2a$12$4HNkVcvENLlkFzvklMn7T.BtLKAG9mJJvjVQBVIYpFPKsGRdLzFxi	2	2025-09-11 18:42:16.73455
+4	María Suárez	maria.suarez@gmail.com	$2a$12$uGG2nMLPey64fSlfjptoR.IQeXQUA0C/J9CywDkl0iZZsJUbDO6wy	2	2025-09-11 18:42:16.73455
+5	Pedro Ortiz	pedro.ortiz@gmail.com	$2a$12$h5hYR4euUHQgVpgYg88IEOWf0wKAxEl38pxxqYtnVx8i.Fc3HCoLG	2	2025-09-11 18:42:16.73455
+6	Lucía García	lucia.garcia@gmail.com	$2a$12$Vo1CDmDPuRH6GS8mxyzm9OVN5S/S.tucVmdYcgc/Ihtg5AEp0PN4e	2	2025-09-11 18:42:16.73455
+7	Roberto Díaz	roberto.diaz@gmail.com	$2a$12$pH5PY/vFriMHHMt5ZOBESOAoZJMlth6uRp4Q/LQeMUXzDVcLGT30C	2	2025-09-11 18:42:16.73455
+8	Sofía Vargas	sofia.vargas@gmail.com	$2a$12$AphnAQInVVj0qptCBXVTzuVIhxoGNVJIGbvNYunrV2to6GLTWLnky	2	2025-09-11 18:42:16.73455
+9	Daniel Guzmán	daniel.guzman@gmail.com	$2a$12$DMNSxHRX2sW62YY4i14GceP9.gfYT4EtDkebkDuNJpS59md97cmh2	2	2025-09-11 18:42:16.73455
+10	Laura Torres	laura.torres@gmail.com	$2a$12$SxyMTzaZtnXU6HIruVmQq.kkDWvdhL036zPw0fPA4FLblpKwlzLim	2	2025-09-11 18:42:16.73455
+15	Asher Bustillos	asher.bustillos@gmail.com	$2a$12$NlRCrL1UGBD25o.QiyYd2.xh4lXzfQqLbVClDNLqLqita8qHhgQu2	2	2025-10-02 14:26:58.978121
+16	Cristian Huari	cristoteam29@gmail.com	$2a$12$PK64W2U173kk9vT.fXAMcOklNocOtZXUDVqM5.jaxXlblrSMEFbHS	1	2025-10-02 14:32:40.421708
+17	Luis Huari Choque	luis.huari29@gmail.com	$2a$12$VO2gTNj4VSezKnmjEDh1cenC59cpPEQLuKO6tq5Dm.2oevTmKPEUC	2	2025-10-02 15:58:15.346144
+18	Santiago Huari Choque	santiago.huari29@gmail.com	$2a$12$GXTWfpigbbDyS23Qia18oeWX06szLhDZuYN.IQ3btHSCJXBtuIMwe	2	2025-10-02 16:00:35.222807
+20	Daniela Belen Ancalle Sejas	daniela.belen@gmail.com	$2a$12$27XHcvVfkHqsXkPZqrMbw.G//6u3sdGgBN4K9w.6ubA04PKccHZZC	1	2025-10-02 16:24:30.543493
+19	Yenny Jallasa Mamani	yenny.jallasa@gmail.com	$2a$12$p4F/E29KsBbz8YkP1RlxSeZYWh/sSIULws7NoQWUdImmiUYYPSFVy	2	2025-10-02 16:15:15.788487
+22	Melissa Sanchez	mely@gmail.com	$2a$12$C/e7ocYOf0k/.vzGzs8VV.RJdrNURMmgfHI8ykcwXUmAHe/H9qq1u	2	2025-10-02 22:59:00.829061
+23	Toribia Gallego	toribia@gmail.com	$2a$12$eHkAORTD27QM..EL3a79rO2EX8TSlAZzRMFaqlLSxlLf/5ZxxDl82	2	2025-10-02 23:01:34.720423
+24	saturnino mamani	saturno@gmail.com	$2a$12$Jty7fptW20DuQlJnWYOQP.FKW6PTOb.640onyglBZM4jYAZB85AIi	2	2025-10-02 23:08:09.373352
+1	Limberg Huari	limberg.huari@gmail.com	$2a$12$CNt7HNlB3aXPpu7yvWiC2.6FiU8AFdaR.LlldMFMvUljB0va6Sydi	1	2025-09-11 18:42:16.73455
+26	Samuel Torrico	samuel@gmail.com	$2a$12$JHi0OOK25q9weV7zKqdaTO9uYGrJFGd/sMhVqjuh3zxivFk2UQ4j2	2	2025-10-02 23:28:41.075029
+25	Belisario Landa	beli.landa@gmail.com	$2a$12$qj98N63kbD8kH6yK.VxbnOxGKPDJCSnrvM3J8CPsIKlssgYWqIduu	2	2025-10-02 23:17:38.941907
+30	Jose Aguirre	jose@gmail.com	$2a$12$435SR6hks6p.viZ7LcklpOXWF5oSL7kTD4wxWafJocWm0gQWgoA6G	2	2025-10-19 21:06:35.071247
+33	Santiago Justo Huari	santiagojusto@gmail.com	$2a$12$jgAbjhcU9VQGkoYxqc4XyeTQXgd6Ra1USkZH2aj/.6fXHMmF22q/G	2	2025-10-19 22:08:45.281598
+31	Melquiades Ancalle	melquiades@gmail.com	$2a$12$4S4m5d88swpKx3NXk2FzP.gLT6qxr8yEEAwyTeyrV2Y7ccdnO6SJW	2	2025-10-19 21:11:12.045146
+35	Luis Morales	luismorales@gmail.com	$2a$12$9.ow7wNpsHUZX7cArSfAx.qGA4ywVWz9OqaLe4LsQ4Fb9Ydjf14tW	2	2025-10-19 22:29:05.429637
+21	Roy Barrero	roy.barrero@gmail.com	$2a$12$AD98OAVcxWfEvBgc9sGnxu775WPhJCM7HguDWq8Jb2/1jDuuSfEG2	3	2025-10-02 17:43:48.599009
+\.
+
+
+--
+-- Data for Name: usuarios_nueva; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.usuarios_nueva (id, nombre, email, contrasenia, idrols, created_at) FROM stdin;
+2	Ana López	ana.lopez@gmail.com	$2a$12$xtOONtA.bdKpOibaHkD.sugIPeb3B7Vfx.TU9Hg8yoAqQOB7J8Su6	2	2025-09-11 18:42:16.73455
+3	Carlos Ramos	carlos.ramos@gmail.com	$2a$12$4HNkVcvENLlkFzvklMn7T.BtLKAG9mJJvjVQBVIYpFPKsGRdLzFxi	2	2025-09-11 18:42:16.73455
+4	María Suárez	maria.suarez@gmail.com	$2a$12$uGG2nMLPey64fSlfjptoR.IQeXQUA0C/J9CywDkl0iZZsJUbDO6wy	2	2025-09-11 18:42:16.73455
+5	Pedro Ortiz	pedro.ortiz@gmail.com	$2a$12$h5hYR4euUHQgVpgYg88IEOWf0wKAxEl38pxxqYtnVx8i.Fc3HCoLG	2	2025-09-11 18:42:16.73455
+6	Lucía García	lucia.garcia@gmail.com	$2a$12$Vo1CDmDPuRH6GS8mxyzm9OVN5S/S.tucVmdYcgc/Ihtg5AEp0PN4e	2	2025-09-11 18:42:16.73455
+7	Roberto Díaz	roberto.diaz@gmail.com	$2a$12$pH5PY/vFriMHHMt5ZOBESOAoZJMlth6uRp4Q/LQeMUXzDVcLGT30C	2	2025-09-11 18:42:16.73455
+8	Sofía Vargas	sofia.vargas@gmail.com	$2a$12$AphnAQInVVj0qptCBXVTzuVIhxoGNVJIGbvNYunrV2to6GLTWLnky	2	2025-09-11 18:42:16.73455
+9	Daniel Guzmán	daniel.guzman@gmail.com	$2a$12$DMNSxHRX2sW62YY4i14GceP9.gfYT4EtDkebkDuNJpS59md97cmh2	2	2025-09-11 18:42:16.73455
+10	Laura Torres	laura.torres@gmail.com	$2a$12$SxyMTzaZtnXU6HIruVmQq.kkDWvdhL036zPw0fPA4FLblpKwlzLim	2	2025-09-11 18:42:16.73455
+15	Asher Bustillos	asher.bustillos@gmail.com	$2a$12$NlRCrL1UGBD25o.QiyYd2.xh4lXzfQqLbVClDNLqLqita8qHhgQu2	2	2025-10-02 14:26:58.978121
+16	Cristian Huari	cristoteam29@gmail.com	$2a$12$PK64W2U173kk9vT.fXAMcOklNocOtZXUDVqM5.jaxXlblrSMEFbHS	1	2025-10-02 14:32:40.421708
+17	Luis Huari Choque	luis.huari29@gmail.com	$2a$12$VO2gTNj4VSezKnmjEDh1cenC59cpPEQLuKO6tq5Dm.2oevTmKPEUC	2	2025-10-02 15:58:15.346144
+18	Santiago Huari Choque	santiago.huari29@gmail.com	$2a$12$GXTWfpigbbDyS23Qia18oeWX06szLhDZuYN.IQ3btHSCJXBtuIMwe	2	2025-10-02 16:00:35.222807
+20	Daniela Belen Ancalle Sejas	daniela.belen@gmail.com	$2a$12$27XHcvVfkHqsXkPZqrMbw.G//6u3sdGgBN4K9w.6ubA04PKccHZZC	1	2025-10-02 16:24:30.543493
+19	Yenny Jallasa Mamani	yenny.jallasa@gmail.com	$2a$12$p4F/E29KsBbz8YkP1RlxSeZYWh/sSIULws7NoQWUdImmiUYYPSFVy	2	2025-10-02 16:15:15.788487
+21	Roy Barrero	roy.barrero@gmail.com	$2a$12$AD98OAVcxWfEvBgc9sGnxu775WPhJCM7HguDWq8Jb2/1jDuuSfEG2	1	2025-10-02 17:43:48.599009
+1	Limberg Huari	limberg.huari@gmail.com	$2a$12$CNt7HNlB3aXPpu7yvWiC2.6FiU8AFdaR.LlldMFMvUljB0va6Sydi	3	2025-09-11 18:42:16.73455
+22	Melissa Sanchez	mely@gmail.com	$2a$12$C/e7ocYOf0k/.vzGzs8VV.RJdrNURMmgfHI8ykcwXUmAHe/H9qq1u	2	2025-10-02 22:59:00.829061
+23	Toribia Gallego	toribia@gmail.com	$2a$12$eHkAORTD27QM..EL3a79rO2EX8TSlAZzRMFaqlLSxlLf/5ZxxDl82	2	2025-10-02 23:01:34.720423
+24	saturnino mamani	saturno@gmail.com	$2a$12$Jty7fptW20DuQlJnWYOQP.FKW6PTOb.640onyglBZM4jYAZB85AIi	1	2025-10-02 23:08:09.373352
+25	Belisario Landa	beli.landa@gmail.com	$2a$12$qj98N63kbD8kH6yK.VxbnOxGKPDJCSnrvM3J8CPsIKlssgYWqIduu	3	2025-10-02 23:17:38.941907
+26	Samuel Torrico	samuel@gmail.com	$2a$12$JHi0OOK25q9weV7zKqdaTO9uYGrJFGd/sMhVqjuh3zxivFk2UQ4j2	1	2025-10-02 23:28:41.075029
 \.
 
 
@@ -1598,15 +1735,15 @@ COPY public.usuarios (id, nombre, email, contrasenia, idrols, idvendedors, idcli
 -- Data for Name: vendedors; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.vendedors (id, nombre, direccion, telefono, email) FROM stdin;
-2	Roy Barrero	Av. Busch 21	7422222	roybarrero@gmail.com
-3	Melissa Sánchez	Calle Sucre 10	7433333	melissasanchez@gmail.com
-1	Limberg Huari	Zona Plan 3000	7411111	limberg.huari@gmail.com
-11	Cristian Huari	Barrio San Martín, Zona Plan 3000, Sobre avenida Panamericana	71336373	cristoteam29@gmail.com
-12	Roy Barrero	Zona Norte, Barrio los norteños	63224700	roy.barrero@gmail.com
-13	jonathan Chambi	\N	\N	jonathan@gmail.com
-14	Alex Junior Ticona	\N	\N	alex.junior@gmail.com
-15	Juan Padilla	\N	\N	juan@gmail.com
+COPY public.vendedors (id, nombre, direccion, telefono, email, idusuarios, activo) FROM stdin;
+2	Roy Barrero	Av. Busch 21	7422222	roybarrero@gmail.com	\N	1
+3	Melissa Sánchez	Calle Sucre 10	7433333	melissasanchez@gmail.com	\N	1
+13	jonathan Chambi	\N	\N	jonathan@gmail.com	\N	1
+14	Alex Junior Ticona	\N	\N	alex.junior@gmail.com	\N	1
+15	Juan Padilla	\N	\N	juan@gmail.com	\N	1
+11	Cristian Huari	Barrio San Martín, Zona Plan 3000, Sobre avenida Panamericana	71336373	cristoteam29@gmail.com	16	1
+1	Limberg Huari	Zona Plan 3000	7411111	limberg.huari@gmail.com	1	1
+12	Roy Barrero	Zona Norte, Barrio los norteños	63224700	roy.barrero@gmail.com	21	1
 \.
 
 
@@ -1621,7 +1758,7 @@ SELECT pg_catalog.setval('public.categorias_id_seq', 12, true);
 -- Name: clientes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.clientes_id_seq', 27, true);
+SELECT pg_catalog.setval('public.clientes_id_seq', 33, true);
 
 
 --
@@ -1733,14 +1870,21 @@ SELECT pg_catalog.setval('public.stocks_id_seq', 17, true);
 -- Name: usuarios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.usuarios_id_seq', 29, true);
+SELECT pg_catalog.setval('public.usuarios_id_seq', 35, true);
+
+
+--
+-- Name: usuarios_nueva_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.usuarios_nueva_id_seq', 1, false);
 
 
 --
 -- Name: vendedores_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.vendedores_id_seq', 15, true);
+SELECT pg_catalog.setval('public.vendedores_id_seq', 16, true);
 
 
 --
@@ -1896,6 +2040,22 @@ ALTER TABLE ONLY public.usuarios
 
 
 --
+-- Name: usuarios_nueva usuarios_nueva_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.usuarios_nueva
+    ADD CONSTRAINT usuarios_nueva_email_key UNIQUE (email);
+
+
+--
+-- Name: usuarios_nueva usuarios_nueva_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.usuarios_nueva
+    ADD CONSTRAINT usuarios_nueva_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: usuarios usuarios_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2030,14 +2190,6 @@ ALTER TABLE ONLY public.productoaves
 
 
 --
--- Name: usuarios fk_usuarios_cliente; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.usuarios
-    ADD CONSTRAINT fk_usuarios_cliente FOREIGN KEY (idclientes) REFERENCES public.clientes(id) ON DELETE CASCADE;
-
-
---
 -- Name: usuarios fk_usuarios_roles; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2046,16 +2198,16 @@ ALTER TABLE ONLY public.usuarios
 
 
 --
--- Name: usuarios fk_usuarios_vendedor; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: usuarios_nueva fk_usuarios_roles; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.usuarios
-    ADD CONSTRAINT fk_usuarios_vendedor FOREIGN KEY (idvendedors) REFERENCES public.vendedors(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.usuarios_nueva
+    ADD CONSTRAINT fk_usuarios_roles FOREIGN KEY (idrols) REFERENCES public.rols(id);
 
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict eY9CiU5fJepjVnrayxrgAxb2JwTqCtdRKVDx3RyDNEy33GRnZh4vDnV6OFqvBhz
+\unrestrict cAN9rljgneweoK8mZdhGDZGjkpX3KaJ4hiWW0ul8ZhAM6w0moqhAS2eIvcXo6oS
 
