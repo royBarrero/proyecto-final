@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict cAN9rljgneweoK8mZdhGDZGjkpX3KaJ4hiWW0ul8ZhAM6w0moqhAS2eIvcXo6oS
+\restrict dj18phZhyfmat2xC9eIukqYuTHce2XFNvEs4LTuIypWkK2IR6ME3gtgJ3Jp4ZTy
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.6
@@ -1120,44 +1120,6 @@ ALTER SEQUENCE public.usuarios_id_seq OWNED BY public.usuarios.id;
 
 
 --
--- Name: usuarios_nueva; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.usuarios_nueva (
-    id integer NOT NULL,
-    nombre character varying(150) NOT NULL,
-    email character varying(150) NOT NULL,
-    contrasenia character varying(255) NOT NULL,
-    idrols integer DEFAULT 2 NOT NULL,
-    created_at timestamp without time zone DEFAULT now()
-);
-
-
-ALTER TABLE public.usuarios_nueva OWNER TO postgres;
-
---
--- Name: usuarios_nueva_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.usuarios_nueva_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.usuarios_nueva_id_seq OWNER TO postgres;
-
---
--- Name: usuarios_nueva_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.usuarios_nueva_id_seq OWNED BY public.usuarios_nueva.id;
-
-
---
 -- Name: vendedors; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -1321,13 +1283,6 @@ ALTER TABLE ONLY public.stocks ALTER COLUMN id SET DEFAULT nextval('public.stock
 --
 
 ALTER TABLE ONLY public.usuarios ALTER COLUMN id SET DEFAULT nextval('public.usuarios_id_seq'::regclass);
-
-
---
--- Name: usuarios_nueva id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.usuarios_nueva ALTER COLUMN id SET DEFAULT nextval('public.usuarios_nueva_id_seq'::regclass);
 
 
 --
@@ -1698,36 +1653,7 @@ COPY public.usuarios (id, nombre, email, contrasenia, idrols, created_at) FROM s
 31	Melquiades Ancalle	melquiades@gmail.com	$2a$12$4S4m5d88swpKx3NXk2FzP.gLT6qxr8yEEAwyTeyrV2Y7ccdnO6SJW	2	2025-10-19 21:11:12.045146
 35	Luis Morales	luismorales@gmail.com	$2a$12$9.ow7wNpsHUZX7cArSfAx.qGA4ywVWz9OqaLe4LsQ4Fb9Ydjf14tW	2	2025-10-19 22:29:05.429637
 21	Roy Barrero	roy.barrero@gmail.com	$2a$12$AD98OAVcxWfEvBgc9sGnxu775WPhJCM7HguDWq8Jb2/1jDuuSfEG2	3	2025-10-02 17:43:48.599009
-\.
-
-
---
--- Data for Name: usuarios_nueva; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.usuarios_nueva (id, nombre, email, contrasenia, idrols, created_at) FROM stdin;
-2	Ana López	ana.lopez@gmail.com	$2a$12$xtOONtA.bdKpOibaHkD.sugIPeb3B7Vfx.TU9Hg8yoAqQOB7J8Su6	2	2025-09-11 18:42:16.73455
-3	Carlos Ramos	carlos.ramos@gmail.com	$2a$12$4HNkVcvENLlkFzvklMn7T.BtLKAG9mJJvjVQBVIYpFPKsGRdLzFxi	2	2025-09-11 18:42:16.73455
-4	María Suárez	maria.suarez@gmail.com	$2a$12$uGG2nMLPey64fSlfjptoR.IQeXQUA0C/J9CywDkl0iZZsJUbDO6wy	2	2025-09-11 18:42:16.73455
-5	Pedro Ortiz	pedro.ortiz@gmail.com	$2a$12$h5hYR4euUHQgVpgYg88IEOWf0wKAxEl38pxxqYtnVx8i.Fc3HCoLG	2	2025-09-11 18:42:16.73455
-6	Lucía García	lucia.garcia@gmail.com	$2a$12$Vo1CDmDPuRH6GS8mxyzm9OVN5S/S.tucVmdYcgc/Ihtg5AEp0PN4e	2	2025-09-11 18:42:16.73455
-7	Roberto Díaz	roberto.diaz@gmail.com	$2a$12$pH5PY/vFriMHHMt5ZOBESOAoZJMlth6uRp4Q/LQeMUXzDVcLGT30C	2	2025-09-11 18:42:16.73455
-8	Sofía Vargas	sofia.vargas@gmail.com	$2a$12$AphnAQInVVj0qptCBXVTzuVIhxoGNVJIGbvNYunrV2to6GLTWLnky	2	2025-09-11 18:42:16.73455
-9	Daniel Guzmán	daniel.guzman@gmail.com	$2a$12$DMNSxHRX2sW62YY4i14GceP9.gfYT4EtDkebkDuNJpS59md97cmh2	2	2025-09-11 18:42:16.73455
-10	Laura Torres	laura.torres@gmail.com	$2a$12$SxyMTzaZtnXU6HIruVmQq.kkDWvdhL036zPw0fPA4FLblpKwlzLim	2	2025-09-11 18:42:16.73455
-15	Asher Bustillos	asher.bustillos@gmail.com	$2a$12$NlRCrL1UGBD25o.QiyYd2.xh4lXzfQqLbVClDNLqLqita8qHhgQu2	2	2025-10-02 14:26:58.978121
-16	Cristian Huari	cristoteam29@gmail.com	$2a$12$PK64W2U173kk9vT.fXAMcOklNocOtZXUDVqM5.jaxXlblrSMEFbHS	1	2025-10-02 14:32:40.421708
-17	Luis Huari Choque	luis.huari29@gmail.com	$2a$12$VO2gTNj4VSezKnmjEDh1cenC59cpPEQLuKO6tq5Dm.2oevTmKPEUC	2	2025-10-02 15:58:15.346144
-18	Santiago Huari Choque	santiago.huari29@gmail.com	$2a$12$GXTWfpigbbDyS23Qia18oeWX06szLhDZuYN.IQ3btHSCJXBtuIMwe	2	2025-10-02 16:00:35.222807
-20	Daniela Belen Ancalle Sejas	daniela.belen@gmail.com	$2a$12$27XHcvVfkHqsXkPZqrMbw.G//6u3sdGgBN4K9w.6ubA04PKccHZZC	1	2025-10-02 16:24:30.543493
-19	Yenny Jallasa Mamani	yenny.jallasa@gmail.com	$2a$12$p4F/E29KsBbz8YkP1RlxSeZYWh/sSIULws7NoQWUdImmiUYYPSFVy	2	2025-10-02 16:15:15.788487
-21	Roy Barrero	roy.barrero@gmail.com	$2a$12$AD98OAVcxWfEvBgc9sGnxu775WPhJCM7HguDWq8Jb2/1jDuuSfEG2	1	2025-10-02 17:43:48.599009
-1	Limberg Huari	limberg.huari@gmail.com	$2a$12$CNt7HNlB3aXPpu7yvWiC2.6FiU8AFdaR.LlldMFMvUljB0va6Sydi	3	2025-09-11 18:42:16.73455
-22	Melissa Sanchez	mely@gmail.com	$2a$12$C/e7ocYOf0k/.vzGzs8VV.RJdrNURMmgfHI8ykcwXUmAHe/H9qq1u	2	2025-10-02 22:59:00.829061
-23	Toribia Gallego	toribia@gmail.com	$2a$12$eHkAORTD27QM..EL3a79rO2EX8TSlAZzRMFaqlLSxlLf/5ZxxDl82	2	2025-10-02 23:01:34.720423
-24	saturnino mamani	saturno@gmail.com	$2a$12$Jty7fptW20DuQlJnWYOQP.FKW6PTOb.640onyglBZM4jYAZB85AIi	1	2025-10-02 23:08:09.373352
-25	Belisario Landa	beli.landa@gmail.com	$2a$12$qj98N63kbD8kH6yK.VxbnOxGKPDJCSnrvM3J8CPsIKlssgYWqIduu	3	2025-10-02 23:17:38.941907
-26	Samuel Torrico	samuel@gmail.com	$2a$12$JHi0OOK25q9weV7zKqdaTO9uYGrJFGd/sMhVqjuh3zxivFk2UQ4j2	1	2025-10-02 23:28:41.075029
+36	Limberg Huari Choque	limberg6@gmail.com	$2a$12$5ZezdTYm7UJ3ODhEAwW1oeGRM9mFPjYppIlAJf/pJaUhmZJy9CVW2	1	2025-10-19 23:42:32.855727
 \.
 
 
@@ -1744,6 +1670,7 @@ COPY public.vendedors (id, nombre, direccion, telefono, email, idusuarios, activ
 11	Cristian Huari	Barrio San Martín, Zona Plan 3000, Sobre avenida Panamericana	71336373	cristoteam29@gmail.com	16	1
 1	Limberg Huari	Zona Plan 3000	7411111	limberg.huari@gmail.com	1	1
 12	Roy Barrero	Zona Norte, Barrio los norteños	63224700	roy.barrero@gmail.com	21	1
+17	Limberg Huari Choque	\N	\N	limberg6@gmail.com	36	0
 \.
 
 
@@ -1870,21 +1797,14 @@ SELECT pg_catalog.setval('public.stocks_id_seq', 17, true);
 -- Name: usuarios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.usuarios_id_seq', 35, true);
-
-
---
--- Name: usuarios_nueva_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.usuarios_nueva_id_seq', 1, false);
+SELECT pg_catalog.setval('public.usuarios_id_seq', 36, true);
 
 
 --
 -- Name: vendedores_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.vendedores_id_seq', 16, true);
+SELECT pg_catalog.setval('public.vendedores_id_seq', 17, true);
 
 
 --
@@ -2040,22 +1960,6 @@ ALTER TABLE ONLY public.usuarios
 
 
 --
--- Name: usuarios_nueva usuarios_nueva_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.usuarios_nueva
-    ADD CONSTRAINT usuarios_nueva_email_key UNIQUE (email);
-
-
---
--- Name: usuarios_nueva usuarios_nueva_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.usuarios_nueva
-    ADD CONSTRAINT usuarios_nueva_pkey PRIMARY KEY (id);
-
-
---
 -- Name: usuarios usuarios_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2198,16 +2102,8 @@ ALTER TABLE ONLY public.usuarios
 
 
 --
--- Name: usuarios_nueva fk_usuarios_roles; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.usuarios_nueva
-    ADD CONSTRAINT fk_usuarios_roles FOREIGN KEY (idrols) REFERENCES public.rols(id);
-
-
---
 -- PostgreSQL database dump complete
 --
 
-\unrestrict cAN9rljgneweoK8mZdhGDZGjkpX3KaJ4hiWW0ul8ZhAM6w0moqhAS2eIvcXo6oS
+\unrestrict dj18phZhyfmat2xC9eIukqYuTHce2XFNvEs4LTuIypWkK2IR6ME3gtgJ3Jp4ZTy
 
