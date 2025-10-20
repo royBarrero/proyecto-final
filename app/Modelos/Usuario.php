@@ -40,13 +40,12 @@ class Usuario extends Authenticatable
     // 🔹 Relación con Cliente
     public function cliente()
     {
-        return $this->belongsTo(Cliente::class, 'idclientes');
+        return $this->hasOne(Cliente::class, 'idusuarios');
     }
 
-    // 🔹 Relación con Vendedor
     public function vendedor()
     {
-        return $this->belongsTo(Vendedor::class, 'idvendedors');
+        return $this->hasOne(Vendedor::class, 'idusuarios');
     }
     public function rol()
     {

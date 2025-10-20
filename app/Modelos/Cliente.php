@@ -19,8 +19,9 @@ class Cliente extends Model
     ];
 
     // Relación con usuarios (1 cliente puede tener varios usuarios, si es el caso)
-    public function usuarios()
+    // Relación con usuarios
+    public function usuario()
     {
-        return $this->hasMany(Usuario::class, 'idclientes');
+        return $this->belongsTo(Usuario::class, 'idusuarios');
     }
 }

@@ -20,8 +20,9 @@ class Vendedor extends Model
     ];
 
     // Relación con usuarios
-    public function usuarios()
+    public function usuario()
     {
-        return $this->hasMany(Usuario::class, 'idvendedors');
+        return $this->belongsTo(Usuario::class, 'idusuarios');
     }
+
 }
