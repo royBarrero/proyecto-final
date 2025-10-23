@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict lHyP5ErGV673RfqdcUXm6u4jwiIDbZRctzg3KkEJ8VODvyqfCgXvZR5EodeyQIX
+\restrict YisKdU8XcI8NnGtsr0TFE2SByd3kJAp019duldKZFptd5Ca3MBv74RdchTK5ftj
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.6
@@ -1286,6 +1286,11 @@ COPY public.auditorias (id, tabla, registro_id, accion, usuario_id, cambios, ip,
 5	usuarios	16	CIERRE_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-10-23 01:55:39.186141
 6	usuarios	21	INICIO_SESION	21	{"nombre": "Roy Barrero"}	127.0.0.1	2025-10-23 01:56:09.363529
 7	proveedors	4	ACTUALIZAR	21	{"antes": {"id": 4, "nombre": "Granos del Oriente", "telefono": "7004444", "direccion": "Zona Plan 3000"}, "despues": {"id": 4, "nombre": "Granos del Oriente", "telefono": "7004410", "direccion": "Zona Plan 3001"}}	127.0.0.1	2025-10-23 02:15:53.261631
+8	usuarios	21	CIERRE_SESION	21	{"nombre": "Roy Barrero"}	127.0.0.1	2025-10-23 02:56:15.174293
+9	usuarios	16	INICIO_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-10-23 02:56:24.995069
+10	usuarios	16	INICIO_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-10-23 12:23:06.033104
+11	usuarios	16	CIERRE_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-10-23 13:52:54.402694
+12	usuarios	21	INICIO_SESION	21	{"nombre": "Roy Barrero"}	127.0.0.1	2025-10-23 13:53:07.593565
 \.
 
 
@@ -1640,9 +1645,10 @@ COPY public.usuarios (id, nombre, email, contrasenia, idrols, created_at) FROM s
 9	Daniel Guzmán	daniel.guzman@gmail.com	$2a$12$DMNSxHRX2sW62YY4i14GceP9.gfYT4EtDkebkDuNJpS59md97cmh2	2	2025-09-11 18:42:16.73455
 10	Laura Torres	laura.torres@gmail.com	$2a$12$SxyMTzaZtnXU6HIruVmQq.kkDWvdhL036zPw0fPA4FLblpKwlzLim	2	2025-09-11 18:42:16.73455
 15	Asher Bustillos	asher.bustillos@gmail.com	$2a$12$NlRCrL1UGBD25o.QiyYd2.xh4lXzfQqLbVClDNLqLqita8qHhgQu2	2	2025-10-02 14:26:58.978121
-16	Cristian Huari	cristoteam29@gmail.com	$2a$12$PK64W2U173kk9vT.fXAMcOklNocOtZXUDVqM5.jaxXlblrSMEFbHS	1	2025-10-02 14:32:40.421708
 17	Luis Huari Choque	luis.huari29@gmail.com	$2a$12$VO2gTNj4VSezKnmjEDh1cenC59cpPEQLuKO6tq5Dm.2oevTmKPEUC	2	2025-10-02 15:58:15.346144
 18	Santiago Huari Choque	santiago.huari29@gmail.com	$2a$12$GXTWfpigbbDyS23Qia18oeWX06szLhDZuYN.IQ3btHSCJXBtuIMwe	2	2025-10-02 16:00:35.222807
+16	Cristian Huari	cristoteam29@gmail.com	$2a$12$PK64W2U173kk9vT.fXAMcOklNocOtZXUDVqM5.jaxXlblrSMEFbHS	3	2025-10-02 14:32:40.421708
+21	Roy Barrero	roy.barrero@gmail.com	$2a$12$AD98OAVcxWfEvBgc9sGnxu775WPhJCM7HguDWq8Jb2/1jDuuSfEG2	1	2025-10-02 17:43:48.599009
 20	Daniela Belen Ancalle Sejas	daniela.belen@gmail.com	$2a$12$27XHcvVfkHqsXkPZqrMbw.G//6u3sdGgBN4K9w.6ubA04PKccHZZC	1	2025-10-02 16:24:30.543493
 19	Yenny Jallasa Mamani	yenny.jallasa@gmail.com	$2a$12$p4F/E29KsBbz8YkP1RlxSeZYWh/sSIULws7NoQWUdImmiUYYPSFVy	2	2025-10-02 16:15:15.788487
 22	Melissa Sanchez	mely@gmail.com	$2a$12$C/e7ocYOf0k/.vzGzs8VV.RJdrNURMmgfHI8ykcwXUmAHe/H9qq1u	2	2025-10-02 22:59:00.829061
@@ -1655,7 +1661,6 @@ COPY public.usuarios (id, nombre, email, contrasenia, idrols, created_at) FROM s
 33	Santiago Justo Huari	santiagojusto@gmail.com	$2a$12$jgAbjhcU9VQGkoYxqc4XyeTQXgd6Ra1USkZH2aj/.6fXHMmF22q/G	2	2025-10-19 22:08:45.281598
 31	Melquiades Ancalle	melquiades@gmail.com	$2a$12$4S4m5d88swpKx3NXk2FzP.gLT6qxr8yEEAwyTeyrV2Y7ccdnO6SJW	2	2025-10-19 21:11:12.045146
 35	Luis Morales	luismorales@gmail.com	$2a$12$9.ow7wNpsHUZX7cArSfAx.qGA4ywVWz9OqaLe4LsQ4Fb9Ydjf14tW	2	2025-10-19 22:29:05.429637
-21	Roy Barrero	roy.barrero@gmail.com	$2a$12$AD98OAVcxWfEvBgc9sGnxu775WPhJCM7HguDWq8Jb2/1jDuuSfEG2	3	2025-10-02 17:43:48.599009
 36	Limberg Huari Choque	limberg6@gmail.com	$2a$12$5ZezdTYm7UJ3ODhEAwW1oeGRM9mFPjYppIlAJf/pJaUhmZJy9CVW2	1	2025-10-19 23:42:32.855727
 \.
 
@@ -1670,10 +1675,10 @@ COPY public.vendedors (id, nombre, direccion, telefono, email, idusuarios, activ
 13	jonathan Chambi	\N	\N	jonathan@gmail.com	\N	1
 14	Alex Junior Ticona	\N	\N	alex.junior@gmail.com	\N	1
 15	Juan Padilla	\N	\N	juan@gmail.com	\N	1
-11	Cristian Huari	Barrio San Martín, Zona Plan 3000, Sobre avenida Panamericana	71336373	cristoteam29@gmail.com	16	1
 1	Limberg Huari	Zona Plan 3000	7411111	limberg.huari@gmail.com	1	1
-12	Roy Barrero	Zona Norte, Barrio los norteños	63224700	roy.barrero@gmail.com	21	1
 17	Limberg Huari Choque	\N	\N	limberg6@gmail.com	36	0
+11	Cristian Huari	Barrio San Martín, Zona Plan 3000, Sobre avenida Panamericana	71336373	cristoteam29@gmail.com	16	1
+12	Roy Barrero	Zona Norte, Barrio los norteños	63224700	roy.barrero@gmail.com	21	1
 \.
 
 
@@ -1681,7 +1686,7 @@ COPY public.vendedors (id, nombre, direccion, telefono, email, idusuarios, activ
 -- Name: auditorias_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.auditorias_id_seq', 7, true);
+SELECT pg_catalog.setval('public.auditorias_id_seq', 12, true);
 
 
 --
@@ -2146,5 +2151,5 @@ ALTER TABLE ONLY public.usuarios
 -- PostgreSQL database dump complete
 --
 
-\unrestrict lHyP5ErGV673RfqdcUXm6u4jwiIDbZRctzg3KkEJ8VODvyqfCgXvZR5EodeyQIX
+\unrestrict YisKdU8XcI8NnGtsr0TFE2SByd3kJAp019duldKZFptd5Ca3MBv74RdchTK5ftj
 
