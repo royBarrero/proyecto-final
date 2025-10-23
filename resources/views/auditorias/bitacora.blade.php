@@ -30,7 +30,12 @@
                     <th>Cambios</th>
                     <th>Fecha</th>
                     <th>IP</th>
-                    <th>Acciones</th>
+                    @auth
+                        @if (auth()->user()->idrol == 3)
+                            {{-- Solo dueño del negocio --}}
+                            <th>Acciones</th>
+                        @endif
+                    @endauth
                 </tr>
             </thead>
             <tbody>
@@ -64,7 +69,7 @@
                         </td>
 
                         {{-- Cambios --}}
-                        <td data-label="Cambios" >
+                        <td data-label="Cambios">
                             @php
                                 $cambios = is_array($audit->cambios)
                                     ? $audit->cambios
@@ -113,17 +118,21 @@
 
                         {{-- IP --}}
                         <td data-label="IP">{{ $audit->ip ?? 'Desconocida' }}</td>
-
-                        {{-- Botón eliminar --}}
-                        <td data-label="Acciones">
-                            <form action="{{ route('auditorias.destroy', $audit->id) }}" method="POST"
-                                style="display: inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn-eliminar"
-                                    onclick="return confirm('¿Eliminar este registro de auditoría?')">Eliminar</button>
-                            </form>
-                        </td>
+                        @auth
+                            @if (auth()->user()->idrol == 3)
+                                {{-- Solo dueño del negocio --}}
+                                {{-- Botón eliminar --}}
+                                <td data-label="Acciones">
+                                    <form action="{{ route('auditorias.destroy', $audit->id) }}" method="POST"
+                                        style="display: inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn-eliminar"
+                                            onclick="return confirm('¿Eliminar este registro de auditoría?')">Eliminar</button>
+                                    </form>
+                                </td>
+                            @endif
+                        @endauth
                     </tr>
                 @endforeach
             </tbody>
