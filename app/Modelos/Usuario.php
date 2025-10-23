@@ -7,7 +7,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use App\Modelos\Vendedor;
+use App\Modelos\Cliente;
 use App\Modelos\Rol;
+
 
 class Usuario extends Authenticatable
 {
