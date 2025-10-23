@@ -36,7 +36,9 @@ class UsuarioControlador extends Controlador
     }
     public function mostrarDatosDeTodosLosUsuarios()
     {
-        $usuarios = Usuario::obtenerUsuariosCompleto();
+       $usuarios = collect(Usuario::obtenerUsuariosCompleto())
+                    ->filter(fn($u) => $u->id !== auth()->id());
+
         return response()->view('vendedores.mostrar-usuarios', compact('usuarios'))
                 ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
                 ->header('Pragma', 'no-cache')

@@ -45,7 +45,7 @@
         </div>
         <div class="form-group" style="display:flex; gap:10px;">
             <button type="submit" class="btn">Actualizar</button>
-            <a href="{{ route('productoaves.index') }}" class="btn btn-cerrar">Volver</a>
+            <a href="{{ url()->previous() }}" class="btn btn-cerrar">Volver</a>
         </div>
     </form>
 </div>

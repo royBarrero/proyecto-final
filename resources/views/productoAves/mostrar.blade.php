@@ -14,7 +14,7 @@
     </div>
     <div class="div-botones2" style="margin-top:20px;">
         <a href="{{ route('productoaves.edit', $productoAve->id) }}" class="btn-editar">Editar</a>
-        <a href="{{ route('productoaves.index') }}" class="btn btn-cerrar">Volver</a>
+        <a href="{{ url()->previous() }}" class="btn btn-cerrar">Volver</a>
     </div>
 </div>
 @endsection

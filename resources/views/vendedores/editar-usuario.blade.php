@@ -139,7 +139,7 @@ function seleccionarRol(id, descripcion) {
         {{-- Botones --}}
         <div class="form-group" style="display:flex; gap:10px;">
             <button type="submit" class="btn">Confirmar Cambios</button>
-            <a href="{{ route('mostrarDatosDeTodosLosUsuarios') }}" class="btn btn-cerrar">Cancelar</a>
+            <a href="{{ url()->previous() }}" class="btn btn-cerrar">Cancelar</a>
         </div>
     </form>
 </div>

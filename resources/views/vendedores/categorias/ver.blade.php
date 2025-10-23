@@ -5,6 +5,6 @@
 <div class="container">
     <h2>{{ $categoria->nombre }}</h2>
     <p>{{ $categoria->descripcion }}</p>
-    <a href="{{ route('categorias.index') }}" class="btn-eliminar">Volver</a>
+    <a href="{{ url()->previous() }}" class="btn-eliminar">Volver</a>
 </div>
 @endsection

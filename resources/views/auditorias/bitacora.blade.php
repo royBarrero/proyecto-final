@@ -21,7 +21,7 @@
             @endif
         @endauth
         <div class="div-botones2">
-            <a href="{{ route('bienvenido.usuarios.vendedor') }}" class="btn-eliminar">Volver</a>
+            <a href="{{ url()->previous() }}" class="btn-eliminar">Volver</a>
         </div>
         <table class="styled-table">
             <thead>

@@ -109,7 +109,9 @@
 </div>
 
 <footer>
-    <p>© {{ date('Y') }} HuAviar | Contacto: info@tudominio.com</p>
+    <p>© {{ date('Y') }} HuAviar | 
+       <a href="https://wa.me/message/ACPCFECPVJO5C1 " target="_blank">Contactar por WhatsApp</a>
+    </p>
 </footer>
 
 </body>
