@@ -31,7 +31,7 @@
                     <th>Fecha</th>
                     <th>IP</th>
                     @auth
-                        @if (auth()->user()->idrol == 3)
+                        @if (auth()->user()->idrols == 3)
                             {{-- Solo dueño del negocio --}}
                             <th>Acciones</th>
                         @endif
@@ -119,7 +119,7 @@
                         {{-- IP --}}
                         <td data-label="IP">{{ $audit->ip ?? 'Desconocida' }}</td>
                         @auth
-                            @if (auth()->user()->idrol == 3)
+                            @if (auth()->user()->idrols == 3)
                                 {{-- Solo dueño del negocio --}}
                                 {{-- Botón eliminar --}}
                                 <td data-label="Acciones">
