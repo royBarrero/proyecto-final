@@ -3,7 +3,7 @@ namespace App\Modelos;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Modelos\Productoave;
+use App\Modelos\ProductoAve;
 
 class Categoria extends Model
 {
@@ -19,6 +19,6 @@ class Categoria extends Model
     ];
     public function productoAve()
     {
-        return $this->hasOne(Productoave::class, 'idcategorias', 'id');
+        return $this->hasOne(ProductoAve::class, 'idcategorias', 'id');
     }
 }

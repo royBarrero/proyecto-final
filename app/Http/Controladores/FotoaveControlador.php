@@ -3,7 +3,7 @@
 namespace App\Http\Controladores;
 
 use App\Modelos\Fotoave;
-use App\Modelos\Productoave;
+use App\Modelos\ProductoAve;
 use Illuminate\Http\Request;
 
 class FotoaveControlador extends Controlador
@@ -27,7 +27,7 @@ class FotoaveControlador extends Controlador
     // ➕ Mostrar formulario para subir una nueva foto
     public function create()
     {
-        $productos = Productoave::all();
+        $productos = ProductoAve::all();
         return response()->view('fotoAves.create', compact('productos'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
             ->header('Pragma', 'no-cache')
             ->header('Expires', '0');
@@ -63,7 +63,7 @@ class FotoaveControlador extends Controlador
     public function edit($id)
     {
         $fotoAve = Fotoave::findOrFail($id);
-        $productos = Productoave::all();
+        $productos = ProductoAve::all();
 
         return response()
             ->view('fotoAves.editar', compact('fotoAve', 'productos'))

@@ -6,16 +6,20 @@
     <div class="container">
         <h2>Lista de Auditorías</h2>
         <x-alerta />
-
-        <div class="div-botones2" style="margin-bottom: 15px;">
-            <form action="{{ route('auditorias.destroyAll') }}" method="POST" style="display: inline;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn-eliminar"
-                    onclick="return confirm('¿Eliminar toda la bitácora? Esta acción es irreversible.')">Eliminar
-                    Todo</button>
-            </form>
-        </div>
+        @auth
+            @if (auth()->user()->idrols == 3)
+                {{-- Solo dueño del negocio --}}
+                <div class="div-botones2" style="margin-bottom: 15px;">
+                    <form action="{{ route('auditorias.destroyAll') }}" method="POST" style="display: inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn-eliminar"
+                            onclick="return confirm('¿Eliminar toda la bitácora? Esta acción es irreversible.')">Eliminar
+                            Todo</button>
+                    </form>
+                </div>
+            @endif
+        @endauth
         <div class="div-botones2">
             <a href="{{ route('bienvenido.usuarios.vendedor') }}" class="btn-eliminar">Volver</a>
         </div>

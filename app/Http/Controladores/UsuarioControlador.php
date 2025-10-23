@@ -29,7 +29,7 @@ class UsuarioControlador extends Controlador
 
     public function mostrarDatosPersonales()
     {
-        return response()->view('vendedores.bienvenido')->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        return response()->view('vendedores.datos-personales')->header('Cache-Control', 'no-cache, no-store, must-revalidate')
     ->header('Pragma', 'no-cache')
     ->header('Expires', '0');
     }

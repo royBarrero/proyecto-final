@@ -9,7 +9,7 @@ use App\Http\Controladores\Autenticacion\PerfilControlador;
 use App\Http\Controladores\UsuarioControlador;
 use App\Http\Controladores\CategoriaControlador;
 use App\Http\Controladores\RolControlador;
-use App\Http\Controladores\ProductoaveControlador;
+use App\Http\Controladores\ProductoAveControlador;
 use App\Http\Controladores\FotoaveControlador;
 use App\Http\Controladores\DetalleaveControlador;
 use App\Http\Controladores\AuditoriaControlador;
@@ -66,7 +66,7 @@ Route::resource('categorias', CategoriaControlador::class)->middleware('auth');
 
 Route::resource('rols', RolControlador::class)->middleware('auth');
 
-Route::resource('productoaves', ProductoaveControlador::class)->middleware('auth');
+Route::resource('productoaves', ProductoAveControlador::class)->middleware('auth');
 
 Route::resource('fotoaves', FotoaveControlador::class)->middleware('auth');
 

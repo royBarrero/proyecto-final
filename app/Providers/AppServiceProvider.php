@@ -18,7 +18,7 @@ use App\Modelos\Categoria;
 use App\Modelos\Cliente;
 use App\Modelos\Detalleave;
 use App\Modelos\Fotoave;
-use App\Modelos\Productoave;
+use App\Modelos\ProductoAve;
 use App\Modelos\Proveedor;
 use App\Modelos\Rol;
 use App\Modelos\Usuario;
@@ -43,7 +43,7 @@ class AppServiceProvider extends ServiceProvider
         // Observador para cambios en el modelo Usuario
         $models = [
         Usuario::class,
-        Productoave::class,
+        ProductoAve::class,
         Cliente::class,
         Proveedor::class,
         Categoria::class,

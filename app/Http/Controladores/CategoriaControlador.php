@@ -11,19 +11,19 @@ class CategoriaControlador extends Controlador
     {
         $categorias = Categoria::orderBy('id', 'asc')->get(); // Orden ascendente por id
         //return view('vendedores.categorias.mostrar', compact('categorias'));
-         return response()
-                ->view('vendedores.categorias.mostrar', compact('categorias'))
-                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-                ->header('Pragma', 'no-cache')
-                ->header('Expires', '0');
+        return response()
+            ->view('vendedores.categorias.mostrar', compact('categorias'))
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     // Mostrar formulario de crear
     public function create()
     {
         return response()->view('vendedores.categorias.crear')->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-    ->header('Pragma', 'no-cache')
-    ->header('Expires', '0');
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     // Guardar
@@ -35,23 +35,23 @@ class CategoriaControlador extends Controlador
         ]);
 
         Categoria::create($request->all());
-        return redirect()->route('categorias.index')->with('success','Categoría creada correctamente');
+        return redirect()->route('categorias.index')->with('success', 'Categoría creada correctamente');
     }
 
     // Mostrar detalle
     public function show(Categoria $categoria)
     {
-        return reponse()->view('vendedores.categorias.mostrar', compact('categoria'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-    ->header('Pragma', 'no-cache')
-    ->header('Expires', '0');
+        return response()->view('vendedores.categorias.ver', compact('categoria'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     // Formulario editar
     public function edit(Categoria $categoria)
     {
         return response()->view('vendedores.categorias.editar', compact('categoria'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-    ->header('Pragma', 'no-cache')
-    ->header('Expires', '0');
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     // Actualizar
@@ -63,13 +63,13 @@ class CategoriaControlador extends Controlador
         ]);
 
         $categoria->update($request->all());
-        return redirect()->route('categorias.index')->with('warning','Categoría actualizada correctamente');
+        return redirect()->route('categorias.index')->with('warning', 'Categoría actualizada correctamente');
     }
 
     // Eliminar
     public function destroy(Categoria $categoria)
     {
         $categoria->delete();
-        return redirect()->route('categorias.index')->with('error','Categoría eliminada correctamente');
+        return redirect()->route('categorias.index')->with('error', 'Categoría eliminada correctamente');
     }
 }
