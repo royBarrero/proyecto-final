@@ -4,6 +4,7 @@ namespace App\Modelos;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Modelos\Productoave;
 
 class Fotoave extends Model
 {

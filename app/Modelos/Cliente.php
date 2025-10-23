@@ -3,7 +3,7 @@ namespace App\Modelos;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use App\Modelos\Usuario;
 class Cliente extends Model
 {
     use HasFactory;

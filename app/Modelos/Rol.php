@@ -7,6 +7,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Modelos\Usuario;
 class Rol extends Model
 {
     protected $table = 'rols';   // 👈 tu tabla

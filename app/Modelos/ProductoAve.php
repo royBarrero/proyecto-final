@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;;
 use Illuminate\Database\Eloquent\Model;
+use App\Modelos\Fotoaves;
+use App\Modelos\Detalleave;
+use App\Modelos\Categoria;
 
 class Productoave extends Model
 {
