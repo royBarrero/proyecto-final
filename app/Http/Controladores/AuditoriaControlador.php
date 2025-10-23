@@ -11,7 +11,7 @@ class AuditoriaControlador extends Controlador
         // Cargar también el usuario relacionado
         $auditorias = Auditoria::with('usuario')
             ->orderBy('created_at', 'asc')
-            ->paginate(20);
+            ->paginate(10);
 
         return response()->view('auditorias.bitacora', compact('auditorias'))
                     ->header('Cache-Control', 'no-cache, no-store, must-revalidate')

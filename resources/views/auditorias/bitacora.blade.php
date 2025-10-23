@@ -144,7 +144,7 @@
         <div class="div-botones2">
             <a href="{{ route('bienvenido.usuarios.vendedor') }}" class="btn-eliminar">Volver</a>
         </div>
-        <div style="margin-top: 15px;">
+        <div class="paginacion">
             {{ $auditorias->links() }}
         </div>
     </div>
