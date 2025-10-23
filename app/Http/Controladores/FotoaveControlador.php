@@ -12,19 +12,16 @@ class FotoaveControlador extends Controlador
     public function index()
     {
         $fotos = Fotoave::with('productoAve')
-                            ->whereHas('productoAve', function($query) {
-                            $query->whereIn('nombre', ['pollo', 'huevo']);
-                            })->orderBy('id', 'asc')->get();
+            ->whereHas('productoAve', function ($query) {
+                $query->whereIn('nombre', ['pollo', 'huevo']);
+            })->orderBy('id', 'asc')->get();
 
         // Separar por tipo
         $fotoaves = $fotos->filter(fn($foto) => $foto->productoAve && $foto->productoAve->nombre === 'pollo');
         $fotohuevos = $fotos->filter(fn($foto) => $foto->productoAve && $foto->productoAve->nombre === 'huevo');
-
-        return response()
-                ->view('vendedores.bienvenido', compact('fotoaves','fotohuevos'))
-                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-                ->header('Pragma', 'no-cache')
-                ->header('Expires', '0');
+        return response()->view('vendedores.bienvenido', compact('fotoaves', 'fotohuevos'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     // ➕ Mostrar formulario para subir una nueva foto
@@ -32,8 +29,8 @@ class FotoaveControlador extends Controlador
     {
         $productos = Productoave::all();
         return response()->view('fotoAves.create', compact('productos'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-                ->header('Pragma', 'no-cache')
-                ->header('Expires', '0');
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     // 💾 Guardar una foto
@@ -56,12 +53,12 @@ class FotoaveControlador extends Controlador
     }
 
     // 🔍 Mostrar una foto
-    public function show( $id)
+    public function show($id)
     {
-         $fotoAve = Fotoave::findOrFail($id);
+        $fotoAve = Fotoave::findOrFail($id);
         return response()->view('fotoaves.show', compact('fotoAve'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-                ->header('Pragma', 'no-cache')
-                ->header('Expires', '0');
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
     public function edit($id)
     {
@@ -87,11 +84,11 @@ class FotoaveControlador extends Controlador
         $rutaAnterior = public_path('imagenes/aves/' . $fotoAve->nombrefoto);
         if ($fotoAve->nombrefoto && file_exists($rutaAnterior)) {
             unlink($rutaAnterior);
-        }      
+        }
 
         // Guardar nueva imagen
         $archivo = $request->file('nombrefoto');
-        $nombreArchivo = time().'_'.$archivo->getClientOriginalName();
+        $nombreArchivo = time() . '_' . $archivo->getClientOriginalName();
         $archivo->move(public_path('imagenes/aves'), $nombreArchivo);
 
         // Actualizar registro

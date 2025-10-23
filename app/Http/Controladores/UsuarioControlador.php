@@ -10,11 +10,11 @@ use App\Modelos\Rol;
 use App\Modelos\Vendedor;
 use App\Modelos\Cliente;
 use App\Modelos\FotoAve;
-use App\Modelos\ProductoAve;
+use App\Modelos\Productoave;
 class UsuarioControlador extends Controlador
 {
     public function bienvenido()
-    {   $fotos = FotoAve::with('productoAve')
+    {   $fotos = Fotoave::with('productoAve')
                 ->whereHas('productoAve', function($query) {
                 $query->whereIn('nombre', ['pollo', 'huevo']);
                 })->orderBy('id', 'asc')->get();
