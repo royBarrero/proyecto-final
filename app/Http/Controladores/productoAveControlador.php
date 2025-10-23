@@ -12,7 +12,7 @@ class ProductoAveControlador extends Controlador
     public function index()
     {
         $aves = ProductoAve::with(['categoria', 'detalleAve'])->orderBy('id', 'asc')->get();
-        return response()->view('productoaves.principal', compact('aves'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        return response()->view('productoAves.principal', compact('aves'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
     ->header('Pragma', 'no-cache')
     ->header('Expires', '0');
     }
