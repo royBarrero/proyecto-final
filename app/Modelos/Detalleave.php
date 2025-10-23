@@ -4,7 +4,7 @@ namespace App\Modelos;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Modelos\Productoave;
+use App\Modelos\ProductoAve;
 
 class Detalleave extends Model
 {
@@ -21,6 +21,6 @@ class Detalleave extends Model
     // 🔗 Relación inversa (1 detalle puede tener 1 producto)
     public function productoAve()
     {
-        return $this->hasOne(Productoave::class, 'iddetalleaves', 'id');
+        return $this->hasOne(ProductoAve::class, 'iddetalleaves', 'id');
     }
 }
