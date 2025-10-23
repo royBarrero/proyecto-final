@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict XGYLUfhub7OL46fNavsdKzSK5ivVZHl3G3VX3EQ1qe5zvhJCNMoodhh8wlj9wYL
+\restrict lHyP5ErGV673RfqdcUXm6u4jwiIDbZRctzg3KkEJ8VODvyqfCgXvZR5EodeyQIX
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.6
@@ -69,25 +69,6 @@ $$;
 
 
 ALTER FUNCTION public.actualizar_cantidad_productoaves() OWNER TO postgres;
-
---
--- Name: actualizar_producto(integer, character varying, numeric); Type: PROCEDURE; Schema: public; Owner: postgres
---
-
-CREATE PROCEDURE public.actualizar_producto(IN p_id integer, IN p_nombre character varying, IN p_precio numeric)
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    UPDATE productoAves
-    SET nombre = p_nombre,
-	    precio = p_precio
-    WHERE productoAves.id = p_id;
-
-    RAISE NOTICE 'producto con ID %  ha sido actualizado.', p_id;
-END $$;
-
-
-ALTER PROCEDURE public.actualizar_producto(IN p_id integer, IN p_nombre character varying, IN p_precio numeric) OWNER TO postgres;
 
 --
 -- Name: actualizar_stock_producto(integer, character varying, numeric); Type: PROCEDURE; Schema: public; Owner: postgres
@@ -217,23 +198,6 @@ $$;
 ALTER FUNCTION public.cifrar_contrasenia() OWNER TO postgres;
 
 --
--- Name: eliminar_producto(integer); Type: PROCEDURE; Schema: public; Owner: postgres
---
-
-CREATE PROCEDURE public.eliminar_producto(IN p_id integer)
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    DELETE FROM productoAlimentos
-    WHERE productos.id = p_id;
-
-    RAISE NOTICE 'Producto con ID % eliminado.', p_id;
-END $$;
-
-
-ALTER PROCEDURE public.eliminar_producto(IN p_id integer) OWNER TO postgres;
-
---
 -- Name: es_contrasenia_correcta(character varying, character varying); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -254,40 +218,6 @@ $$;
 
 
 ALTER FUNCTION public.es_contrasenia_correcta(p_email character varying, p_contrasenia character varying) OWNER TO postgres;
-
---
--- Name: insertar_cliente(character varying, character varying, character varying); Type: PROCEDURE; Schema: public; Owner: postgres
---
-
-CREATE PROCEDURE public.insertar_cliente(IN p_nombre character varying, IN p_direccion character varying, IN p_telefono character varying)
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    INSERT INTO clientes (nombre, direccion, telefono)
-    VALUES (p_nombre, p_direccion, p_telefono);
-
-    RAISE NOTICE 'Cliente % ha sido insertado correctamente.', p_nombre;
-END $$;
-
-
-ALTER PROCEDURE public.insertar_cliente(IN p_nombre character varying, IN p_direccion character varying, IN p_telefono character varying) OWNER TO postgres;
-
---
--- Name: insertar_producto(character varying, numeric, integer, integer); Type: PROCEDURE; Schema: public; Owner: postgres
---
-
-CREATE PROCEDURE public.insertar_producto(IN p_nombre character varying, IN p_precio numeric, IN p_idcategorias integer, IN p_iddetalleaves integer)
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    INSERT INTO productoAves (nombre, precio, idcategorias, iddetalleaves)
-    VALUES (p_nombre, p_precio, p_idcategorias, p_iddetalleaves);
-
-    RAISE NOTICE 'Producto % ha sido insertado correctamente.', p_nombre;
-END $$;
-
-
-ALTER PROCEDURE public.insertar_producto(IN p_nombre character varying, IN p_precio numeric, IN p_idcategorias integer, IN p_iddetalleaves integer) OWNER TO postgres;
 
 --
 -- Name: obtener_usuario_por_id(integer); Type: FUNCTION; Schema: public; Owner: postgres
@@ -400,43 +330,6 @@ $$;
 ALTER FUNCTION public.obtener_usuarios_con_su_rol() OWNER TO postgres;
 
 --
--- Name: sp_actualizar_cliente(integer, character varying, character varying, character varying); Type: PROCEDURE; Schema: public; Owner: postgres
---
-
-CREATE PROCEDURE public.sp_actualizar_cliente(IN p_id integer, IN p_nombre character varying, IN p_direccion character varying, IN p_telefono character varying)
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    UPDATE clientes
-    SET nombre = p_nombre,
-        direccion = p_direccion,
-        telefono = p_telefono
-    WHERE clientes.id = p_id;
-
-    RAISE NOTICE 'Cliente con ID % ha sido actualizado.', p_id;
-END $$;
-
-
-ALTER PROCEDURE public.sp_actualizar_cliente(IN p_id integer, IN p_nombre character varying, IN p_direccion character varying, IN p_telefono character varying) OWNER TO postgres;
-
---
--- Name: sp_eliminar_cliente(integer); Type: PROCEDURE; Schema: public; Owner: postgres
---
-
-CREATE PROCEDURE public.sp_eliminar_cliente(IN p_id integer)
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    DELETE FROM clientes
-    WHERE clientes.id = p_id;
-
-    RAISE NOTICE 'Cliente con ID % eliminado.', p_id;
-END $$;
-
-
-ALTER PROCEDURE public.sp_eliminar_cliente(IN p_id integer) OWNER TO postgres;
-
---
 -- Name: sp_pedidos_cliente(integer); Type: PROCEDURE; Schema: public; Owner: postgres
 --
 
@@ -456,6 +349,46 @@ ALTER PROCEDURE public.sp_pedidos_cliente(IN p_idcliente integer) OWNER TO postg
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
+
+--
+-- Name: auditorias; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.auditorias (
+    id integer NOT NULL,
+    tabla character varying(255) NOT NULL,
+    registro_id integer NOT NULL,
+    accion character varying(50) NOT NULL,
+    usuario_id integer,
+    cambios jsonb,
+    ip character varying(45),
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.auditorias OWNER TO postgres;
+
+--
+-- Name: auditorias_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.auditorias_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.auditorias_id_seq OWNER TO postgres;
+
+--
+-- Name: auditorias_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.auditorias_id_seq OWNED BY public.auditorias.id;
+
 
 --
 -- Name: categorias; Type: TABLE; Schema: public; Owner: postgres
@@ -753,6 +686,41 @@ ALTER SEQUENCE public.detallepedidos_id_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE public.detallepedidos_id_seq OWNED BY public.detallepedidos.id;
+
+
+--
+-- Name: fotoaves; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.fotoaves (
+    id integer NOT NULL,
+    nombrefoto character varying(250) NOT NULL,
+    idproductoaves integer NOT NULL
+);
+
+
+ALTER TABLE public.fotoaves OWNER TO postgres;
+
+--
+-- Name: fotoaves_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.fotoaves_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.fotoaves_id_seq OWNER TO postgres;
+
+--
+-- Name: fotoaves_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.fotoaves_id_seq OWNED BY public.fotoaves.id;
 
 
 --
@@ -1160,6 +1128,13 @@ ALTER SEQUENCE public.vendedores_id_seq OWNED BY public.vendedors.id;
 
 
 --
+-- Name: auditorias id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.auditorias ALTER COLUMN id SET DEFAULT nextval('public.auditorias_id_seq'::regclass);
+
+
+--
 -- Name: categorias id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1213,6 +1188,13 @@ ALTER TABLE ONLY public.detallecotizaciones ALTER COLUMN id SET DEFAULT nextval(
 --
 
 ALTER TABLE ONLY public.detallepedidos ALTER COLUMN id SET DEFAULT nextval('public.detallepedidos_id_seq'::regclass);
+
+
+--
+-- Name: fotoaves id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.fotoaves ALTER COLUMN id SET DEFAULT nextval('public.fotoaves_id_seq'::regclass);
 
 
 --
@@ -1293,6 +1275,21 @@ ALTER TABLE ONLY public.vendedors ALTER COLUMN id SET DEFAULT nextval('public.ve
 
 
 --
+-- Data for Name: auditorias; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.auditorias (id, tabla, registro_id, accion, usuario_id, cambios, ip, created_at) FROM stdin;
+1	usuarios	16	INICIO_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-10-23 00:08:29.16311
+2	productoaves	1	ACTUALIZAR	16	{"antes": {"id": 1, "nombre": "pollo", "precio": "35.00", "cantidad": 100, "idcategorias": 1, "iddetalleaves": 1}, "despues": {"id": 1, "nombre": "pollo", "precio": "25.00", "cantidad": "100", "idcategorias": "1", "iddetalleaves": 1}}	127.0.0.1	2025-10-23 00:58:27.197064
+3	categorias	6	ELIMINAR	16	{"antes": {"id": 6, "nombre": "Huevos", "descripcion": "Producción de huevos"}}	127.0.0.1	2025-10-23 01:04:22.933477
+4	categorias	13	CREAR	16	{"despues": {"id": 13, "nombre": "Huevos", "descripcion": "Produccion de huevos"}}	127.0.0.1	2025-10-23 01:04:44.336544
+5	usuarios	16	CIERRE_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-10-23 01:55:39.186141
+6	usuarios	21	INICIO_SESION	21	{"nombre": "Roy Barrero"}	127.0.0.1	2025-10-23 01:56:09.363529
+7	proveedors	4	ACTUALIZAR	21	{"antes": {"id": 4, "nombre": "Granos del Oriente", "telefono": "7004444", "direccion": "Zona Plan 3000"}, "despues": {"id": 4, "nombre": "Granos del Oriente", "telefono": "7004410", "direccion": "Zona Plan 3001"}}	127.0.0.1	2025-10-23 02:15:53.261631
+\.
+
+
+--
 -- Data for Name: categorias; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1301,13 +1298,11 @@ COPY public.categorias (id, nombre, descripcion) FROM stdin;
 3	Accesorios	Jaulas, bebederos, comederos
 4	Medicinas	Vitaminas y vacunas
 5	Carnes	Carne de aves
-6	Huevos	Producción de huevos
 7	Servicios	Servicios adicionales
-8	Transporte	Envio y logística
-9	Promociones	Ofertas y descuentos
-10	Otros	Productos varios
 1	Aves	Productos de aves vivos
 11	Alimento de engorde	Balanceado para ponedoras
+8	Transporte	Envío y logística
+13	Huevos	Produccion de huevos
 \.
 
 
@@ -1391,7 +1386,6 @@ COPY public.detalleaves (id, descripcion, edad) FROM stdin;
 2	Sussex	8-14
 3	Sussex	15-28
 4	Sussex	28-*
-5	Rhode Island Red	0-7
 6	Rhode Island Red	8-14
 7	Rhode Island Red	15-28
 8	Rhode Island Red	28-*
@@ -1415,6 +1409,7 @@ COPY public.detalleaves (id, descripcion, edad) FROM stdin;
 26	Leghorn	8-14
 27	Leghorn	15-28
 28	Leghorn	28-*
+5	Rhode Islam Red	0-7
 \.
 
 
@@ -1469,6 +1464,15 @@ COPY public.detallepedidos (id, idpedidos, idproductoaves, cantidad, preciounita
 8	8	8	12	50.00	600.00
 9	9	9	13	50.00	650.00
 10	10	10	14	50.00	700.00
+\.
+
+
+--
+-- Data for Name: fotoaves; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.fotoaves (id, nombrefoto, idproductoaves) FROM stdin;
+4	1761174383_Captura de pantalla 2025-10-22 182806.png	4
 \.
 
 
@@ -1557,8 +1561,6 @@ COPY public.productoalimentos (id, nombre, precio) FROM stdin;
 --
 
 COPY public.productoaves (id, nombre, precio, idcategorias, iddetalleaves, cantidad) FROM stdin;
-12	pollo	85.50	1	12	0
-1	pollo	30.00	1	1	100
 2	pollo	45.00	1	2	200
 3	pollo	50.00	1	3	50
 4	pollo	80.00	1	4	300
@@ -1570,6 +1572,7 @@ COPY public.productoaves (id, nombre, precio, idcategorias, iddetalleaves, canti
 10	pollo	65.00	1	10	75
 11	pollo	85.50	1	11	0
 14	pollo	85.50	1	13	0
+1	pollo	25.00	1	1	100
 \.
 
 
@@ -1581,13 +1584,13 @@ COPY public.proveedors (id, nombre, direccion, telefono) FROM stdin;
 1	NutriAvicola S.R.L.	Av. Alemana 123	7001111
 2	Avícola Integral S.A.	Av. San Martín 45	7002222
 3	Balanceados Sofía	Av. Mutualista 10	7003333
-4	Granos del Oriente	Zona Plan 3000	7004444
 5	Alimentos Rico Ave	Av. Santos Dumont 55	7005555
 6	ProAgro Bolivia	Calle Ñuflo de Chávez 77	7006666
 7	AgroGrain Import	Av. Radial 10	7007777
 8	VitaMix Aves	Av. 3 Pasos al Frente 88	7008888
 9	Proteínas del Valle	Av. Grigotá 99	7009999
 10	AgroAvícola Santa Cruz	Zona Norte 11	7010000
+4	Granos del Oriente	Zona Plan 3001	7004410
 \.
 
 
@@ -1675,10 +1678,17 @@ COPY public.vendedors (id, nombre, direccion, telefono, email, idusuarios, activ
 
 
 --
+-- Name: auditorias_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.auditorias_id_seq', 7, true);
+
+
+--
 -- Name: categorias_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.categorias_id_seq', 12, true);
+SELECT pg_catalog.setval('public.categorias_id_seq', 13, true);
 
 
 --
@@ -1706,7 +1716,7 @@ SELECT pg_catalog.setval('public.cotizaciones_id_seq', 10, true);
 -- Name: detalleaves_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.detalleaves_id_seq', 1, false);
+SELECT pg_catalog.setval('public.detalleaves_id_seq', 5, true);
 
 
 --
@@ -1728,6 +1738,13 @@ SELECT pg_catalog.setval('public.detallecotizaciones_id_seq', 10, true);
 --
 
 SELECT pg_catalog.setval('public.detallepedidos_id_seq', 10, true);
+
+
+--
+-- Name: fotoaves_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.fotoaves_id_seq', 4, true);
 
 
 --
@@ -1808,6 +1825,14 @@ SELECT pg_catalog.setval('public.vendedores_id_seq', 17, true);
 
 
 --
+-- Name: auditorias auditorias_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.auditorias
+    ADD CONSTRAINT auditorias_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: categorias categorias_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1869,6 +1894,14 @@ ALTER TABLE ONLY public.detallecotizaciones
 
 ALTER TABLE ONLY public.detallepedidos
     ADD CONSTRAINT detallepedidos_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: fotoaves fotoaves_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.fotoaves
+    ADD CONSTRAINT fotoaves_pkey PRIMARY KEY (id);
 
 
 --
@@ -2054,6 +2087,14 @@ ALTER TABLE ONLY public.detallepedidos
 
 
 --
+-- Name: fotoaves fk_fotoaves_productoaves; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.fotoaves
+    ADD CONSTRAINT fk_fotoaves_productoaves FOREIGN KEY (idproductoaves) REFERENCES public.productoaves(id) ON DELETE CASCADE;
+
+
+--
 -- Name: pagos fk_pagos_metodopagos; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2105,5 +2146,5 @@ ALTER TABLE ONLY public.usuarios
 -- PostgreSQL database dump complete
 --
 
-\unrestrict XGYLUfhub7OL46fNavsdKzSK5ivVZHl3G3VX3EQ1qe5zvhJCNMoodhh8wlj9wYL
+\unrestrict lHyP5ErGV673RfqdcUXm6u4jwiIDbZRctzg3KkEJ8VODvyqfCgXvZR5EodeyQIX
 
