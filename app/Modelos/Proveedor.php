@@ -3,38 +3,26 @@
 namespace App\Modelos;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\DB;;
 use Illuminate\Database\Eloquent\Model;
 
-class Productoave extends Model
+class Proveedor extends Model
 {
-    protected $table = 'productoaves';   // 👈 tu tabla
+    use HasFactory;
+
+    protected $table = 'proveedors';   // Nombre correcto de la tabla
     protected $primaryKey = 'id';
-    public $timestamps = false;
+    public $timestamps = false;         // No hay created_at ni updated_at
 
     protected $fillable = [
         'nombre',
-        'precio',
-        'idcategorias',
-        'iddetalleaves',
-        'cantidad'
+        'direccion',
+        'telefono',
     ];
-     // 🔗 Relación con FotoAve (1 producto puede tener muchas fotos)
-    public function fotoAves()
-    {
-        return $this->hasMany(Fotoave::class, 'idproductoaves', 'id');
-    }
 
-    // 🔗 Relación con DetalleAve (1 producto pertenece a 1 detalle)
-    public function detalleAve()
-    {
-        return $this->belongsTo(Detalleave::class, 'iddetalleaves', 'id');
-    }
-
-    // 🔗 Relación con Categoría (1 producto pertenece a 1 categoría)
-    public function categoria()
-    {
-        return $this->belongsTo(Categoria::class, 'idcategorias', 'id');
-    }
+    // 🔗 Aquí podrías agregar relaciones si lo necesitas
+    // Por ejemplo, productos que pertenezcan a este proveedor:
+    // public function productos()
+    // {
+    //     return $this->hasMany(Productoave::class, 'idproveedor', 'id');
+    // }
 }

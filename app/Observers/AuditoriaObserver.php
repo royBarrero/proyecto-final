@@ -8,42 +8,59 @@ use App\Modelos\Auditoria;
 
 class AuditoriaObserver
 {
-    // Cuando se crea un registro
+    /**
+     * Método para capturar la creación
+     */
     public function created($model)
     {
-        Auditoria::create([
-            'tabla' => $model->getTable(),
-            'registro_id' => $model->id,
-            'accion' => 'CREAR',
-            'usuario_id' => Auth::id(),
-            'cambios' => $model->getAttributes(),
-            'ip' => Request::ip(),
-        ]);
+        $this->registrarCambio($model, 'CREAR');
     }
 
-    // Cuando se actualiza un registro
+    /**
+     * Método para capturar la actualización
+     */
     public function updated($model)
     {
-        Auditoria::create([
-            'tabla' => $model->getTable(),
-            'registro_id' => $model->id,
-            'accion' => 'ACTUALIZAR',
-            'usuario_id' => Auth::id(),
-            'cambios' => $model->getChanges(),
-            'ip' => Request::ip(),
-        ]);
+        $this->registrarCambio($model, 'ACTUALIZAR');
     }
 
-    // Cuando se elimina un registro
+    /**
+     * Método para capturar la eliminación
+     */
     public function deleted($model)
     {
+        $this->registrarCambio($model, 'ELIMINAR');
+    }
+
+    /**
+     * Función interna para guardar en auditoría
+     */
+    protected function registrarCambio($model, $accion)
+    {
+        // Obtenemos usuario actual
+        $usuario_id = Auth::id();
+
+        // Obtenemos cambios
+        $cambios = null;
+
+        if ($accion === 'ACTUALIZAR') {
+            $cambios = [
+                'antes'  => $model->getOriginal(),
+                'despues'=> $model->getAttributes(),
+            ];
+        } elseif ($accion === 'CREAR') {
+            $cambios = ['despues' => $model->getAttributes()];
+        } elseif ($accion === 'ELIMINAR') {
+            $cambios = ['antes' => $model->getOriginal()];
+        }
+
         Auditoria::create([
-            'tabla' => $model->getTable(),
-            'registro_id' => $model->id,
-            'accion' => 'ELIMINAR',
-            'usuario_id' => Auth::id(),
-            'cambios' => $model->getOriginal(),
-            'ip' => Request::ip(),
+            'tabla'       => $model->getTable(),
+            'registro_id' => $model->id ?? null,
+            'accion'      => $accion,
+            'usuario_id'  => $usuario_id,
+            'cambios'     => $cambios,
+            'ip'          => Request::ip(),
         ]);
     }
 }

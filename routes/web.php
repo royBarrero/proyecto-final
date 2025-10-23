@@ -13,6 +13,7 @@ use App\Http\Controladores\ProductoaveControlador;
 use App\Http\Controladores\FotoaveControlador;
 use App\Http\Controladores\DetalleaveControlador;
 use App\Http\Controladores\AuditoriaControlador;
+use App\Http\Controladores\ProveedorControlador;
 
 Route::get('/', [FotoaveControlador::class, 'index'])->name("inicio");
 
@@ -74,3 +75,5 @@ Route::resource('detalleaves', DetalleaveControlador::class)->middleware('auth')
 Route::get('auditorias', [AuditoriaControlador::class, 'index'])->name('auditorias.index');
 Route::delete('auditorias/{id}', [AuditoriaControlador::class, 'destroy'])->name('auditorias.destroy');
 Route::delete('auditorias/destroyAll', [AuditoriaControlador::class, 'destroyAll'])->name('auditorias.destroyAll');
+
+Route::resource('proveedores', ProveedorControlador::class);

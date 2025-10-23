@@ -21,4 +21,10 @@ class Auditoria extends Model
     protected $casts = [
         'cambios' => 'array'
     ];
+    public function usuario()
+    {
+        return $this->belongsTo(\App\Modelos\Usuario::class, 'usuario_id','id');
+    }
+
+
 }
