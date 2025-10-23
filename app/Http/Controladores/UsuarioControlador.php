@@ -9,8 +9,8 @@ use App\Modelos\Usuario;
 use App\Modelos\Rol;
 use App\Modelos\Vendedor;
 use App\Modelos\Cliente;
-use App\Modelos\FotoAve;
-use App\Modelos\Productoave;
+use App\Modelos\Fotoave;
+
 class UsuarioControlador extends Controlador
 {
     public function bienvenido()
