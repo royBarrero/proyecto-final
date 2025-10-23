@@ -19,12 +19,13 @@ class Auditoria extends Model
         'created_at'
     ];
     protected $casts = [
-        'cambios' => 'array'
+        'cambios' => 'array',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
     public function usuario()
     {
         return $this->belongsTo(\App\Modelos\Usuario::class, 'usuario_id','id');
     }
-
-
+    
 }
