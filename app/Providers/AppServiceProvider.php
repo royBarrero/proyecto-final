@@ -23,6 +23,7 @@ use App\Modelos\Proveedor;
 use App\Modelos\Rol;
 use App\Modelos\Usuario;
 use App\Modelos\Vendedor;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
