@@ -9,11 +9,12 @@ use App\Http\Controladores\Autenticacion\PerfilControlador;
 use App\Http\Controladores\UsuarioControlador;
 use App\Http\Controladores\CategoriaControlador;
 use App\Http\Controladores\RolControlador;
-use App\Http\Controladores\ProductoAveControlador;
+use App\Http\Controladores\ProductoaveControlador;
+use App\Http\Controladores\FotoaveControlador;
+use App\Http\Controladores\DetalleaveControlador;
+use App\Http\Controladores\AuditoriaControlador;
 
-Route::get('/', function () {
-    return view('bienvenido');
-})->name("inicio");
+Route::get('/', [FotoaveControlador::class, 'index'])->name("inicio");
 
 /* ---------------- LOGIN ---------------- */
 Route::get('/login', [AccesoControlador::class, 'mostrarFormularioDeAcceso'])->name('acceso');
@@ -64,6 +65,12 @@ Route::resource('categorias', CategoriaControlador::class)->middleware('auth');
 
 Route::resource('rols', RolControlador::class)->middleware('auth');
 
-Route::resource('productoAves', ProductoAveControlador::class)->middleware('auth');
+Route::resource('productoaves', ProductoaveControlador::class)->middleware('auth');
 
+Route::resource('fotoaves', FotoaveControlador::class)->middleware('auth');
 
+Route::resource('detalleaves', DetalleaveControlador::class)->middleware('auth');
+
+Route::get('auditorias', [AuditoriaControlador::class, 'index'])->name('auditorias.index');
+Route::delete('auditorias/{id}', [AuditoriaControlador::class, 'destroy'])->name('auditorias.destroy');
+Route::delete('auditorias/destroyAll', [AuditoriaControlador::class, 'destroyAll'])->name('auditorias.destroyAll');

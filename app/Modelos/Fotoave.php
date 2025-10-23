@@ -1,23 +1,26 @@
 <?php
+
 namespace App\Modelos;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Categoria extends Model
+class Fotoave extends Model
 {
     use HasFactory;
 
-    protected $table = 'categorias';
+    protected $table = 'fotoaves';
     protected $primaryKey = 'id';
     public $timestamps = false;
 
     protected $fillable = [
-        'nombre',
-        'descripcion',
+        'nombrefoto',
+        'idproductoaves',
     ];
+
     public function productoAve()
     {
-        return $this->hasOne(Productoave::class, 'idcategorias', 'id');
+        return $this->belongsTo(Productoave::class, 'idproductoaves','id');
     }
+    
 }

@@ -5,9 +5,8 @@ use App\Modelos\Productoave;
 use App\Modelos\Categoria;
 use App\Modelos\DetalleAve;
 use Illuminate\Http\Request;
-use App\Modelos\Fotoave;
 
-class ProductoaveControlador extends Controlador
+class ProveedorControlador extends Controlador
 {
     public function index()
     {
@@ -33,24 +32,10 @@ class ProductoaveControlador extends Controlador
             'precio' => 'required|numeric|min:0',
             'idcategorias' => 'required|exists:categorias,id',
             'iddetalleAves' => 'required|exists:detalleAves,id|unique:productoaves,iddetalleAves',
-            'cantidad' => 'required|integer|min:0',
-            'fotos.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048'
+            'cantidad' => 'required|integer|min:0'
         ]);
-         // Crear el producto
-        $producto = Productoave::create($request->only([
-            'nombre', 'precio', 'idcategorias', 'iddetalleAves', 'cantidad'
-        ]));
-        // Si hay fotos, guardarlas
-        if ($request->hasFile('fotos')) {
-            foreach ($request->file('fotos') as $foto) {
-                $nombreArchivo = time().'_'.$foto->getClientOriginalName();
-                $foto->move(public_path('imagenes/aves'), $nombreArchivo);
-                Fotoave::create([
-                    'nombrefoto' => $nombreArchivo,
-                    'idproductoaves' => $producto->id
-                ]);
-            }
-        }
+
+        Productoave::create($request->all());
         return redirect()->route('productoaves.principal')->with('success', 'Producto creado correctamente.');
     }
 
@@ -79,34 +64,18 @@ class ProductoaveControlador extends Controlador
             'nombre' => 'required|string|max:150',
             'precio' => 'required|numeric|min:0',
             'idcategorias' => 'required|exists:categorias,id',
-            'cantidad' => 'required|integer|min:0',
-            'fotos' => 'nullable|array',
-            'fotos.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'iddetalleAves' => 'required|exists:detalleAves,id|unique:productoaves,iddetalleAves,' . $productoave->id,
+            'cantidad' => 'required|integer|min:0'
         ]);
-        // 🔄 Actualiza los datos del producto
-        $productoave->update($request->only([
-            'nombre', 'precio', 'idcategorias', 'cantidad'
-        ]));
 
-        // 📸 Si hay nuevas fotos, las guarda sin borrar las antiguas
-        if ($request->hasFile('fotos')) {
-            foreach ($request->file('fotos') as $foto) {
-                $nombreArchivo = time().'_'.$foto->getClientOriginalName();
-                $foto->move(public_path('imagenes/aves'), $nombreArchivo);
-                Fotoave::create([
-                    'nombrefoto' => $nombreArchivo,
-                    'idproductoaves' => $productoave->id
-                ]);
-            }
-        }
- 
-        return redirect()->route('productoaves.index')->with('warning', 'Producto actualizado correctamente.');
+        $productoave->update($request->all());
+        return redirect()->route('productoaves.mostrar')->with('warning', 'Producto actualizado correctamente.');
     }
 
     public function destroy($id)
     {
         $productoave = Productoave::findOrFail($id);
         $productoave->delete();
-        return redirect()->route('productoaves.index')->with('error', 'Producto eliminado correctamente.');
+        return redirect()->route('productoaves.mostrar')->with('error', 'Producto eliminado correctamente.');
     }
 }

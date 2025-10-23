@@ -339,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = form.closest('.card-categoria');
 
             // Confirmación antes de eliminar
-            if (confirm('¿Eliminar esta categoría?')) {
+            if (confirm('¿Seguro que lo quieres eliminar?')) {
                 e.preventDefault();
                 if (fila) fila.classList.add('fade-out');
                 if (card) card.classList.add('fade-out');

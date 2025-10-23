@@ -15,9 +15,13 @@
             </tr>
         </thead>
         <tbody>
+            @php
+                $i=0;
+            @endphp
         @foreach($categorias ?? [] as $categoria)
+            
             <tr>
-                <td data-label="ID">{{ $categoria->id }}</td>
+                <td data-label="ID"> {{++$i}}</td>
                 <td data-label="Nombre">{{ $categoria->nombre }}</td>
                 <td data-label="Descripción">{{ $categoria->descripcion }}</td>
                 <td data-label="Acciones">

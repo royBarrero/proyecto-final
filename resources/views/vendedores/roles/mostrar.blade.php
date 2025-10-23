@@ -14,10 +14,12 @@
             </tr>
         </thead>
         <tbody>
-        
+        @php
+            $i=0;
+        @endphp
         @foreach($roles ?? [] as $rol)
             <tr>
-                <td data-label="ID">{{ $rol->id }}</td>
+                <td data-label="ID">{{++$i }}</td>
                 <td data-label="Descripcion">{{ $rol->descripcion }}</td>
                 <td data-label="Aciones">
                     <div class="div-botones">

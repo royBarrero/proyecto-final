@@ -9,14 +9,24 @@ use App\Modelos\Usuario;
 use App\Modelos\Rol;
 use App\Modelos\Vendedor;
 use App\Modelos\Cliente;
+use App\Modelos\FotoAve;
+use App\Modelos\ProductoAve;
 class UsuarioControlador extends Controlador
 {
     public function bienvenido()
-    {
-        return response()->view('vendedores.bienvenido')->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-    ->header('Pragma', 'no-cache')
-    ->header('Expires', '0');
+    {   $fotos = FotoAve::with('productoAve')
+                ->whereHas('productoAve', function($query) {
+                $query->whereIn('nombre', ['pollo', 'huevo']);
+                })->orderBy('id', 'asc')->get();
+
+        // Separar por tipo
+        $fotoaves = $fotos->filter(fn($foto) => $foto->productoAve && $foto->productoAve->nombre === 'pollo');
+        $fotohuevos = $fotos->filter(fn($foto) => $foto->productoAve && $foto->productoAve->nombre === 'huevo');
+        return response()->view('vendedores.bienvenido',compact('fotoaves','fotohuevos'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
     }
+
     public function mostrarDatosPersonales()
     {
         return response()->view('vendedores.bienvenido')->header('Cache-Control', 'no-cache, no-store, must-revalidate')

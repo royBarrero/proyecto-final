@@ -9,7 +9,7 @@ class RolControlador extends Controlador
 {
     public function index()
     {
-        $roles = Rol::orderBy('id', 'asc')->get();
+        $roles = Rol::orderBy('id', 'asc')->orderBy('id', 'asc')->get();
         return response()->view('vendedores.roles.mostrar', compact('roles'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
     ->header('Pragma', 'no-cache')
     ->header('Expires', '0');

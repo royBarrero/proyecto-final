@@ -18,9 +18,12 @@
                 </tr>
             </thead>
             <tbody>
+                @php
+                    $i=0;
+                @endphp
             @foreach($usuarios ?? [] as $usuario)
                 <tr>
-                    <td data-label="ID">{{ $usuario->id }}</td>
+                    <td data-label="ID">{{ ++$i }}</td>
                     <td data-label="Nombre">{{ $usuario->nombre }}</td>
                     <td data-label="Correo">{{ $usuario->correo }}</td>
                     <td data-label="Rol">{{ $usuario->rol }}</td>
