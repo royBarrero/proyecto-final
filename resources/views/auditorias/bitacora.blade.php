@@ -116,8 +116,8 @@
 
 
                         {{-- Fecha --}}
-                        <td data-label="Fecha">
-                            {{ \Carbon\Carbon::parse($audit->created_at)->format('d/m/Y H:i:s') }}
+                        <td data-label="Fecha" data-fecha="{{ $audit->created_at->toIso8601String() }}">
+                            {{ $audit->created_at->format('d/m/Y H:i:s') }}
                         </td>
 
                         {{-- IP --}}
@@ -148,4 +148,12 @@
             {{ $auditorias->links() }}
         </div>
     </div>
+    <script>
+        document.querySelectorAll('[data-fecha]').forEach(el => {
+            const utcDate = new Date(el.getAttribute('data-fecha'));
+            // Convierte según la zona horaria local del usuario
+            el.textContent = utcDate.toLocaleString();
+        });
+    </script>
+
 @endsection
