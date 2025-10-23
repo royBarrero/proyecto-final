@@ -9,7 +9,7 @@ use App\Modelos\Categoria;
 
 class Productoave extends Model
 {
-    protected $table = 'productoaves';   // 👈 tu tabla
+    protected $table = 'productoaves';   // 👈 tu tabla 
     protected $primaryKey = 'id';
     public $timestamps = false;
 
