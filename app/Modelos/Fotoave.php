@@ -19,7 +19,7 @@ class Fotoave extends Model
         'idproductoaves',
     ];
 
-    public function productoAve()
+    public function productoave()
     {
         return $this->belongsTo(Productoave::class, 'idproductoaves', 'id');
     }
