@@ -11,12 +11,16 @@ class DetalleaveControlador extends Controlador
     {
         $detalleaves = Detalleave::orderBy('id', 'asc')->get();
          
-        return view('detalleAves.mostrar', compact('detalleaves'));
+        return response()->view('detalleAves.mostrar', compact('detalleaves'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
     public function show($id)
     {
         $detalleAve = Detalleave::findOrFail($id);
-        return view('detalleAves.mostrarDetalle', compact('detalleAve'));
+        return response()->view('detalleAves.mostrarDetalle', compact('detalleAve'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
     public function create()
     {
@@ -37,7 +41,9 @@ class DetalleaveControlador extends Controlador
     public function edit($id)
     {
         $detalleave = Detalleave::findOrFail($id);
-        return view('detalleAves.editar', compact('detalleave'));
+        return response()->view('detalleAves.editar', compact('detalleave'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     public function update(Request $request, $id)

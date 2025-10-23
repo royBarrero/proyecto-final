@@ -29,23 +29,26 @@ class UsuarioControlador extends Controlador
 
     public function mostrarDatosPersonales()
     {
-        return response()->view('vendedores.datos-personales')->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-    ->header('Pragma', 'no-cache')
-    ->header('Expires', '0');
+        return response()->view('vendedores.datos-personales')
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
     }
     public function mostrarDatosDeTodosLosUsuarios()
     {
         $usuarios = Usuario::obtenerUsuariosCompleto();
-        return response()->view('vendedores.mostrar-usuarios', compact('usuarios'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-    ->header('Pragma', 'no-cache')
-    ->header('Expires', '0');
+        return response()->view('vendedores.mostrar-usuarios', compact('usuarios'))
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
     }
     public function formularioParaCrearNuevoUsuario()
     {
         $roles = Rol::all(); // obtenemos roles para el dropdown
-        return response()->view('vendedores.crear-usuario', compact('roles'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-    ->header('Pragma', 'no-cache')
-    ->header('Expires', '0');
+        return response()->view('vendedores.crear-usuario', compact('roles'))
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
     }
 public function crearNuevoUsuario(Request $request)
 {

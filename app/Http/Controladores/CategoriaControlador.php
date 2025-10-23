@@ -49,7 +49,8 @@ class CategoriaControlador extends Controlador
     // Formulario editar
     public function edit(Categoria $categoria)
     {
-        return response()->view('vendedores.categorias.editar', compact('categoria'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        return response()->view('vendedores.categorias.editar', compact('categoria'))
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
             ->header('Pragma', 'no-cache')
             ->header('Expires', '0');
     }

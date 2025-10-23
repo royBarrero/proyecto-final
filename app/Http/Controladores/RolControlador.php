@@ -11,15 +11,15 @@ class RolControlador extends Controlador
     {
         $roles = Rol::orderBy('id', 'asc')->orderBy('id', 'asc')->get();
         return response()->view('vendedores.roles.mostrar', compact('roles'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-    ->header('Pragma', 'no-cache')
-    ->header('Expires', '0');
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
     }
 
     public function create()
     {
         return response()->view('vendedores.roles.crear')->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-    ->header('Pragma', 'no-cache')
-    ->header('Expires', '0');
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
     }
 
     public function store(Request $request)
@@ -35,15 +35,15 @@ class RolControlador extends Controlador
     public function show(Rol $rol)
     {
         return response()->view('vendedores.roles.mostrar', compact('rol'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-    ->header('Pragma', 'no-cache')
-    ->header('Expires', '0');
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
     }
 
     public function edit(Rol $rol)
     {
         return response()->view('vendedores.roles.editar', compact('rol'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-    ->header('Pragma', 'no-cache')
-    ->header('Expires', '0');
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
     }
 
     public function update(Request $request, Rol $rol)

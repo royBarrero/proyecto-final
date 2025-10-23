@@ -10,12 +10,16 @@ class ProveedorControlador extends Controlador
     public function index()
     {
         $proveedores = Proveedor::orderBy('id', 'asc')->get();
-        return view('proveedores.mostrar', compact('proveedores'));
+        return response()->view('proveedores.mostrar', compact('proveedores'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     public function create()
     {
-        return view('proveedores.crear');
+        return response()->view('proveedores.crear')->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     public function store(Request $request)
@@ -34,7 +38,9 @@ class ProveedorControlador extends Controlador
     public function edit($id)
     {
         $proveedor = Proveedor::findOrFail($id);
-        return view('proveedores.editar', compact('proveedor'));
+        return response()->view('proveedores.editar', compact('proveedor'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     public function update(Request $request, $id)
