@@ -3,6 +3,7 @@ namespace App\Modelos;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Modelos\Productoave;
 
 class Categoria extends Model
 {
