@@ -24,7 +24,7 @@ class Productoave extends Model
         'cantidad'
     ];
      // 🔗 Relación con FotoAve (1 producto puede tener muchas fotos)
-    public function fotoAves()
+    public function fotoaves()
     {
         return $this->hasMany(Fotoave::class, 'idproductoaves', 'id');
     }
