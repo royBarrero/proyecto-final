@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controladores;
 
-use App\Modelos\ProductoAve;
+use App\Modelos\Productoave;
 use App\Modelos\Categoria;
 use App\Modelos\Detalleave;
 use Illuminate\Http\Request;
@@ -11,7 +11,7 @@ class ProductoaveControlador extends Controlador
 {
     public function index()
     {
-        $aves = ProductoAve::with(['categoria', 'detalleAve'])->orderBy('id', 'asc')->get();
+        $aves = Productoave::with(['categoria', 'detalleAve'])->orderBy('id', 'asc')->get();
         return response()->view('productoaves.principal', compact('aves'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
     ->header('Pragma', 'no-cache')
     ->header('Expires', '0');
@@ -20,7 +20,7 @@ class ProductoaveControlador extends Controlador
     public function create()
     {
         $categorias = Categoria::all();
-        $detalles = DetalleAve::all();
+        $detalles = Detalleave::all();
         return response()->view('productoaves.create', compact('categorias', 'detalles'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
     ->header('Pragma', 'no-cache')
     ->header('Expires', '0');
@@ -37,7 +37,7 @@ class ProductoaveControlador extends Controlador
             'fotos.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048'
         ]);
          // Crear el producto
-        $producto = ProductoAve::create($request->only([
+        $producto = Productoave::create($request->only([
             'nombre', 'precio', 'idcategorias', 'iddetalleAves', 'cantidad'
         ]));
         // Si hay fotos, guardarlas
@@ -56,7 +56,7 @@ class ProductoaveControlador extends Controlador
 
     public function show($id)
     {
-        $productoAve = ProductoAve::with(['categoria', 'detalleAve'])->findOrFail($id);
+        $productoAve = Productoave::with(['categoria', 'detalleAve'])->findOrFail($id);
         return response()->view('productoaves.mostrar', compact('productoAve'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
     ->header('Pragma', 'no-cache')
     ->header('Expires', '0');
@@ -64,7 +64,7 @@ class ProductoaveControlador extends Controlador
 
     public function edit($id)
     {
-        $productoAve = ProductoAve::findOrFail($id);
+        $productoAve = Productoave::findOrFail($id);
         $categorias = Categoria::all();
         $detalles = Detalleave::all();
         return response()->view('productoAves.editar', compact('productoAve', 'categorias', 'detalles'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
@@ -74,7 +74,7 @@ class ProductoaveControlador extends Controlador
 
     public function update(Request $request, $id)
     {
-        $productoave = ProductoAve::findOrFail($id);
+        $productoave = Productoave::findOrFail($id);
         $request->validate([
             'nombre' => 'required|string|max:150',
             'precio' => 'required|numeric|min:0',
@@ -105,7 +105,7 @@ class ProductoaveControlador extends Controlador
 
     public function destroy($id)
     {
-        $productoave = ProductoAve::findOrFail($id);
+        $productoave = Productoave::findOrFail($id);
         $productoave->delete();
         return redirect()->route('productoaves.index')->with('error', 'Producto eliminado correctamente.');
     }

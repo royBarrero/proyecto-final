@@ -10,7 +10,7 @@ use App\Modelos\Fotoaves;
 use App\Modelos\Detalleave;
 use App\Modelos\Categoria;
 
-class ProductoAve extends Model
+class Productoave extends Model
 {
     protected $table = 'productoaves';   // 👈 tu tabla
     protected $primaryKey = 'id';

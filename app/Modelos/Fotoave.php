@@ -4,7 +4,7 @@ namespace App\Modelos;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Modelos\ProductoAve;
+use App\Modelos\Productoave;
 
 class Fotoave extends Model
 {
@@ -21,7 +21,7 @@ class Fotoave extends Model
 
     public function productoave()
     {
-        return $this->belongsTo(ProductoAve::class, 'idproductoaves', 'id');
+        return $this->belongsTo(Productoave::class, 'idproductoaves', 'id');
     }
 
 
