@@ -10,7 +10,7 @@ class AuditoriaControlador extends Controlador
     {
         // Cargar también el usuario relacionado
         $auditorias = Auditoria::with('usuario')
-            ->orderBy('created_at', 'asc')
+            ->orderBy('created_at', 'desc')
             ->paginate(10);
 
         return response()->view('auditorias.bitacora', compact('auditorias'))
