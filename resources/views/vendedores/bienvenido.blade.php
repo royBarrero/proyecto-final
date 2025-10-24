@@ -21,6 +21,16 @@
             @endauth
         </button>
     </div>
+       <div style="position:relative; display:inline-block;">
+        <button 
+            id="createBTN"
+            onclick="window.location.href='{{ route('pagos.index') }}'"
+            style="color:#ef8504; background:white; padding:8px 15px; border-radius:5px; font-weight:bold; border:none; cursor:pointer; transition: all 0.2s ease-in-out;">
+            @auth
+                Gestionar Ventas
+            @endauth
+        </button>
+    </div>
     <div style="position:relative; display:inline-block;">
         <button 
             id="createBTN"
