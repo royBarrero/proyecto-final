@@ -15,6 +15,7 @@ class Cliente extends Model
     protected $fillable = [
         'idusuarios',   // FK usuario
         'direccion',
+        'nombre',
         'telefono',
         'activo',
     ];

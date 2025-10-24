@@ -19,34 +19,42 @@ class RegistroControlador extends Controlador
 
     // Procesar registro
     public function registrar(Request $request)
-    {
-        $request->validate([
-            'nombre'    => ['required', 'string', 'max:150'],
-            'apellido'  => ['required', 'string', 'max:150'],
-            'email'     => ['required', 'email', 'unique:usuarios,email'], // validación única en la columna correo
-            'password'  => ['required', 'confirmed', 'min:6'], // confirmado
-            'direccion' => ['nullable', 'string', 'max:255'],
-            'telefono'  => ['nullable', 'string', 'max:20'],
-        ]);
-        $cliente = Cliente::create([
-            'nombre'    => $request->nombre . ' ' . $request->apellido,
-            'direccion' => $request->direccion,
-            'telefono'  => $request->telefono,
-        ]);
-        $usuario = Usuario::create([
-            'nombre'      => $request->nombre . ' ' . $request->apellido, // concatenar nombre y apellido
-            'email'      => $request->email,
-            'contrasenia' => $request->password,
-            'idclientes'  => $cliente->id
-        ]);
-    
-        Auth::login($usuario);
+{
+    $request->validate([
+        'nombre'    => ['required', 'string', 'max:150'],
+        'apellido'  => ['required', 'string', 'max:150'],
+        'email'     => ['required', 'email', 'unique:usuarios,email'],
+        'password'  => ['required', 'confirmed', 'min:6'],
+        'direccion' => ['nullable', 'string', 'max:255'],
+        'telefono'  => ['nullable', 'string', 'max:20'],
+    ]);
 
-        $rol = Auth::user()->idrols;   // gracias a la relación belongsTo
-        if($rol === 1){
-           return redirect()->route('bienvenido.usuarios.vendedor'); 
-        }
-        return redirect()->intended('/');
+    // Crear usuario primero
+    $usuario = Usuario::create([
+        'nombre'      => $request->nombre . ' ' . $request->apellido,
+        'email'       => $request->email,
+        'contrasenia' => $request->password, // ya cifrada con pgcrypto
+        'idrols'      => 2, // rol de cliente
+    ]);
+
+    // Crear cliente apuntando al usuario
+    $cliente = Cliente::create([
+        'idusuarios' => $usuario->id,
+        'nombre'      => $request->nombre . ' ' . $request->apellido,
+        'direccion'  => $request->direccion,
+        'telefono'   => $request->telefono,
+    ]);
+
+    // Loguear usuario
+    Auth::login($usuario);
+
+    // Redirigir según rol
+    $rol = Auth::user()->idrols;
+    if ($rol === 1) {
+        return redirect()->route('bienvenido.usuarios.vendedor'); 
+    }
+
+    return redirect()->intended('/');
 }
 
 }
