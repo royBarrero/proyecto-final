@@ -318,7 +318,7 @@
         }
 
         .styled-table td {
-            text-align: left;
+            text-align: center;
             padding: 10px;
             position: relative;
         }
