@@ -402,6 +402,7 @@
     }
 </style>
 
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Confirmar eliminación
