@@ -8,7 +8,7 @@ use App\Http\Controladores\Autenticacion\PerfilControlador;
 use App\Http\Controladores\UsuarioControlador;
 use App\Http\Controladores\CategoriaControlador;
 use App\Http\Controladores\RolControlador;
-use App\Http\Controladores\productoAveControlador;
+use App\Http\Controladores\ProductoAveControlador;
 use App\Http\Controladores\FotoaveControlador;
 use App\Http\Controladores\DetalleaveControlador;
 use App\Http\Controladores\AuditoriaControlador;
