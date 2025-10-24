@@ -305,7 +305,7 @@
         .styled-table tbody,
         .styled-table tr,
         .styled-table td {
-            display: block;
+            
             width: 100%;
         }
 
