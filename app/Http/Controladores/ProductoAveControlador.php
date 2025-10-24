@@ -21,7 +21,7 @@ class ProductoAveControlador extends Controlador
     {
         $categorias = Categoria::all();
         $detalles = Detalleave::all();
-        return response()->view('productoaves.create', compact('categorias', 'detalles'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        return response()->view('productoAves.create', compact('categorias', 'detalles'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
     ->header('Pragma', 'no-cache')
     ->header('Expires', '0');
     }
