@@ -10,7 +10,7 @@ use App\Modelos\Rol;
 use App\Modelos\Vendedor;
 use App\Modelos\Cliente;
 use App\Modelos\Fotoave;
-
+use Illuminate\Support\Facades\Auth;
 class UsuarioControlador extends Controlador
 {
     public function bienvenido()
@@ -36,8 +36,8 @@ class UsuarioControlador extends Controlador
     }
     public function mostrarDatosDeTodosLosUsuarios()
     {
-       $usuarios = collect(Usuario::obtenerUsuariosCompleto())
-                    ->filter(fn($u) => $u->id !== auth()->id());
+       $usuarios = Usuario::obtenerUsuariosCompleto()
+        ->filter(fn($u) => $u->id !== auth::id());
 
         return response()->view('vendedores.mostrar-usuarios', compact('usuarios'))
                 ->header('Cache-Control', 'no-cache, no-store, must-revalidate')

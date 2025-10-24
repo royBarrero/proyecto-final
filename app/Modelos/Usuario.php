@@ -80,7 +80,8 @@ class Usuario extends Authenticatable
     }
     public static function obtenerUsuariosCompleto()
     {
-        return collect(DB::select('SELECT * FROM obtener_usuarios_completo()'));
+        return collect(DB::select('SELECT * FROM obtener_usuarios_completo()'))
+        ->map(fn($u) => (object) $u);
     }
     public static function eliminarPorId(int $id): void
     {

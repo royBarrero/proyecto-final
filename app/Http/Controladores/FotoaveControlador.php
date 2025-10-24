@@ -104,6 +104,6 @@ class FotoaveControlador extends Controlador
     {
         $fotoAve = Fotoave::findOrFail($id);
         $fotoAve->delete();
-        return redirect()->route('fotoaves.index')->with('error', 'Foto eliminada correctamente.');
+        return redirect()->route('bienvenido.usuarios.vendedor')->with('error', 'Foto eliminada correctamente.');
     }
 }

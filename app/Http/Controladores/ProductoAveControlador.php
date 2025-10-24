@@ -44,7 +44,7 @@ class ProductoAveControlador extends Controlador
         if ($request->hasFile('fotos')) {
             foreach ($request->file('fotos') as $foto) {
                 $nombreArchivo = time().'_'.$foto->getClientOriginalName();
-                $foto->move(public_path('imagenes/aves'), $nombreArchivo);
+                $foto->storeAs('imagenes', $nombreArchivo, 'public');
                 Fotoave::create([
                     'nombrefoto' => $nombreArchivo,
                     'idproductoaves' => $producto->id
@@ -91,10 +91,8 @@ class ProductoAveControlador extends Controlador
         // 📸 Si hay nuevas fotos, las guarda sin borrar las antiguas
         if ($request->hasFile('fotos')) {
             foreach ($request->file('fotos') as $foto) {
-                $nombreArchivo = time().'_'.$foto->getClientOriginalName();
-                
-                $foto->move(public_path('imagenes/aves'), $nombreArchivo);
-
+                $nombreArchivo = time().'_'.$foto->getClientOriginalName();  
+                $foto->storeAs('imagenes', $nombreArchivo, 'public');
                 Fotoave::create([
                     'nombrefoto' => $nombreArchivo,
                     'idproductoaves' => $productoave->id
