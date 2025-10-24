@@ -66,7 +66,9 @@
         <div class="bird-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(250px,1fr)); gap:20px;">
             @foreach($fotoaves ?? [] as $foto)
                 <div class="bird-card" style="border:1px solid #ddd; border-radius:10px; overflow:hidden; background:white;">
-                    <img src="{{ asset('imagenes/aves/'.$foto->nombrefoto) }}" alt="{{ $foto->nombrefoto }}" style="width:100%; height:180px; object-fit:cover;">
+                    
+                    <img src="{{ asset('storage/imagenes/aves/'.$foto->nombrefoto) }}" alt="{{ $foto->nombrefoto }}" style="width:100%; height:180px; object-fit:cover;">
+
                     <div class="info" style="padding:10px;">
                         <h3 style="font-size:18px; margin:0 0 5px;">{{ $foto->productoAve->nombre }}</h3>
                         <p style="color:#666;">Precio: Bs {{ number_format($foto->productoAve->precio,2) }}</p>
