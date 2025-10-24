@@ -305,7 +305,7 @@
         .styled-table tbody,
         .styled-table tr,
         .styled-table td {
-            
+            display: block;
             width: 100%;
         }
 
@@ -318,7 +318,7 @@
         }
 
         .styled-table td {
-            text-align: right;
+            text-align: left;
             padding: 10px;
             position: relative;
         }
