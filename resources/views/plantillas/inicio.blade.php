@@ -13,7 +13,7 @@
     </title>
     <link rel="icon" type="image/png" href="{{ asset('imagenes/logo2.png') }}" sizes="32x32">
 
-    <style>
+   <style>
     /* ====== ESTILO BASE ====== */
     body {
         font-family: Arial, sans-serif;
@@ -401,6 +401,7 @@
         }
     }
 </style>
+
 
 
     <script>
