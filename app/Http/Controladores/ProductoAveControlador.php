@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controladores;
 
 use App\Modelos\ProductoAve;
@@ -22,8 +23,8 @@ class ProductoAveControlador extends Controlador
         $categorias = Categoria::all();
         $detalles = Detalleave::all();
         return response()->view('productoAves.create', compact('categorias', 'detalles'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-    ->header('Pragma', 'no-cache')
-    ->header('Expires', '0');
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     public function store(Request $request)
@@ -36,14 +37,18 @@ class ProductoAveControlador extends Controlador
             'cantidad' => 'required|integer|min:0',
             'fotos.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048'
         ]);
-         // Crear el producto
+        // Crear el producto
         $producto = ProductoAve::create($request->only([
-            'nombre', 'precio', 'idcategorias', 'iddetalleAves', 'cantidad'
+            'nombre',
+            'precio',
+            'idcategorias',
+            'iddetalleAves',
+            'cantidad'
         ]));
         // Si hay fotos, guardarlas
         if ($request->hasFile('fotos')) {
             foreach ($request->file('fotos') as $foto) {
-                $nombreArchivo = time().'_'.$foto->getClientOriginalName();
+                $nombreArchivo = time() . '_' . $foto->getClientOriginalName();
                 $foto->move(public_path('imagenes/aves'), $nombreArchivo);
                 Fotoave::create([
                     'nombrefoto' => $nombreArchivo,
@@ -58,8 +63,8 @@ class ProductoAveControlador extends Controlador
     {
         $productoAve = ProductoAve::with(['categoria', 'detalleAve'])->findOrFail($id);
         return response()->view('productoaves.mostrar', compact('productoAve'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-    ->header('Pragma', 'no-cache')
-    ->header('Expires', '0');
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     public function edit($id)
@@ -68,8 +73,8 @@ class ProductoAveControlador extends Controlador
         $categorias = Categoria::all();
         $detalles = Detalleave::all();
         return response()->view('productoAves.editar', compact('productoAve', 'categorias', 'detalles'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-                ->header('Pragma', 'no-cache')
-                ->header('Expires', '0');
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     public function update(Request $request, $id)
@@ -85,13 +90,24 @@ class ProductoAveControlador extends Controlador
         ]);
         // 🔄 Actualiza los datos del producto
         $productoave->update($request->only([
-            'nombre', 'precio', 'idcategorias', 'cantidad'
+            'nombre',
+            'precio',
+            'idcategorias',
+            'cantidad'
         ]));
 
         // 📸 Si hay nuevas fotos, las guarda sin borrar las antiguas
         if ($request->hasFile('fotos')) {
             foreach ($request->file('fotos') as $foto) {
-                $nombreArchivo = time().'_'.$foto->getClientOriginalName();
+                $nombreArchivo = time() . '_' . $foto->getClientOriginalName();
+                $destino = public_path('imagenes/aves');
+
+                if (!file_exists($destino)) {
+                    mkdir($destino, 0777, true);
+                }
+
+                $foto->move($destino, $nombreArchivo);
+
                 $foto->move(public_path('imagenes/aves'), $nombreArchivo);
                 Fotoave::create([
                     'nombrefoto' => $nombreArchivo,
@@ -99,7 +115,7 @@ class ProductoAveControlador extends Controlador
                 ]);
             }
         }
- 
+
         return redirect()->route('productoaves.index')->with('warning', 'Producto actualizado correctamente.');
     }
 
