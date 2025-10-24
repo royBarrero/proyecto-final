@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
 use App\Http\Controladores\Autenticacion\AccesoControlador;
 use App\Http\Controladores\Autenticacion\RegistroControlador;
