@@ -37,4 +37,5 @@ class ProductoAve extends Model
     {
         return $this->belongsTo(Categoria::class, 'idcategorias', 'id');
     }
+    
 }
