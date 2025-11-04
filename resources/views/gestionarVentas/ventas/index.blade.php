@@ -24,7 +24,7 @@
                 <td>{{ ++$i }}</td>
                 <td>{{ $venta->cliente ?? '-' }}</td>
                 <td>{{ $venta->vendedor ?? '-' }}</td>
-                <td>{{ $venta->metodoPago ?? '-' }}</td>
+                <td>{{ $venta->metodo_pago ?? '-' }}</td>
                 <td>{{ number_format($venta->total, 2) }}</td>
                 {{--<td>{{ $venta->fecha->format('d/m/Y H:i') }}</td>--}}
                 <td>{{ \Carbon\Carbon::parse($venta->fecha)->format('d/m/Y') }}</td>
