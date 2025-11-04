@@ -24,16 +24,7 @@
             @endauth
         </button>
     </div>
-    <div style="position:relative; display:inline-block;">
-        <button 
-            id="createBTN"
-            onclick="window.location.href='{{ route('proveedores.index') }}'"
-            style="color:#ef8504; background:white; padding:8px 15px; border-radius:5px; font-weight:bold; border:none; cursor:pointer; transition: all 0.2s ease-in-out;">
-            @auth
-                Gestionar Proveedores
-            @endauth
-        </button>
-    </div>
+    
     
     <div style="position:relative; display:inline-block;">
         <button id="gestionarVentasBtn" style="color:#ef8504; background:white; padding:8px 15px; border-radius:5px; font-weight:bold; border:none; cursor:pointer;">
@@ -62,7 +53,9 @@
                 <a href="{{ route('ventas.create') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar carrito')}}</a>
                 {{--<a href="{{ route('ventas.create') }}" class="btn-editar">Nueva Venta</a>--}}
             </li>
-            
+            <li style="border-bottom:1px solid #eee;">
+                <a href="{{ route('proveedores.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar Proveedores')}}</a>
+            </li>
         </ul>
     </div>
     {{-----------------------------------------------------------------------------------------------------------------}}
