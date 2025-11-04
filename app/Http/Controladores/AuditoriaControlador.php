@@ -13,7 +13,7 @@ class AuditoriaControlador extends Controlador
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return response()->view('auditorias.bitacora', compact('auditorias'))
+        return response()->view('autenticacionYseguridad.auditorias.bitacora', compact('auditorias'))
                     ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
                     ->header('Pragma', 'no-cache')
                     ->header('Expires', '0');
