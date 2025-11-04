@@ -65,7 +65,7 @@
 
         <div class="form-group" style="display:flex; gap:10px;">
             <button type="submit" class="btn">Guardar</button>
-            <a href="{{ route('bienvenido.usuarios.vendedo') }}" class="btn btn-cerrar">Volver</a>
+            <a href="{{ route('bienvenido.usuarios.vendedor') }}" class="btn btn-cerrar">Volver</a>
         </div>
     </form>
 </div>
