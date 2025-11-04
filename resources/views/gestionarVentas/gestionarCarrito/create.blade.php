@@ -17,7 +17,17 @@
         </div>
 
         {{-- Enviar el ID del usuario logueado como vendedor automáticamente --}}
-        <input type="hidden" name="id_vendedor" value="{{ Auth::user()->id }}">
+        {{--<input type="hidden" name="id_vendedor" value="{{ Auth::user()->id }}">--}}
+        <div class="form-group">
+            <label>Vendedor</label>
+            <select name="id_vendedor" required>
+                @foreach($vendedores as $v)
+                    <option value="{{ $v->id }}" {{ $venta->id_vendedor == $v->id ? 'selected' : '' }}>
+                        {{ $v->idusuarios }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
         <div class="form-group">
             <label>Método de Pago</label>
