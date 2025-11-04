@@ -22,8 +22,8 @@
         @foreach($ventas ?? [] as $venta)
             <tr>
                 <td>{{ ++$i }}</td>
-                <td>{{ $venta->cliente->nombre ?? '-' }}</td>
-                <td>{{ $venta->vendedor->nombre ?? '-' }}</td>
+                <td>{{ $venta->cliente ?? '-' }}</td>
+                <td>{{ $venta->vendedor ?? '-' }}</td>
                 <td>{{ $venta->metodoPago->descripcion ?? '-' }}</td>
                 <td>{{ number_format($venta->total, 2) }}</td>
                 {{--<td>{{ $venta->fecha->format('d/m/Y H:i') }}</td>--}}
