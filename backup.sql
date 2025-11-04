@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict YisKdU8XcI8NnGtsr0TFE2SByd3kJAp019duldKZFptd5Ca3MBv74RdchTK5ftj
+\restrict fDzVjxLDlHZS5rTW08GwoS1NzQoAhRvl8rEQrcdwXPeqsfY7dorNZ5CKJbgxO8j
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.6
@@ -174,6 +174,22 @@ $$;
 ALTER PROCEDURE public.actualizar_usuario_completo(IN p_id integer, IN p_nombre character varying, IN p_email character varying, IN p_idrols integer, IN p_direccion character varying, IN p_telefono character varying) OWNER TO postgres;
 
 --
+-- Name: actualizar_venta(integer, numeric, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.actualizar_venta(p_idventa integer, p_total numeric, p_metodo_pago integer) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    UPDATE pedidos SET total = p_total WHERE id = p_idventa;
+    UPDATE pagos SET monto = p_total, idmetodoPagos = p_metodo_pago WHERE idpedidos = p_idventa;
+END;
+$$;
+
+
+ALTER FUNCTION public.actualizar_venta(p_idventa integer, p_total numeric, p_metodo_pago integer) OWNER TO postgres;
+
+--
 -- Name: cifrar_contrasenia(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -198,6 +214,34 @@ $$;
 ALTER FUNCTION public.cifrar_contrasenia() OWNER TO postgres;
 
 --
+-- Name: eliminar_venta(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.eliminar_venta(p_idventa integer) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    v_item RECORD;
+BEGIN
+    -- Devolver el stock antes de borrar
+    FOR v_item IN SELECT * FROM detallePedidos WHERE idpedidos = p_idventa
+    LOOP
+        UPDATE productoAves
+        SET cantidad = cantidad + v_item.cantidad
+        WHERE id = v_item.idproductoAves;
+    END LOOP;
+
+    -- Borrar primero pagos, detalles y finalmente el pedido
+    DELETE FROM pagos WHERE idpedidos = p_idventa;
+    DELETE FROM detallePedidos WHERE idpedidos = p_idventa;
+    DELETE FROM pedidos WHERE id = p_idventa;
+END;
+$$;
+
+
+ALTER FUNCTION public.eliminar_venta(p_idventa integer) OWNER TO postgres;
+
+--
 -- Name: es_contrasenia_correcta(character varying, character varying); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -218,6 +262,56 @@ $$;
 
 
 ALTER FUNCTION public.es_contrasenia_correcta(p_email character varying, p_contrasenia character varying) OWNER TO postgres;
+
+--
+-- Name: listar_ventas(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.listar_ventas() RETURNS TABLE(id integer, cliente character varying, vendedor character varying, total numeric, fecha date, metodo_pago character varying)
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        p.id,
+        c.nombre::VARCHAR AS cliente,
+        v.nombre::VARCHAR AS vendedor,
+        p.total,
+        p.fecha,
+        m.descripcion AS metodo_pago
+    FROM pedidos p
+    JOIN clientes c ON p.idclientes = c.id
+    JOIN vendedors v ON p.idvendedors = v.id
+    JOIN pagos pa ON pa.idpedidos = p.id
+    JOIN metodoPagos m ON pa.idmetodoPagos = m.id;
+END;
+$$;
+
+
+ALTER FUNCTION public.listar_ventas() OWNER TO postgres;
+
+--
+-- Name: obtener_detalle_venta(integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.obtener_detalle_venta(p_idventa integer) RETURNS TABLE(producto character varying, cantidad integer, precio numeric, subtotal numeric)
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        pa.nombre AS producto,
+        d.cantidad,
+        d.precioUnitario AS precio,
+        d.subtotal
+    FROM detallePedidos d
+    JOIN productoAves pa ON pa.id = d.idproductoAves
+    WHERE d.idpedidos = p_idventa;
+END;
+$$;
+
+
+ALTER FUNCTION public.obtener_detalle_venta(p_idventa integer) OWNER TO postgres;
 
 --
 -- Name: obtener_usuario_por_id(integer); Type: FUNCTION; Schema: public; Owner: postgres
@@ -328,6 +422,50 @@ $$;
 
 
 ALTER FUNCTION public.obtener_usuarios_con_su_rol() OWNER TO postgres;
+
+--
+-- Name: registrar_venta(integer, integer, numeric, integer, json); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION public.registrar_venta(p_idcliente integer, p_idvendedor integer, p_total numeric, p_metodo_pago integer, p_detalles json) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    v_idpedido INT;
+    v_item JSON;
+    v_idproducto INT;
+    v_cantidad INT;
+    v_precio NUMERIC;
+BEGIN
+    -- 1️⃣ Crear el pedido
+    INSERT INTO pedidos (fecha, estado, total, idclientes, idvendedors)
+    VALUES (CURRENT_DATE, 1, p_total, p_idcliente, p_idvendedor)
+    RETURNING id INTO v_idpedido;
+
+    -- 2️⃣ Insertar los detalles
+    FOR v_item IN SELECT * FROM json_array_elements(p_detalles)
+    LOOP
+        v_idproducto := (v_item->>'idproducto')::INT;
+        v_cantidad   := (v_item->>'cantidad')::INT;
+        v_precio     := (v_item->>'precio')::NUMERIC;
+
+        INSERT INTO detallePedidos (idpedidos, idproductoAves, cantidad, precioUnitario, subtotal)
+        VALUES (v_idpedido, v_idproducto, v_cantidad, v_precio, v_cantidad * v_precio);
+
+        -- 3️⃣ Actualizar stock
+        UPDATE productoAves
+        SET cantidad = cantidad - v_cantidad
+        WHERE id = v_idproducto;
+    END LOOP;
+
+    -- 4️⃣ Registrar el pago
+    INSERT INTO pagos (fecha, estado, monto, idpedidos, idmetodoPagos)
+    VALUES (CURRENT_DATE, 1, p_total, v_idpedido, p_metodo_pago);
+END;
+$$;
+
+
+ALTER FUNCTION public.registrar_venta(p_idcliente integer, p_idvendedor integer, p_total numeric, p_metodo_pago integer, p_detalles json) OWNER TO postgres;
 
 --
 -- Name: sp_pedidos_cliente(integer); Type: PROCEDURE; Schema: public; Owner: postgres
@@ -1291,6 +1429,49 @@ COPY public.auditorias (id, tabla, registro_id, accion, usuario_id, cambios, ip,
 10	usuarios	16	INICIO_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-10-23 12:23:06.033104
 11	usuarios	16	CIERRE_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-10-23 13:52:54.402694
 12	usuarios	21	INICIO_SESION	21	{"nombre": "Roy Barrero"}	127.0.0.1	2025-10-23 13:53:07.593565
+13	usuarios	16	INICIO_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-10-23 17:35:13.703925
+14	productoaves	1	ACTUALIZAR	16	{"antes": {"id": 1, "nombre": "pollo", "precio": "25.00", "cantidad": 100, "idcategorias": 1, "iddetalleaves": 1}, "despues": {"id": 1, "nombre": "pollo", "precio": "40", "cantidad": "100", "idcategorias": "1", "iddetalleaves": 1}}	127.0.0.1	2025-10-23 20:32:15.731026
+15	usuarios	16	CIERRE_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-10-23 21:45:37.822072
+16	usuarios	37	CREAR	\N	{"despues": {"id": 37, "email": "pepe@gmail.com", "idrols": 2, "nombre": "Pepe Gonzales", "contrasenia": "123456"}}	127.0.0.1	2025-10-23 21:52:14.766628
+17	usuarios	38	CREAR	\N	{"despues": {"id": 38, "email": "pep1e@gmail.com", "idrols": 2, "nombre": "Pepe1 Gonzales", "contrasenia": "123456"}}	127.0.0.1	2025-10-23 21:58:53.497842
+18	usuarios	39	CREAR	\N	{"despues": {"id": 39, "email": "pepe12@gmail.com", "idrols": 2, "nombre": "Pepe12 Gonzales", "contrasenia": "123456"}}	127.0.0.1	2025-10-23 22:00:29.868492
+19	clientes	37	CREAR	\N	{"despues": {"id": 37, "nombre": "Pepe12 Gonzales", "telefono": null, "direccion": null, "idusuarios": 39}}	127.0.0.1	2025-10-23 22:00:29.873067
+20	usuarios	39	INICIO_SESION	39	{"nombre": "Pepe12 Gonzales"}	127.0.0.1	2025-10-23 22:00:29.878033
+21	usuarios	39	CIERRE_SESION	39	{"nombre": "Pepe12 Gonzales"}	127.0.0.1	2025-10-23 23:05:45.220185
+22	usuarios	16	INICIO_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-10-23 23:06:01.8347
+23	fotoaves	5	CREAR	16	{"despues": {"id": 5, "nombrefoto": "1761276980_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-23 23:36:20.964057
+24	fotoaves	6	CREAR	16	{"despues": {"id": 6, "nombrefoto": "1761277560_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-23 23:46:00.402034
+25	fotoaves	5	ELIMINAR	16	{"antes": {"id": 5, "nombrefoto": "1761276980_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-23 23:56:00.290202
+26	usuarios	16	CIERRE_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-10-23 23:56:06.607606
+27	usuarios	16	INICIO_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-10-23 23:56:21.070198
+28	fotoaves	6	ELIMINAR	16	{"antes": {"id": 6, "nombrefoto": "1761277560_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-23 23:56:26.523521
+29	usuarios	16	CIERRE_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-10-23 23:56:30.489709
+30	usuarios	16	INICIO_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-10-23 23:56:44.491951
+31	fotoaves	7	CREAR	16	{"despues": {"id": 7, "nombrefoto": "1761278253_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-23 23:57:33.678156
+32	fotoaves	7	ELIMINAR	16	{"antes": {"id": 7, "nombrefoto": "1761278253_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-23 23:59:44.913087
+33	fotoaves	8	CREAR	16	{"despues": {"id": 8, "nombrefoto": "1761278797_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-24 00:06:37.133134
+34	fotoaves	8	ELIMINAR	16	{"antes": {"id": 8, "nombrefoto": "1761278797_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-24 00:37:18.935076
+35	fotoaves	9	CREAR	16	{"despues": {"id": 9, "nombrefoto": "1761280658_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-24 00:37:38.640064
+36	fotoaves	9	ELIMINAR	16	{"antes": {"id": 9, "nombrefoto": "1761280658_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-24 00:50:55.152972
+37	fotoaves	10	CREAR	16	{"despues": {"id": 10, "nombrefoto": "1761281473_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-24 00:51:13.425247
+38	fotoaves	10	ELIMINAR	16	{"antes": {"id": 10, "nombrefoto": "1761281473_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-24 00:57:01.129946
+39	fotoaves	11	CREAR	16	{"despues": {"id": 11, "nombrefoto": "1761281839_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-24 00:57:19.764878
+40	fotoaves	12	CREAR	16	{"despues": {"id": 12, "nombrefoto": "1761282283_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-24 01:04:43.973723
+41	fotoaves	4	ELIMINAR	16	{"antes": {"id": 4, "nombrefoto": "1761174383_Captura de pantalla 2025-10-22 182806.png", "idproductoaves": 4}}	127.0.0.1	2025-10-24 01:17:38.671349
+42	fotoaves	11	ELIMINAR	16	{"antes": {"id": 11, "nombrefoto": "1761281839_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-24 01:17:43.341277
+43	fotoaves	12	ELIMINAR	16	{"antes": {"id": 12, "nombrefoto": "1761282283_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-24 01:17:47.768973
+44	fotoaves	13	CREAR	16	{"despues": {"id": 13, "nombrefoto": "1761283083_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-24 01:18:03.882477
+45	fotoaves	13	ELIMINAR	16	{"antes": {"id": 13, "nombrefoto": "1761283083_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-24 01:31:05.658058
+46	fotoaves	14	CREAR	16	{"despues": {"id": 14, "nombrefoto": "1761283883_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-24 01:31:23.442558
+47	fotoaves	14	ELIMINAR	16	{"antes": {"id": 14, "nombrefoto": "1761283883_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-24 02:25:41.179394
+48	fotoaves	15	CREAR	16	{"despues": {"id": 15, "nombrefoto": "1761287187_Captura de pantalla 2025-10-22 182806.png", "idproductoaves": 1}}	127.0.0.1	2025-10-24 02:26:27.942889
+49	fotoaves	16	CREAR	16	{"despues": {"id": 16, "nombrefoto": "1761287187_foto2.png", "idproductoaves": 1}}	127.0.0.1	2025-10-24 02:26:27.950484
+50	usuarios	16	INICIO_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-11-03 11:29:37.263221
+51	usuarios	16	CIERRE_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-11-03 11:29:48.212321
+52	usuarios	16	INICIO_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-11-03 11:29:55.996748
+53	usuarios	16	CIERRE_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-11-03 11:35:38.699774
+54	usuarios	16	INICIO_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-11-03 11:35:50.126451
+55	usuarios	16	INICIO_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-11-03 22:33:07.288989
 \.
 
 
@@ -1343,6 +1524,7 @@ COPY public.clientes (id, nombre, direccion, telefono, idusuarios, activo) FROM 
 31	Santiago Justo Huari	\N	67791098	33	1
 29	Melquiades Ancalle	\N	78556200	31	1
 33	Luis Morales	\N	\N	35	1
+37	Pepe12 Gonzales	\N	\N	39	1
 \.
 
 
@@ -1477,7 +1659,8 @@ COPY public.detallepedidos (id, idpedidos, idproductoaves, cantidad, preciounita
 --
 
 COPY public.fotoaves (id, nombrefoto, idproductoaves) FROM stdin;
-4	1761174383_Captura de pantalla 2025-10-22 182806.png	4
+15	1761287187_Captura de pantalla 2025-10-22 182806.png	1
+16	1761287187_foto2.png	1
 \.
 
 
@@ -1577,7 +1760,7 @@ COPY public.productoaves (id, nombre, precio, idcategorias, iddetalleaves, canti
 10	pollo	65.00	1	10	75
 11	pollo	85.50	1	11	0
 14	pollo	85.50	1	13	0
-1	pollo	25.00	1	1	100
+1	pollo	40.00	1	1	100
 \.
 
 
@@ -1651,9 +1834,12 @@ COPY public.usuarios (id, nombre, email, contrasenia, idrols, created_at) FROM s
 21	Roy Barrero	roy.barrero@gmail.com	$2a$12$AD98OAVcxWfEvBgc9sGnxu775WPhJCM7HguDWq8Jb2/1jDuuSfEG2	1	2025-10-02 17:43:48.599009
 20	Daniela Belen Ancalle Sejas	daniela.belen@gmail.com	$2a$12$27XHcvVfkHqsXkPZqrMbw.G//6u3sdGgBN4K9w.6ubA04PKccHZZC	1	2025-10-02 16:24:30.543493
 19	Yenny Jallasa Mamani	yenny.jallasa@gmail.com	$2a$12$p4F/E29KsBbz8YkP1RlxSeZYWh/sSIULws7NoQWUdImmiUYYPSFVy	2	2025-10-02 16:15:15.788487
+37	Pepe Gonzales	pepe@gmail.com	$2a$12$zACEfyJWAxiMKKSmCOdSKephGT/dpZb.xxk/ZElSJhCd2lkQrT2pS	2	2025-10-23 21:52:14.537225
 22	Melissa Sanchez	mely@gmail.com	$2a$12$C/e7ocYOf0k/.vzGzs8VV.RJdrNURMmgfHI8ykcwXUmAHe/H9qq1u	2	2025-10-02 22:59:00.829061
 23	Toribia Gallego	toribia@gmail.com	$2a$12$eHkAORTD27QM..EL3a79rO2EX8TSlAZzRMFaqlLSxlLf/5ZxxDl82	2	2025-10-02 23:01:34.720423
 24	saturnino mamani	saturno@gmail.com	$2a$12$Jty7fptW20DuQlJnWYOQP.FKW6PTOb.640onyglBZM4jYAZB85AIi	2	2025-10-02 23:08:09.373352
+38	Pepe1 Gonzales	pep1e@gmail.com	$2a$12$u5R/MdFgE4rOhZzdZnvS2.7Txe.pzppDWNPV/0ffi9hGTCETYs8Pe	2	2025-10-23 21:58:53.239201
+39	Pepe12 Gonzales	pepe12@gmail.com	$2a$12$ApayBrKcBABpzmltvihrZ.gylyEh3PChd5MJZQZJ7jrAXBeMfOMc2	2	2025-10-23 22:00:29.629588
 1	Limberg Huari	limberg.huari@gmail.com	$2a$12$CNt7HNlB3aXPpu7yvWiC2.6FiU8AFdaR.LlldMFMvUljB0va6Sydi	1	2025-09-11 18:42:16.73455
 26	Samuel Torrico	samuel@gmail.com	$2a$12$JHi0OOK25q9weV7zKqdaTO9uYGrJFGd/sMhVqjuh3zxivFk2UQ4j2	2	2025-10-02 23:28:41.075029
 25	Belisario Landa	beli.landa@gmail.com	$2a$12$qj98N63kbD8kH6yK.VxbnOxGKPDJCSnrvM3J8CPsIKlssgYWqIduu	2	2025-10-02 23:17:38.941907
@@ -1686,7 +1872,7 @@ COPY public.vendedors (id, nombre, direccion, telefono, email, idusuarios, activ
 -- Name: auditorias_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.auditorias_id_seq', 12, true);
+SELECT pg_catalog.setval('public.auditorias_id_seq', 55, true);
 
 
 --
@@ -1700,7 +1886,7 @@ SELECT pg_catalog.setval('public.categorias_id_seq', 13, true);
 -- Name: clientes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.clientes_id_seq', 33, true);
+SELECT pg_catalog.setval('public.clientes_id_seq', 37, true);
 
 
 --
@@ -1749,7 +1935,7 @@ SELECT pg_catalog.setval('public.detallepedidos_id_seq', 10, true);
 -- Name: fotoaves_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.fotoaves_id_seq', 4, true);
+SELECT pg_catalog.setval('public.fotoaves_id_seq', 16, true);
 
 
 --
@@ -1819,7 +2005,7 @@ SELECT pg_catalog.setval('public.stocks_id_seq', 17, true);
 -- Name: usuarios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.usuarios_id_seq', 36, true);
+SELECT pg_catalog.setval('public.usuarios_id_seq', 39, true);
 
 
 --
@@ -2151,5 +2337,5 @@ ALTER TABLE ONLY public.usuarios
 -- PostgreSQL database dump complete
 --
 
-\unrestrict YisKdU8XcI8NnGtsr0TFE2SByd3kJAp019duldKZFptd5Ca3MBv74RdchTK5ftj
+\unrestrict fDzVjxLDlHZS5rTW08GwoS1NzQoAhRvl8rEQrcdwXPeqsfY7dorNZ5CKJbgxO8j
 
