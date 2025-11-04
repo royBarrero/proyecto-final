@@ -26,8 +26,7 @@
                 <td>{{ $venta->vendedor->nombre ?? '-' }}</td>
                 <td>{{ $venta->metodoPago->descripcion ?? '-' }}</td>
                 <td>{{ number_format($venta->total, 2) }}</td>
-                <td>{{ \Carbon\Carbon::parse($venta->fecha)->format('d/m/Y') }}</td>
-
+                <td>{{ $venta->fecha->format('d/m/Y H:i') }}</td>
                 <td>
                     <div class="div-botones">
                         <a href="{{ route('ventas.edit',$venta->id) }}" class="btn-editar">Editar</a>
