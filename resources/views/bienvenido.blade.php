@@ -26,13 +26,48 @@
     </div>
     {{----------------------------------------------------------------------------------------------------------------------}}
     <div style="position:relative; display:inline-block;">
-        <button id="gestionarVentasBtn" style="color:#ef8504; background:white; padding:8px 15px; border-radius:5px; font-weight:bold; border:none; cursor:pointer;">
+        <button id="reporteAnalisisBtn" style="color:#ef8504; background:white; padding:8px 15px; border-radius:5px; font-weight:bold; border:none; cursor:pointer;">
+            @Auth
+                {{__('Reporte y análisis')}} ▼
+            @endAuth
+        </button>
+
+        <ul id="reporteAnalisisMenu" style="
+            display:none;
+            position:absolute;
+            right:0;
+            background:white;
+            color:#333;
+            list-style:none;
+            padding:0;
+            margin:0;
+            border-radius:5px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.1);
+            min-width:150px;
+            z-index:1000;">
+            <li style="border-bottom:1px solid #eee;">
+                <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Generar reporte de compras')}}</a>
+            </li>
+            <li style="border-bottom:1px solid #eee;">
+                <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Generar reporte de ventas')}}</a>
+            </li>
+            <li style="border-bottom:1px solid #eee;">
+                <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Generar reporte de productos')}}</a>
+            </li>
+            <li style="border-bottom:1px solid #eee;">
+                <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Visualizar reportes de productos')}}</a>
+            </li>
+        </ul>
+    </div>
+    {{----------------------------------------------------------------------------------------------------------------------}}
+    <div style="position:relative; display:inline-block;">
+        <button id="administracionFinanzasBtn" style="color:#ef8504; background:white; padding:8px 15px; border-radius:5px; font-weight:bold; border:none; cursor:pointer;">
             @Auth
                 {{__('Administracion de finanzas')}} ▼
             @endAuth
         </button>
 
-        <ul id="gestionarVentasMenu" style="
+        <ul id="administracionFinanzasMenu" style="
             display:none;
             position:absolute;
             right:0;
@@ -48,7 +83,12 @@
             <li style="border-bottom:1px solid #eee;">
                 <a href="{{ route('caja.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar caja')}}</a>
             </li>
-            
+            <li style="border-bottom:1px solid #eee;">
+                <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar gastos')}}</a>
+            </li>
+            <li style="border-bottom:1px solid #eee;">
+                <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Realizar arqueo de caja')}}</a>
+            </li>
         </ul>
     </div>
     {{----------------------------------------------------------------------------------------------------------------------}}
@@ -77,8 +117,14 @@
                 <a href="{{ route('ventas.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar venta')}}</a>
             </li>
             <li style="border-bottom:1px solid #eee;">
-                <a href="{{ route('ventas.create') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar carrito')}}</a>
+                <a href="{{ route('ventas.create') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar carrito de compra')}}</a>
                 {{--<a href="{{ route('ventas.create') }}" class="btn-editar">Nueva Venta</a>--}}
+            </li>
+            <li style="border-bottom:1px solid #eee;">
+                <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar métodos de pagos')}}</a>
+            </li>
+            <li style="border-bottom:1px solid #eee;">
+                <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar compras de productos')}}</a>
             </li>
             <li style="border-bottom:1px solid #eee;">
                 <a href="{{ route('proveedores.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar Proveedores')}}</a>
@@ -112,9 +158,15 @@
             <li style="border-bottom:1px solid #eee;">
                 <a href="{{ route('detalleaves.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar productos')}}</a>
             </li>
-            {{--<li style="border-bottom:1px solid #eee;">
-                <a href="{{ route('categorias.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">producto entrante</a>
-            </li>--}}
+            <li style="border-bottom:1px solid #eee;">
+                <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Consultar historial de movimiento de inventario')}}</a>
+            </li>
+            <li style="border-bottom:1px solid #eee;">
+                <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Consultar productos disponibles')}}</a>
+            </li>
+            <li style="border-bottom:1px solid #eee;">
+                <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Control de stock bajo')}}</a>
+            </li>
             
         </ul>
     </div>
@@ -191,7 +243,9 @@
                 { boton: 'gestionarProductosBtn', menu: 'gestionarProductosMenu' },
                 { boton: 'userMenuBtn', menu: 'userMenu' },
                 { boton: 'gestionarVentasBtn', menu: 'gestionarVentasMenu'},
-                { boton: 'autenticacionSeguridadBtn', menu: 'autenticacionSeguridadMenu'}
+                { boton: 'autenticacionSeguridadBtn', menu: 'autenticacionSeguridadMenu'},
+                {boton: 'administracionFinanzasBtn', menu:'administracionFinanzasMenu'},
+                {boton: 'reporteAnalisisBtn', menu: 'reporteAnalisisMenu'}
             ];
 
             menus.forEach(({ boton, menu }) => {
