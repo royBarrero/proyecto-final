@@ -19,7 +19,7 @@ class FotoaveControlador extends Controlador
         // Separar por tipo
         $fotoaves = $fotos->filter(fn($foto) => $foto->productoAve && $foto->productoAve->nombre === 'pollo');
         $fotohuevos = $fotos->filter(fn($foto) => $foto->productoAve && $foto->productoAve->nombre === 'huevo');
-        return response()->view('bienvenido', compact('fotoaves', 'fotohuevos'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        return response()->view('index', compact('fotoaves', 'fotohuevos'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
             ->header('Pragma', 'no-cache')
             ->header('Expires', '0');
     }

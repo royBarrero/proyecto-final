@@ -12,7 +12,7 @@ class CategoriaControlador extends Controlador
         $categorias = Categoria::orderBy('id', 'asc')->get(); // Orden ascendente por id
         //return view('vendedores.categorias.mostrar', compact('categorias'));
         return response()
-            ->view('vendedores.categorias.mostrar', compact('categorias'))
+            ->view('categorias.mostrar', compact('categorias'))
             ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
             ->header('Pragma', 'no-cache')
             ->header('Expires', '0');
@@ -21,7 +21,7 @@ class CategoriaControlador extends Controlador
     // Mostrar formulario de crear
     public function create()
     {
-        return response()->view('vendedores.categorias.crear')->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        return response()->view('categorias.crear')->header('Cache-Control', 'no-cache, no-store, must-revalidate')
             ->header('Pragma', 'no-cache')
             ->header('Expires', '0');
     }
@@ -41,7 +41,7 @@ class CategoriaControlador extends Controlador
     // Mostrar detalle
     public function show(Categoria $categoria)
     {
-        return response()->view('vendedores.categorias.ver', compact('categoria'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        return response()->view('categorias.ver', compact('categoria'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
             ->header('Pragma', 'no-cache')
             ->header('Expires', '0');
     }
@@ -49,7 +49,7 @@ class CategoriaControlador extends Controlador
     // Formulario editar
     public function edit(Categoria $categoria)
     {
-        return response()->view('vendedores.categorias.editar', compact('categoria'))
+        return response()->view('categorias.editar', compact('categoria'))
             ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
             ->header('Pragma', 'no-cache')
             ->header('Expires', '0');

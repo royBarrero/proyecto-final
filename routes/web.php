@@ -14,6 +14,7 @@ use App\Http\Controladores\DetalleaveControlador;
 use App\Http\Controladores\AuditoriaControlador;
 use App\Http\Controladores\ProveedorControlador;
 use App\Http\Controladores\PagoControlador;
+use App\Http\Controladores\VentaControlador;
 
 Route::get('/', [FotoaveControlador::class, 'index'])->name("inicio");
 
@@ -78,3 +79,6 @@ Route::delete('auditorias/destroyAll', [AuditoriaControlador::class, 'destroyAll
 
 Route::resource('proveedores', ProveedorControlador::class);
 Route::resource('pagos', PagoControlador::class);
+
+Route::resource('ventas', VentaControlador::class);
+

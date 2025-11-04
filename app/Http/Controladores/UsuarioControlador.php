@@ -22,14 +22,14 @@ class UsuarioControlador extends Controlador
         // Separar por tipo
         $fotoaves = $fotos->filter(fn($foto) => $foto->productoAve && $foto->productoAve->nombre === 'pollo');
         $fotohuevos = $fotos->filter(fn($foto) => $foto->productoAve && $foto->productoAve->nombre === 'huevo');
-        return response()->view('vendedores.bienvenido',compact('fotoaves','fotohuevos'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        return response()->view('bienvenido',compact('fotoaves','fotohuevos'))->header('Cache-Control', 'no-cache, no-store, must-revalidate')
                 ->header('Pragma', 'no-cache')
                 ->header('Expires', '0');
     }
 
     public function mostrarDatosPersonales()
     {
-        return response()->view('vendedores.datos-personales')
+        return response()->view('autenticacionYseguridad.usuarios.datos-personales')
                 ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
                 ->header('Pragma', 'no-cache')
                 ->header('Expires', '0');
@@ -39,7 +39,7 @@ class UsuarioControlador extends Controlador
        $usuarios = Usuario::obtenerUsuariosCompleto()
         ->filter(fn($u) => $u->id !== auth::id());
 
-        return response()->view('vendedores.mostrar-usuarios', compact('usuarios'))
+        return response()->view('autenticacionYseguridad.usuarios.mostrar-usuarios', compact('usuarios'))
                 ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
                 ->header('Pragma', 'no-cache')
                 ->header('Expires', '0');
@@ -47,7 +47,7 @@ class UsuarioControlador extends Controlador
     public function formularioParaCrearNuevoUsuario()
     {
         $roles = Rol::all(); // obtenemos roles para el dropdown
-        return response()->view('vendedores.crear-usuario', compact('roles'))
+        return response()->view('autenticacionYseguridad.usuarios.crear-usuario', compact('roles'))
                 ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
                 ->header('Pragma', 'no-cache')
                 ->header('Expires', '0');
@@ -114,7 +114,7 @@ public function crearNuevoUsuario(Request $request)
             }
         }
         
-        return response()->view('vendedores.editar-usuario', compact('usuario','roles','rolIdUsuario'))
+        return response()->view('autenticacionYseguridad.usuarios.editar-usuario', compact('usuario','roles','rolIdUsuario'))
                          ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
                          ->header('Pragma', 'no-cache')
                          ->header('Expires', '0');
