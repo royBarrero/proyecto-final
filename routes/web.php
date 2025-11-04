@@ -15,6 +15,7 @@ use App\Http\Controladores\AuditoriaControlador;
 use App\Http\Controladores\ProveedorControlador;
 use App\Http\Controladores\PagoControlador;
 use App\Http\Controladores\VentaControlador;
+use App\Http\Controladores\CajaControlador;
 
 Route::get('/', [FotoaveControlador::class, 'index'])->name("inicio");
 
@@ -81,4 +82,19 @@ Route::resource('proveedores', ProveedorControlador::class);
 Route::resource('pagos', PagoControlador::class);
 
 Route::resource('ventas', VentaControlador::class);
+
+
+
+Route::middleware(['auth'])->group(function() {
+    Route::get('/caja', [CajaControlador::class,'index'])->name('caja.index');
+
+    Route::get('/caja/abrir', fn() => view('administracionDEfinanzas.gestionarCaja.abrir'))->name('caja.abrir.form');
+    Route::post('/caja/abrir', [CajaControlador::class,'abrir'])->name('caja.abrir');
+
+    Route::get('/caja/{id}/pagos', [CajaControlador::class,'formPago'])->name('caja.pagos.form');
+    Route::post('/caja/pagos', [CajaControlador::class,'registrarPago'])->name('caja.pagos.store');
+
+    Route::get('/caja/{id}/movimientos', [CajaControlador::class,'movimientos'])->name('caja.movimientos');
+    Route::put('/caja/{id}/cerrar', [CajaControlador::class,'cerrar'])->name('caja.cerrar');
+});
 

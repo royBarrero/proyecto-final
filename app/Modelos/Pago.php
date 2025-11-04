@@ -11,12 +11,21 @@ class Pago extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'fecha',
-        'estado',
-        'monto',
-        'idpedidos',
-        'idmetodopagos'
-    ];
+    'fecha',
+    'estado',
+    'monto',
+    'idpedidos',
+    'idmetodopagos',
+    'idcaja',
+    'tipo',
+    'descripcion',
+    'origen',
+    'idreferencia'
+];
+public function caja()
+{
+    return $this->belongsTo(Caja::class, 'idcaja');
+}
 
     // Relación con Pedido
     public function pedido()

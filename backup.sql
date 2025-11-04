@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict 4mOJ69dGRpYlZyWFMxLfMkIkk6vFpkkXsMM9QvLwQz9DpaJl3tQ2dkdIrtNerBL
+\restrict 2XPLgKR1ytHZFytl4nnttqITaVxx47aeLdzyqyygLgwMEDwNcoANZSuwuCia53o
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.6
@@ -529,6 +529,45 @@ ALTER SEQUENCE public.auditorias_id_seq OWNED BY public.auditorias.id;
 
 
 --
+-- Name: cajas; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.cajas (
+    id integer NOT NULL,
+    fecha_apertura timestamp without time zone DEFAULT now() NOT NULL,
+    fecha_cierre timestamp without time zone,
+    monto_inicial numeric(12,2) NOT NULL,
+    monto_final numeric(12,2),
+    estado character varying(10) DEFAULT 'abierta'::character varying NOT NULL,
+    idusuarios integer NOT NULL
+);
+
+
+ALTER TABLE public.cajas OWNER TO postgres;
+
+--
+-- Name: cajas_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.cajas_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.cajas_id_seq OWNER TO postgres;
+
+--
+-- Name: cajas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.cajas_id_seq OWNED BY public.cajas.id;
+
+
+--
 -- Name: categorias; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -931,6 +970,47 @@ ALTER SEQUENCE public.migrations_id_seq OWNED BY public.migrations.id;
 
 
 --
+-- Name: movimientoscaja; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.movimientoscaja (
+    id integer NOT NULL,
+    idcaja integer NOT NULL,
+    tipo character varying(10) NOT NULL,
+    descripcion text,
+    monto numeric(12,2) NOT NULL,
+    fecha timestamp without time zone DEFAULT now(),
+    origen character varying(30) DEFAULT NULL::character varying,
+    idreferencia integer,
+    CONSTRAINT movimientoscaja_tipo_check CHECK (((tipo)::text = ANY ((ARRAY['ingreso'::character varying, 'egreso'::character varying])::text[])))
+);
+
+
+ALTER TABLE public.movimientoscaja OWNER TO postgres;
+
+--
+-- Name: movimientoscaja_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.movimientoscaja_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.movimientoscaja_id_seq OWNER TO postgres;
+
+--
+-- Name: movimientoscaja_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.movimientoscaja_id_seq OWNED BY public.movimientoscaja.id;
+
+
+--
 -- Name: pagos; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -939,8 +1019,14 @@ CREATE TABLE public.pagos (
     fecha date NOT NULL,
     estado integer NOT NULL,
     monto numeric(12,2) NOT NULL,
-    idpedidos integer NOT NULL,
-    idmetodopagos integer NOT NULL
+    idpedidos integer,
+    idmetodopagos integer NOT NULL,
+    idcaja integer,
+    tipo character varying(10),
+    descripcion text,
+    origen character varying(30),
+    idreferencia integer,
+    CONSTRAINT pagos_tipo_check CHECK (((tipo)::text = ANY ((ARRAY['ingreso'::character varying, 'egreso'::character varying])::text[])))
 );
 
 
@@ -1273,6 +1359,13 @@ ALTER TABLE ONLY public.auditorias ALTER COLUMN id SET DEFAULT nextval('public.a
 
 
 --
+-- Name: cajas id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cajas ALTER COLUMN id SET DEFAULT nextval('public.cajas_id_seq'::regclass);
+
+
+--
 -- Name: categorias id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1347,6 +1440,13 @@ ALTER TABLE ONLY public.metodopagos ALTER COLUMN id SET DEFAULT nextval('public.
 --
 
 ALTER TABLE ONLY public.migrations ALTER COLUMN id SET DEFAULT nextval('public.migrations_id_seq'::regclass);
+
+
+--
+-- Name: movimientoscaja id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.movimientoscaja ALTER COLUMN id SET DEFAULT nextval('public.movimientoscaja_id_seq'::regclass);
 
 
 --
@@ -1472,6 +1572,17 @@ COPY public.auditorias (id, tabla, registro_id, accion, usuario_id, cambios, ip,
 53	usuarios	16	CIERRE_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-11-03 11:35:38.699774
 54	usuarios	16	INICIO_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-11-03 11:35:50.126451
 55	usuarios	16	INICIO_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-11-03 22:33:07.288989
+56	usuarios	16	INICIO_SESION	16	{"nombre": "Cristian Huari"}	127.0.0.1	2025-11-04 13:34:58.671632
+\.
+
+
+--
+-- Data for Name: cajas; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.cajas (id, fecha_apertura, fecha_cierre, monto_inicial, monto_final, estado, idusuarios) FROM stdin;
+1	2025-11-04 13:38:31.425372	2025-11-04 17:47:41	1000.00	1000.00	cerrada	16
+2	2025-11-04 13:47:54.310963	\N	1000.00	\N	abierta	16
 \.
 
 
@@ -1691,20 +1802,29 @@ COPY public.migrations (id, migration, batch) FROM stdin;
 
 
 --
+-- Data for Name: movimientoscaja; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.movimientoscaja (id, idcaja, tipo, descripcion, monto, fecha, origen, idreferencia) FROM stdin;
+\.
+
+
+--
 -- Data for Name: pagos; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.pagos (id, fecha, estado, monto, idpedidos, idmetodopagos) FROM stdin;
-1	2025-01-05	1	250.00	1	1
-2	2025-01-06	1	300.00	2	2
-3	2025-01-07	1	350.00	3	3
-4	2025-01-08	1	400.00	4	4
-5	2025-01-09	1	450.00	5	5
-6	2025-01-10	1	500.00	6	6
-7	2025-01-11	1	550.00	7	7
-8	2025-01-12	1	600.00	8	8
-9	2025-01-13	1	650.00	9	9
-10	2025-01-14	1	700.00	10	10
+COPY public.pagos (id, fecha, estado, monto, idpedidos, idmetodopagos, idcaja, tipo, descripcion, origen, idreferencia) FROM stdin;
+1	2025-01-05	1	250.00	1	1	\N	\N	\N	\N	\N
+2	2025-01-06	1	300.00	2	2	\N	\N	\N	\N	\N
+3	2025-01-07	1	350.00	3	3	\N	\N	\N	\N	\N
+4	2025-01-08	1	400.00	4	4	\N	\N	\N	\N	\N
+5	2025-01-09	1	450.00	5	5	\N	\N	\N	\N	\N
+6	2025-01-10	1	500.00	6	6	\N	\N	\N	\N	\N
+7	2025-01-11	1	550.00	7	7	\N	\N	\N	\N	\N
+8	2025-01-12	1	600.00	8	8	\N	\N	\N	\N	\N
+9	2025-01-13	1	650.00	9	9	\N	\N	\N	\N	\N
+10	2025-01-14	1	700.00	10	10	\N	\N	\N	\N	\N
+16	2025-11-04	1	200.00	\N	1	2	egreso	comida	\N	\N
 \.
 
 
@@ -1872,7 +1992,14 @@ COPY public.vendedors (id, nombre, direccion, telefono, email, idusuarios, activ
 -- Name: auditorias_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.auditorias_id_seq', 55, true);
+SELECT pg_catalog.setval('public.auditorias_id_seq', 56, true);
+
+
+--
+-- Name: cajas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.cajas_id_seq', 2, true);
 
 
 --
@@ -1953,10 +2080,17 @@ SELECT pg_catalog.setval('public.migrations_id_seq', 3, true);
 
 
 --
+-- Name: movimientoscaja_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.movimientoscaja_id_seq', 1, false);
+
+
+--
 -- Name: pagos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.pagos_id_seq', 10, true);
+SELECT pg_catalog.setval('public.pagos_id_seq', 16, true);
 
 
 --
@@ -2021,6 +2155,14 @@ SELECT pg_catalog.setval('public.vendedores_id_seq', 17, true);
 
 ALTER TABLE ONLY public.auditorias
     ADD CONSTRAINT auditorias_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cajas cajas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cajas
+    ADD CONSTRAINT cajas_pkey PRIMARY KEY (id);
 
 
 --
@@ -2117,6 +2259,14 @@ ALTER TABLE ONLY public.metodopagos
 
 ALTER TABLE ONLY public.migrations
     ADD CONSTRAINT migrations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: movimientoscaja movimientoscaja_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.movimientoscaja
+    ADD CONSTRAINT movimientoscaja_pkey PRIMARY KEY (id);
 
 
 --
@@ -2219,6 +2369,14 @@ CREATE TRIGGER trg_actualizar_cantidad BEFORE INSERT ON public.stocks FOR EACH R
 --
 
 CREATE TRIGGER trg_cifrar_contrasenia BEFORE INSERT OR UPDATE ON public.usuarios FOR EACH ROW EXECUTE FUNCTION public.cifrar_contrasenia();
+
+
+--
+-- Name: cajas fk_cajas_usuarios; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.cajas
+    ADD CONSTRAINT fk_cajas_usuarios FOREIGN KEY (idusuarios) REFERENCES public.usuarios(id);
 
 
 --
@@ -2334,8 +2492,24 @@ ALTER TABLE ONLY public.usuarios
 
 
 --
+-- Name: movimientoscaja movimientoscaja_idcaja_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.movimientoscaja
+    ADD CONSTRAINT movimientoscaja_idcaja_fkey FOREIGN KEY (idcaja) REFERENCES public.cajas(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pagos pagos_idcaja_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pagos
+    ADD CONSTRAINT pagos_idcaja_fkey FOREIGN KEY (idcaja) REFERENCES public.cajas(id) ON DELETE CASCADE;
+
+
+--
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 4mOJ69dGRpYlZyWFMxLfMkIkk6vFpkkXsMM9QvLwQz9DpaJl3tQ2dkdIrtNerBL
+\unrestrict 2XPLgKR1ytHZFytl4nnttqITaVxx47aeLdzyqyygLgwMEDwNcoANZSuwuCia53o
 

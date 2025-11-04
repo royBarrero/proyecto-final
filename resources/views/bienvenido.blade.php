@@ -24,7 +24,34 @@
             @endauth
         </button>
     </div>
-    
+    {{----------------------------------------------------------------------------------------------------------------------}}
+    <div style="position:relative; display:inline-block;">
+        <button id="gestionarVentasBtn" style="color:#ef8504; background:white; padding:8px 15px; border-radius:5px; font-weight:bold; border:none; cursor:pointer;">
+            @Auth
+                {{__('Administracion de finanzas')}} ▼
+            @endAuth
+        </button>
+
+        <ul id="gestionarVentasMenu" style="
+            display:none;
+            position:absolute;
+            right:0;
+            background:white;
+            color:#333;
+            list-style:none;
+            padding:0;
+            margin:0;
+            border-radius:5px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.1);
+            min-width:150px;
+            z-index:1000;">
+            <li style="border-bottom:1px solid #eee;">
+                <a href="{{ route('caja.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar caja')}}</a>
+            </li>
+            
+        </ul>
+    </div>
+    {{----------------------------------------------------------------------------------------------------------------------}}
     
     <div style="position:relative; display:inline-block;">
         <button id="gestionarVentasBtn" style="color:#ef8504; background:white; padding:8px 15px; border-radius:5px; font-weight:bold; border:none; cursor:pointer;">
