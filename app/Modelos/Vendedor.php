@@ -13,11 +13,12 @@ class Vendedor extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'idusuarios',   // FK usuario
+        'nombre',
         'direccion',
         'telefono',
         'email',
         'activo',
+        'idusuarios',   // FK usuario
     ];
 
     // Relación con usuarios

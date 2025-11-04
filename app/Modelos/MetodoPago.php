@@ -3,6 +3,7 @@
 namespace App\Modelos;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class MetodoPago extends Model
 {
@@ -11,4 +12,9 @@ class MetodoPago extends Model
     public $timestamps = false;
 
     protected $fillable = ['descripcion'];
+
+    public function pagos(): HasMany
+    {
+        return $this->hasMany(Pago::class, 'idmetodopagos', 'id');
+    }
 }
