@@ -126,5 +126,9 @@ Route::middleware(['auth'])->group(function() {
     Route::get('/caja/{id}/movimientos', [CajaControlador::class,'movimientos'])->name('caja.movimientos');
     Route::put('/caja/{id}/cerrar', [CajaControlador::class,'cerrar'])->name('caja.cerrar');
     
+    Route::get('/pagos/{id}/editar', [CajaControlador::class, 'editarPago'])->name('pagos.edit');
+    Route::put('/pagos/{id}', [CajaControlador::class, 'actualizarPago'])->name('pagos.update');
+    Route::delete('/pagos/{id}', [CajaControlador::class, 'eliminarPago'])->name('pagos.destroy');
+
 });
 

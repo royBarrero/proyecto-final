@@ -17,11 +17,14 @@ class CajaControlador extends Controlador
     {
         $usuario = Auth::user();
 
-        $caja = Caja::where('idusuarios', $usuario->id)
+        $cajaA = Caja::where('idusuarios', $usuario->id)
                     ->where('estado', 'abierta')
                     ->first();
-
-        return view('administracionDEfinanzas.gestionarCaja.index', compact('caja'));
+        $cajaCerrada = Caja::where('idusuarios', $usuario->id)
+                ->where('estado', 'cerrada')
+                ->orderBy('fecha_cierre', 'desc')
+                ->get(); // 👈 AQUÍ EL CAMBIO
+        return view('administracionDEfinanzas.gestionarCaja.index', compact('cajaA','cajaCerrada'));
     }
 
     /**
@@ -91,23 +94,33 @@ class CajaControlador extends Controlador
         ]);
 
         $caja = Caja::findOrFail($request->idcaja);
+        // Calcular saldo actual antes del movimiento
+        $saldo = $caja->monto_inicial;
+        foreach ($caja->pagos as $p) {
+            $saldo += ($p->tipo == 'ingreso') ? $p->monto : -$p->monto;
+        }
+
+        // Si es egreso y no hay saldo suficiente
+        if ($request->tipo == 'egreso' && $request->monto > $saldo) {
+            return back()->with('error', 'No se puede registrar el egreso. Saldo insuficiente.');
+        }
 
         if ($caja->estado != 'abierta') {
             return back()->with('error', 'No se puede registrar pagos en una caja cerrada.');
         }
 
         Pago::create([
-    'idcaja' => $request->idcaja,
-    'idmetodopagos' => $request->idmetodopagos,
-    'tipo' => $request->tipo,
-    'monto' => $request->monto,
-    'descripcion' => $request->descripcion,
-    'origen' => $request->origen,
-    'idreferencia' => $request->idreferencia,
-    'fecha' => now(),
-    'estado' => 1,  // pendiente o pagado según tu lógica
-    'idpedidos' => $request->idpedidos ?? null,
-]);
+            'idcaja' => $request->idcaja,
+            'idmetodopagos' => $request->idmetodopagos,
+            'tipo' => $request->tipo,
+            'monto' => $request->monto,
+            'descripcion' => $request->descripcion,
+            'origen' => $request->origen,
+            'idreferencia' => $request->idreferencia,
+            'fecha' => now(),
+            'estado' => 1,  // pendiente o pagado según tu lógica
+            'idpedidos' => $request->idpedidos ?? null,
+        ]);
 
 
 
@@ -171,4 +184,49 @@ class CajaControlador extends Controlador
 
         return redirect()->route('caja.index')->with('success', 'Caja cerrada correctamente.');
     }
+    public function editarPago($id)
+{
+    $pago = Pago::findOrFail($id);
+    $metodos = MetodoPago::all();
+    return view('administracionDEfinanzas.gestionarCaja.editarPago', compact('pago', 'metodos'));
+}
+
+public function actualizarPago(Request $request, $id)
+{
+    $pago = Pago::findOrFail($id);
+
+    $request->validate([
+        'tipo' => 'required|in:ingreso,egreso',
+        'monto' => 'required|numeric|min:0',
+        'descripcion' => 'nullable|string|max:255',
+        'idmetodopagos' => 'required|exists:metodopagos,id'
+    ]);
+    // Recalcular saldo sin este pago
+    $saldo = $caja->monto_inicial;
+    foreach ($caja->pagos()->where('id', '!=', $pago->id)->get() as $p) {
+        $saldo += ($p->tipo == 'ingreso') ? $p->monto : -$p->monto;
+    }
+
+    // Verificar que el nuevo movimiento no deje saldo negativo
+    if ($request->tipo == 'egreso' && $request->monto > $saldo) {
+        return back()->with('error', 'No se puede actualizar. Saldo insuficiente.');
+    }
+    $pago->update([
+        'tipo' => $request->tipo,
+        'monto' => $request->monto,
+        'descripcion' => $request->descripcion,
+        'idmetodopagos' => $request->idmetodopagos,
+    ]);
+
+    return back()->with('success', 'Movimiento actualizado.');
+}
+
+public function eliminarPago($id)
+{
+    $pago = Pago::findOrFail($id);
+    $pago->delete();
+
+    return redirect()->route('caja.movimientos')->with('success', 'Movimiento eliminado.');
+}
+
 }
