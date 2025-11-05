@@ -16,6 +16,10 @@ use App\Http\Controladores\ProveedorControlador;
 use App\Http\Controladores\PagoControlador;
 use App\Http\Controladores\VentaControlador;
 use App\Http\Controladores\CajaControlador;
+use App\Http\Controladores\CompraControlador;
+use App\Http\Controladores\ReporteCompraControlador;
+use App\Http\Controladores\ReporteVentaControlador;
+use App\Http\Controladores\ReporteHistorialVentaControlador;
 
 Route::get('/', [FotoaveControlador::class, 'index'])->name("inicio");
 
@@ -82,8 +86,27 @@ Route::resource('proveedores', ProveedorControlador::class);
 Route::resource('pagos', PagoControlador::class);
 
 Route::resource('ventas', VentaControlador::class);
+Route::resource('compras', CompraControlador::class);
+Route::get('/compras', [App\Http\Controladores\CompraControlador::class, 'index'])->name('compras.index');
 
 
+
+//RUTA DE REPORTE DE COMPRAS 
+Route::middleware('auth')->group(function () {
+    Route::get('/reporte-compras', [ReporteCompraControlador::class, 'index'])->name('reporte.compras');
+    Route::get('/reporte-compras/pdf', [ReporteCompraControlador::class, 'exportarPDF'])->name('reporte.compras.pdf');
+});
+// GENERAR REPORTE DE VENTAS 
+Route::prefix('reportes')->middleware('auth')->group(function() {
+    Route::get('ventas', [ReporteVentaControlador::class, 'index'])->name('reportes.ventas.index');
+    Route::get('ventas/pdf', [ReporteVentaControlador::class, 'generar'])->name('reportes.ventas.generar');
+});
+//GENERAR HISTORIAL DE REPORTE DE VENTAS 
+// Rutas de historial de ventas
+Route::prefix('reportes')->middleware('auth')->group(function() {
+    Route::get('historial', [ReporteHistorialVentaControlador::class, 'index'])->name('reportes.historial.index');
+    Route::get('historial/pdf', [ReporteHistorialVentaControlador::class, 'generar'])->name('reportes.historial.generar');
+});
 
 Route::middleware(['auth'])->group(function() {
     Route::get('/caja', [CajaControlador::class,'index'])->name('caja.index');
@@ -96,5 +119,6 @@ Route::middleware(['auth'])->group(function() {
 
     Route::get('/caja/{id}/movimientos', [CajaControlador::class,'movimientos'])->name('caja.movimientos');
     Route::put('/caja/{id}/cerrar', [CajaControlador::class,'cerrar'])->name('caja.cerrar');
+    
 });
 

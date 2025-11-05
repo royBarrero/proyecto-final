@@ -45,18 +45,25 @@
             box-shadow:0 2px 10px rgba(0,0,0,0.1);
             min-width:150px;
             z-index:1000;">
+           <li style="border-bottom:1px solid #eee;">
+    <a href="{{ route('reporte.compras') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">
+        {{__('Generar reporte de compras')}}
+    </a>
+</li>
             <li style="border-bottom:1px solid #eee;">
-                <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Generar reporte de compras')}}</a>
-            </li>
-            <li style="border-bottom:1px solid #eee;">
-                <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Generar reporte de ventas')}}</a>
-            </li>
+            <a href="{{ route('reportes.ventas.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">
+                {{__('Generar reporte de ventas')}}
+            </a>
+        </li>
+        <li style="border-bottom:1px solid #eee;">
+        <a href="{{ route('reportes.historial.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">
+            {{__('Visualizar historial de ventas')}}
+        </a>
+    </li>
             <li style="border-bottom:1px solid #eee;">
                 <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Generar reporte de productos')}}</a>
             </li>
-            <li style="border-bottom:1px solid #eee;">
-                <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Visualizar reportes de productos')}}</a>
-            </li>
+            
         </ul>
     </div>
     {{----------------------------------------------------------------------------------------------------------------------}}
@@ -124,7 +131,8 @@
                 <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar métodos de pagos')}}</a>
             </li>
             <li style="border-bottom:1px solid #eee;">
-                <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar compras de productos')}}</a>
+               <a href="{{ route('compras.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar compras de productos')}}</a>
+
             </li>
             <li style="border-bottom:1px solid #eee;">
                 <a href="{{ route('proveedores.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar Proveedores')}}</a>

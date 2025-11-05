@@ -1,0 +1,107 @@
+<?php
+
+namespace App\Http\Controladores;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Modelos\Compra;
+use App\Modelos\DetalleCompra;
+use App\Modelos\Proveedor;
+use App\Modelos\ProductoAlimento;
+
+class CompraControlador extends Controlador
+{
+    public function index()
+    {
+        $compras = Compra::with('proveedor')->orderBy('id', 'desc')->get();
+        return view('compras.mostrar', compact('compras'));
+    }
+
+    public function create()
+    {
+        $proveedores = Proveedor::all();
+        $productos = ProductoAlimento::all();
+        return view('compras.crear', compact('proveedores', 'productos'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'idproveedors' => 'required|exists:proveedors,id',
+            'productos' => 'required|array|min:1',
+            'productos.*.idproductoalimentos' => 'required|exists:productoalimentos,id',
+            'productos.*.cantidad' => 'required|numeric|min:1',
+            'productos.*.preciounitario' => 'required|numeric|min:0',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $total = 0;
+
+            // Calcular total
+            foreach ($request->productos as $detalle) {
+                $total += $detalle['cantidad'] * $detalle['preciounitario'];
+            }
+
+            // Crear la compra
+            $compra = Compra::create([
+                'fecha' => now(),
+                'estado' => 'ACTIVA',
+                'total' => $total,
+                'idproveedors' => $request->idproveedors,
+                'idvendedors' => auth()->id() ?? 1 // Temporal si aún no manejas usuarios autenticados
+            ]);
+
+            // Guardar detalles e incrementar stock
+            foreach ($request->productos as $detalle) {
+                DetalleCompra::create([
+                    'idcompras' => $compra->id,
+                    'idproductoalimentos' => $detalle['idproductoalimentos'],
+                    'cantidad' => $detalle['cantidad'],
+                    'preciounitario' => $detalle['preciounitario'],
+                    'subtotal' => $detalle['cantidad'] * $detalle['preciounitario'],
+                ]);
+
+                // Actualizar stock del producto
+                $producto = ProductoAlimento::find($detalle['idproductoalimentos']);
+                if ($producto) {
+                    $producto->stock = ($producto->stock ?? 0) + $detalle['cantidad'];
+                    $producto->save();
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('compras.index')->with('success', 'Compra registrada correctamente.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Error al registrar la compra: ' . $e->getMessage()]);
+        }
+    }
+
+    public function show($id)
+    {
+        $compra = Compra::with(['proveedor', 'detalles.producto'])->findOrFail($id);
+        return view('compras.detalle', compact('compra'));
+    }
+
+    public function destroy($id)
+    {
+        $compra = Compra::findOrFail($id);
+
+        DB::transaction(function () use ($compra) {
+            foreach ($compra->detalles as $detalle) {
+                // Restar el stock
+                $producto = $detalle->producto;
+                if ($producto) {
+                    $producto->stock = max(0, $producto->stock - $detalle->cantidad);
+                    $producto->save();
+                }
+                $detalle->delete();
+            }
+            $compra->delete();
+        });
+
+        return redirect()->route('compras.index')->with('success', 'Compra eliminada y stock actualizado.');
+    }
+}
