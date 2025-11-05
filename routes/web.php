@@ -20,6 +20,7 @@ use App\Http\Controladores\CompraControlador;
 use App\Http\Controladores\ReporteCompraControlador;
 use App\Http\Controladores\ReporteVentaControlador;
 use App\Http\Controladores\ReporteHistorialVentaControlador;
+use App\Http\Controladores\ProductoDisponibleControlador;
 
 Route::get('/', [FotoaveControlador::class, 'index'])->name("inicio");
 
@@ -107,7 +108,12 @@ Route::prefix('reportes')->middleware('auth')->group(function() {
     Route::get('historial', [ReporteHistorialVentaControlador::class, 'index'])->name('reportes.historial.index');
     Route::get('historial/pdf', [ReporteHistorialVentaControlador::class, 'generar'])->name('reportes.historial.generar');
 });
-
+//GESTIONAR LISTA DE PRODUCTOS DISPONIBLES
+Route::prefix('reportes')->middleware('auth')->group(function() {
+    // Lista de productos disponibles
+    Route::get('productos-disponibles', [ProductoDisponibleControlador::class, 'index'])
+        ->name('reportes.productos.disponibles');
+});
 Route::middleware(['auth'])->group(function() {
     Route::get('/caja', [CajaControlador::class,'index'])->name('caja.index');
 
