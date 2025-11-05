@@ -70,10 +70,6 @@
         </table>
 
         <div style="margin-top:20px;">
-            {{ $ventas->withQueryString()->links() }}
-        </div>
-
-        <div style="margin-top:20px;">
             <a href="{{ route('reportes.historial.generar', request()->query()) }}" 
                style="padding:10px 20px; background:#ef8504; color:white; border-radius:5px; display:inline-block;">
                Exportar a PDF

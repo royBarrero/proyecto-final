@@ -15,7 +15,6 @@ class ReporteVentaControlador extends Controlador
 public function index(Request $request)
 {
     $metodos = MetodoPago::all();
-    $vendedores = Vendedor::all(); // <-- obtenemos todos los vendedores
 
     $query = Venta::with(['cliente', 'vendedor', 'pagos.metodoPago']);
 
@@ -34,15 +33,11 @@ public function index(Request $request)
         });
     }
 
-    // Filtro por vendedor
-    if ($request->filled('vendedor_id')) {
-        $query->where('idvendedors', $request->vendedor_id);
-    }
-
     $ventas = $query->orderBy('fecha', 'desc')->get();
 
-    return view('reportes.ventas.historial', compact('ventas', 'metodos', 'vendedores'));
+    return view('reportes.ventas.index', compact('ventas', 'metodos'));
 }
+
 
     // Generar PDF de las ventas filtradas
     public function generar(Request $request)
