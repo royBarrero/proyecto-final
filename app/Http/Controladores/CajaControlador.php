@@ -17,11 +17,14 @@ class CajaControlador extends Controlador
     {
         $usuario = Auth::user();
 
-        $caja = Caja::where('idusuarios', $usuario->id)
+        $cajaA = Caja::where('idusuarios', $usuario->id)
                     ->where('estado', 'abierta')
                     ->first();
-
-        return view('administracionDEfinanzas.gestionarCaja.index', compact('caja'));
+        $cajaCerrada = Caja::where('idusuarios', $usuario->id)
+                ->where('estado', 'cerrada')
+                ->orderBy('fecha_cierre', 'desc')
+                ->get(); // 👈 AQUÍ EL CAMBIO
+        return view('administracionDEfinanzas.gestionarCaja.index', compact('cajaA','cajaCerrada'));
     }
 
     /**
