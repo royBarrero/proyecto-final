@@ -60,9 +60,12 @@
             {{__('Visualizar historial de ventas')}}
         </a>
     </li>
-            <li style="border-bottom:1px solid #eee;">
-                <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Generar reporte de productos')}}</a>
-            </li>
+        <li style="border-bottom:1px solid #eee;">
+    <a href="#" style="display:block; padding:10px; text-decoration:none; color:#333;">
+        {{ __('Productos disponibles') }}
+    </a>
+</li>
+
             
         </ul>
     </div>
@@ -170,8 +173,12 @@
                 <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Consultar historial de movimiento de inventario')}}</a>
             </li>
             <li style="border-bottom:1px solid #eee;">
-                <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Consultar productos disponibles')}}</a>
-            </li>
+    <a href="{{ route('reportes.productos.disponibles') }}" 
+       style="display:block; padding:10px; text-decoration:none; color:#333;">
+       {{ __('Consultar productos disponibles') }}
+    </a>
+</li>
+
             <li style="border-bottom:1px solid #eee;">
                 <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Control de stock bajo')}}</a>
             </li>
