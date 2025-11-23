@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Modelos\Detalleave;
 use App\Modelos\Categoria;
+use App\Modelos\Fotoave;
 
 class ProductoAve extends Model
 {
-    protected $table = 'productoaves';   // 👈 tu tabla 
+    protected $table = 'productoaves';   //  tabla 
     protected $primaryKey = 'id';
     public $timestamps = false;
 
