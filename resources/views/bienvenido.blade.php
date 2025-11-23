@@ -20,7 +20,7 @@
             onclick="window.location.href='{{ route('pagos.index') }}'"
             style="color:#ef8504; background:white; padding:8px 15px; border-radius:5px; font-weight:bold; border:none; cursor:pointer; transition: all 0.2s ease-in-out;">
             @auth
-                {{__('Gestionar Ventas')}}
+                {{__('Lista de pagos')}}
             @endauth
         </button>
     </div>
