@@ -63,6 +63,13 @@ class Usuario extends Authenticatable
     }
 
     /**
+     * Relación: Un usuario puede tener muchas cajas
+     */
+    public function cajas(): HasMany
+    {
+        return $this->hasMany(Caja::class, 'idusuarios');
+    }
+    /**
      * Valida credenciales usando la función PostgreSQL es_contrasenia_correcta
      *
      * @param string $email

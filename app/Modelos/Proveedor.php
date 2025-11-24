@@ -25,4 +25,11 @@ class Proveedor extends Model
     // {
     //     return $this->hasMany(Productoave::class, 'idproveedor', 'id');
     // }
+    /**
+     * Relación: Un proveedor puede tener muchas compras
+     */
+    public function compras(): HasMany
+    {
+        return $this->hasMany(Compra::class, 'idproveedors');
+    }
 }
