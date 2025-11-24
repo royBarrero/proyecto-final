@@ -17,6 +17,10 @@ class Categoria extends Model
         'nombre',
         'descripcion',
     ];
+
+    /**
+     * Relación: Una categoría tiene muchos productos ave
+     */
     public function productoAve()
     {
         return $this->hasOne(ProductoAve::class, 'idcategorias', 'id');

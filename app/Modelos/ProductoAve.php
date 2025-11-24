@@ -38,4 +38,27 @@ class ProductoAve extends Model
         return $this->belongsTo(Categoria::class, 'idcategorias', 'id');
     }
     
+    /**
+     * Relación: Un producto ave puede estar en muchos detalles de pedidos
+     */
+    public function detallePedidos(): HasMany
+    {
+        return $this->hasMany(DetallePedido::class, 'idproductoaves');
+    }
+
+     /**
+     * Relación: Un producto ave puede estar en muchas cotizaciones
+     */
+    public function detalleCotizaciones(): HasMany
+    {
+        return $this->hasMany(DetalleCotizacion::class, 'idproductoaves');
+    }
+
+    /**
+     * Relación: Un producto ave puede tener muchos stocks
+     */
+    public function stocks(): HasMany
+    {
+        return $this->hasMany(Stock::class, 'idproductoaves');
+    }
 }
