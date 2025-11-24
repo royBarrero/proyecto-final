@@ -23,10 +23,8 @@ class DatabaseSeeder extends Seeder
             ProductoavesSeeder::class,
             FotoavesSeeder::class,
             MetodopagosSeeder::class,
-        ]);
 
         // Parte 2
-        $this->call([
             ComprasSeeder::class,
             DetallecomprasSeeder::class,
             CotizacionesSeeder::class,
