@@ -4,6 +4,6 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class MigrationsSeeder extends Seeder{
     public function run(){
-        DB::table('migrations')->insert({'id': ''} );
+        DB::table('migrations')->insert(['id'=> ''] );
     }
 }
