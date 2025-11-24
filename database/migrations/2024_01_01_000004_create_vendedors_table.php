@@ -20,8 +20,8 @@ return new class extends Migration
             $table->foreignId('idusuarios')->nullable()->constrained('usuarios');
             $table->smallInteger('activo')->default(0);
             
-            $table->check('activo = ANY(ARRAY[0, 1])');
         });
+        DB::statement("ALTER TABLE vendedors ADD CONSTRAINT chk_activo_valid CHECK (activo = ANY(ARRAY[0, 1]));");
     }
 
     /**

@@ -21,8 +21,12 @@ return new class extends Migration
             $table->string('origen', 30)->nullable();
             $table->integer('idreferencia')->nullable();
             
-            $table->check("tipo IN ('ingreso', 'egreso') OR tipo IS NULL");
         });
+        DB::statement("
+        ALTER TABLE pagos 
+        ADD CONSTRAINT chk_tipo_valido 
+        CHECK (tipo IN ('ingreso', 'egreso') OR tipo IS NULL)
+        ");
     }
 
     public function down(): void

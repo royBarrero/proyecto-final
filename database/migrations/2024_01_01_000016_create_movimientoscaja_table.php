@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('origen', 30)->nullable();
             $table->integer('idreferencia')->nullable();
             
-            $table->check("tipo IN ('ingreso', 'egreso')");
         });
+        DB::statement("ALTER TABLE movimientoscaja ADD CONSTRAINT chk_tipo_valido CHECK (tipo IN ('ingreso', 'egreso'));");
     }
 
     public function down(): void

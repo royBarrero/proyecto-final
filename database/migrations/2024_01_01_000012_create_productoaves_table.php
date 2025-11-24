@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('iddetalleaves')->unique()->constrained('detalleaves');
             $table->integer('cantidad')->default(0);
             
-            $table->check('cantidad >= 0');
         });
+        DB::statement("ALTER TABLE productoaves ADD CONSTRAINT chk_cantidad_no_negativa CHECK (cantidad >= 0);");
     }
 
     public function down(): void
