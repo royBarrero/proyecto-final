@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -19,8 +20,9 @@ return new class extends Migration
             $table->foreignId('idusuarios')->nullable()->constrained('usuarios');
             $table->smallInteger('activo')->default(1);
             
-            $table->check('activo = ANY(ARRAY[0, 1])');
         });
+        DB::statement("ALTER TABLE clientes ADD CONSTRAINT chk_clientes_activo CHECK (activo IN (0, 1));");
+
     }
 
     /**

@@ -3,19 +3,42 @@
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up()
     {
-        // =============================
-        // pgcrypto extension
-        // =============================
+        // ============================================
+        // EXTENSION
+        // ============================================
         DB::unprepared("CREATE EXTENSION IF NOT EXISTS pgcrypto;");
 
-        // =============================
-        // FUNCTION actualizar_cantidad_productoaves
-        // =============================
+        // ============================================
+        // DROP FUNCTIONS Y PROCEDURES EXISTENTES
+        // ============================================
+        DB::unprepared("DROP FUNCTION IF EXISTS actualizar_cantidad_productoaves() CASCADE;");
+        DB::unprepared("DROP FUNCTION IF EXISTS actualizar_venta(integer, numeric, integer) CASCADE;");
+        DB::unprepared("DROP FUNCTION IF EXISTS cifrar_contrasenia() CASCADE;");
+        DB::unprepared("DROP FUNCTION IF EXISTS eliminar_venta(integer) CASCADE;");
+        DB::unprepared("DROP FUNCTION IF EXISTS es_contrasenia_correcta(varchar, varchar) CASCADE;");
+        DB::unprepared("DROP FUNCTION IF EXISTS listar_ventas() CASCADE;");
+        DB::unprepared("DROP FUNCTION IF EXISTS obtener_detalle_venta(integer) CASCADE;");
+        DB::unprepared("DROP FUNCTION IF EXISTS obtener_usuario_por_id(integer) CASCADE;");
+        DB::unprepared("DROP FUNCTION IF EXISTS obtener_usuarios_completo() CASCADE;");
+        DB::unprepared("DROP FUNCTION IF EXISTS obtener_usuarios_con_su_rol() CASCADE;");
+        DB::unprepared("DROP FUNCTION IF EXISTS registrar_venta(integer, integer, numeric, integer, json) CASCADE;");
+
+        DB::unprepared("DROP PROCEDURE IF EXISTS actualizar_stock_producto(integer, varchar, numeric) CASCADE;");
+        DB::unprepared("DROP PROCEDURE IF EXISTS actualizar_usuario_completo(integer, varchar, varchar, integer, varchar, varchar) CASCADE;");
+        DB::unprepared("DROP PROCEDURE IF EXISTS sp_pedidos_cliente(integer) CASCADE;");
+
+        // ============================================
+        // FUNCIONES
+        // ============================================
+
+        // actualizar_cantidad_productoaves
         DB::unprepared("
-CREATE FUNCTION public.actualizar_cantidad_productoaves() RETURNS trigger
+CREATE FUNCTION public.actualizar_cantidad_productoaves()
+RETURNS trigger
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -23,28 +46,26 @@ DECLARE
     nueva_cantidad INT;
 BEGIN
     SELECT cantidad INTO cantidad_actual
-    FROM productoAves
-    WHERE id = NEW.idproductoAves;
+    FROM productoaves
+    WHERE id = NEW.idproductoaves;
 
     nueva_cantidad := cantidad_actual + NEW.cantidad;
 
     IF nueva_cantidad < 0 THEN
-        RAISE EXCEPTION 'No se puede quitar más cantidad(tiene % y quiere quitar %) del producto (cantidad quedaría negativa)',
-        cantidad_actual, nueva_cantidad * -1;
+        RAISE EXCEPTION 'Cantidad negativa: tiene %, intenta quitar %',
+        cantidad_actual, NEW.cantidad;
     END IF;
 
-    UPDATE productoAves
+    UPDATE productoaves
     SET cantidad = nueva_cantidad
-    WHERE id = NEW.idproductoAves;
+    WHERE id = NEW.idproductoaves;
 
     RETURN NEW;
 END;
 $$;
-        ");
+");
 
-        // =============================
-        // FUNCTION actualizar_venta
-        // =============================
+        // actualizar_venta
         DB::unprepared("
 CREATE FUNCTION public.actualizar_venta(p_idventa integer, p_total numeric, p_metodo_pago integer)
 RETURNS void
@@ -52,34 +73,31 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     UPDATE pedidos SET total = p_total WHERE id = p_idventa;
-    UPDATE pagos SET monto = p_total, idmetodoPagos = p_metodo_pago WHERE idpedidos = p_idventa;
+    UPDATE pagos SET monto = p_total, idmetodopagos = p_metodo_pago WHERE idpedidos = p_idventa;
 END;
 $$;
-        ");
+");
 
-        // =============================
-        // FUNCTION cifrar_contrasenia
-        // =============================
+        // cifrar_contrasenia
         DB::unprepared("
-CREATE FUNCTION public.cifrar_contrasenia() RETURNS trigger
+CREATE FUNCTION public.cifrar_contrasenia()
+RETURNS trigger
 LANGUAGE plpgsql
 AS $$
 BEGIN
     IF TG_OP = 'INSERT' THEN
         NEW.contrasenia := crypt(NEW.contrasenia, gen_salt('bf', 12));
     ELSIF TG_OP = 'UPDATE'
-      AND NEW.contrasenia IS DISTINCT FROM OLD.contrasenia THEN
+       AND NEW.contrasenia IS DISTINCT FROM OLD.contrasenia THEN
         NEW.contrasenia := crypt(NEW.contrasenia, gen_salt('bf', 12));
     END IF;
 
     RETURN NEW;
 END;
 $$;
-        ");
+");
 
-        // =============================
-        // FUNCTION eliminar_venta
-        // =============================
+        // eliminar_venta
         DB::unprepared("
 CREATE FUNCTION public.eliminar_venta(p_idventa integer)
 RETURNS void
@@ -88,22 +106,20 @@ AS $$
 DECLARE
     v_item RECORD;
 BEGIN
-    FOR v_item IN SELECT * FROM detallePedidos WHERE idpedidos = p_idventa LOOP
-        UPDATE productoAves
+    FOR v_item IN SELECT * FROM detallepedidos WHERE idpedidos = p_idventa LOOP
+        UPDATE productoaves
         SET cantidad = cantidad + v_item.cantidad
-        WHERE id = v_item.idproductoAves;
+        WHERE id = v_item.idproductoaves;
     END LOOP;
 
     DELETE FROM pagos WHERE idpedidos = p_idventa;
-    DELETE FROM detallePedidos WHERE idpedidos = p_idventa;
+    DELETE FROM detallepedidos WHERE idpedidos = p_idventa;
     DELETE FROM pedidos WHERE id = p_idventa;
 END;
 $$;
-        ");
+");
 
-        // =============================
-        // FUNCTION es_contrasenia_correcta
-        // =============================
+        // es_contrasenia_correcta
         DB::unprepared("
 CREATE FUNCTION public.es_contrasenia_correcta(p_email varchar, p_contrasenia varchar)
 RETURNS integer
@@ -120,11 +136,9 @@ BEGIN
     ), 0);
 END;
 $$;
-        ");
+");
 
-        // =============================
-        // FUNCTION listar_ventas
-        // =============================
+        // listar_ventas
         DB::unprepared("
 CREATE FUNCTION public.listar_ventas()
 RETURNS TABLE(id integer, cliente varchar, vendedor varchar, total numeric, fecha date, metodo_pago varchar)
@@ -132,8 +146,8 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT
-        p.id,
+    SELECT 
+        p.id::INTEGER,
         c.nombre,
         v.nombre,
         p.total,
@@ -143,14 +157,12 @@ BEGIN
     JOIN clientes c ON p.idclientes = c.id
     JOIN vendedors v ON p.idvendedors = v.id
     JOIN pagos pa ON pa.idpedidos = p.id
-    JOIN metodoPagos m ON pa.idmetodoPagos = m.id;
+    JOIN metodopagos m ON pa.idmetodopagos = m.id;
 END;
 $$;
-        ");
+");
 
-        // =============================
-        // FUNCTION obtener_detalle_venta
-        // =============================
+        // obtener_detalle_venta
         DB::unprepared("
 CREATE FUNCTION public.obtener_detalle_venta(p_idventa integer)
 RETURNS TABLE(producto varchar, cantidad integer, precio numeric, subtotal numeric)
@@ -158,20 +170,19 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT pa.nombre,
-           d.cantidad,
-           d.precioUnitario,
-           d.subtotal
-    FROM detallePedidos d
-    JOIN productoAves pa ON pa.id = d.idproductoAves
+    SELECT 
+        pa.nombre,
+        d.cantidad,
+        d.preciounitario,
+        d.subtotal
+    FROM detallepedidos d
+    JOIN productoaves pa ON pa.id = d.idproductoaves
     WHERE d.idpedidos = p_idventa;
 END;
 $$;
-        ");
+");
 
-        // =============================
-        // FUNCTION obtener_usuario_por_id
-        // =============================
+        // obtener_usuario_por_id
         DB::unprepared("
 CREATE FUNCTION public.obtener_usuario_por_id(p_id integer)
 RETURNS TABLE(id integer, nombre varchar, correo varchar, rol varchar, direccion varchar, telefono varchar)
@@ -180,27 +191,25 @@ AS $$
 BEGIN
     RETURN QUERY
     SELECT 
-        u.id,
-        COALESCE(NULLIF(u.nombre,''), NULLIF(c.nombre,''), NULLIF(v.nombre,'')),
-        COALESCE(NULLIF(u.email,''), NULLIF(v.email,'')),
+        u.id::INTEGER,
+        COALESCE(c.nombre, v.nombre, u.nombre),
+        COALESCE(v.email, u.email),
         CASE
             WHEN c.idusuarios IS NOT NULL THEN 'Cliente'
             WHEN v.idusuarios IS NOT NULL THEN 'Vendedor'
             ELSE 'Desconocido'
-        END,
-        COALESCE(NULLIF(c.direccion,''), NULLIF(v.direccion,'')),
-        COALESCE(NULLIF(c.telefono,''), NULLIF(v.telefono,''))
+        END::varchar,
+        COALESCE(c.direccion, v.direccion),
+        COALESCE(c.telefono, v.telefono)
     FROM usuarios u
     LEFT JOIN clientes c ON c.idusuarios = u.id
     LEFT JOIN vendedors v ON v.idusuarios = u.id
     WHERE u.id = p_id;
 END;
 $$;
-        ");
+");
 
-        // =============================
-        // FUNCTION obtener_usuarios_completo
-        // =============================
+        // obtener_usuarios_completo
         DB::unprepared("
 CREATE FUNCTION public.obtener_usuarios_completo()
 RETURNS TABLE(id integer, nombre varchar, correo varchar, rol varchar, direccion varchar, telefono varchar)
@@ -209,14 +218,14 @@ AS $$
 BEGIN
     RETURN QUERY
     SELECT 
-        u.id,
+        u.id::INTEGER,
         COALESCE(c.nombre, v.nombre, u.nombre),
         COALESCE(v.email, u.email),
         CASE
             WHEN c.idusuarios IS NOT NULL THEN 'Cliente'
             WHEN v.idusuarios IS NOT NULL THEN 'Vendedor'
             ELSE 'Desconocido'
-        END,
+        END::varchar,
         COALESCE(c.direccion, v.direccion),
         COALESCE(c.telefono, v.telefono)
     FROM usuarios u
@@ -225,11 +234,9 @@ BEGIN
     ORDER BY u.id;
 END;
 $$;
-        ");
+");
 
-        // =============================
-        // FUNCTION obtener_usuarios_con_su_rol
-        // =============================
+        // obtener_usuarios_con_su_rol
         DB::unprepared("
 CREATE FUNCTION public.obtener_usuarios_con_su_rol()
 RETURNS TABLE(id integer, nombre text, email text, contrasenia text, rol text)
@@ -237,17 +244,20 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT u.id, u.nombre, u.email, u.contrasenia, r.descripcion
+    SELECT 
+        u.id::INTEGER,
+        u.nombre,
+        u.email,
+        u.contrasenia,
+        r.descripcion
     FROM usuarios u
     JOIN rols r ON u.idrols = r.id
     ORDER BY u.id;
 END;
 $$;
-        ");
+");
 
-        // =============================
-        // FUNCTION registrar_venta
-        // =============================
+        // registrar_venta
         DB::unprepared("
 CREATE FUNCTION public.registrar_venta(p_idcliente integer, p_idvendedor integer, p_total numeric, p_metodo_pago integer, p_detalles json)
 RETURNS void
@@ -267,49 +277,46 @@ BEGIN
     FOR v_item IN SELECT * FROM json_array_elements(p_detalles)
     LOOP
         v_idproducto := (v_item->>'idproducto')::INT;
-        v_cantidad := (v_item->>'cantidad')::INT;
-        v_precio := (v_item->>'precio')::NUMERIC;
+        v_cantidad   := (v_item->>'cantidad')::INT;
+        v_precio     := (v_item->>'precio')::NUMERIC;
 
-        INSERT INTO detallePedidos (idpedidos, idproductoAves, cantidad, precioUnitario, subtotal)
-        VALUES (v_idpedido, v_idproducto, v_cantidad, v_precio, v_cantidad * v_precio);
+        INSERT INTO detallepedidos (idpedidos, idproductoaves, cantidad, preciounitario, subtotal)
+        VALUES (v_idpedido, v_idproducto, v_cantidad, v_precio, v_precio * v_cantidad);
 
-        UPDATE productoAves
+        UPDATE productoaves
         SET cantidad = cantidad - v_cantidad
         WHERE id = v_idproducto;
     END LOOP;
 
-    INSERT INTO pagos (fecha, estado, monto, idpedidos, idmetodoPagos)
+    INSERT INTO pagos (fecha, estado, monto, idpedidos, idmetodopagos)
     VALUES (CURRENT_DATE, 1, p_total, v_idpedido, p_metodo_pago);
 END;
 $$;
-        ");
+");
 
-        // =============================
-        // PROCEDURE actualizar_stock_producto
-        // =============================
+        // actualizar_stock_producto
         DB::unprepared("
-CREATE PROCEDURE public.actualizar_stock_producto(IN p_id integer, IN p_nombre varchar, IN p_precio numeric)
+CREATE PROCEDURE public.actualizar_stock_producto(p_id integer, p_nombre varchar, p_precio numeric)
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    UPDATE productoAves
-    SET nombre = p_nombre, precio = p_precio
+    UPDATE productoaves
+    SET nombre = p_nombre,
+        precio = p_precio
     WHERE id = p_id;
 END;
 $$;
-        ");
+");
 
-        // =============================
-        // PROCEDURE actualizar_usuario_completo
-        // =============================
+        // actualizar_usuario_completo
         DB::unprepared("
 CREATE PROCEDURE public.actualizar_usuario_completo(
-    IN p_id integer,
-    IN p_nombre varchar,
-    IN p_email varchar,
-    IN p_idrols integer,
-    IN p_direccion varchar,
-    IN p_telefono varchar
+    p_id integer,
+    p_nombre varchar,
+    p_email varchar,
+    p_idrols integer,
+    p_direccion varchar,
+    p_telefono varchar
 )
 LANGUAGE plpgsql
 AS $$
@@ -322,37 +329,37 @@ BEGIN
 
     IF p_idrols = 2 THEN
         IF v_idcliente IS NOT NULL THEN
-            UPDATE clientes
-            SET nombre = p_nombre, direccion = p_direccion, telefono = p_telefono, activo = 1
+            UPDATE clientes SET
+                nombre = p_nombre,
+                direccion = p_direccion,
+                telefono = p_telefono,
+                activo = 1
             WHERE id = v_idcliente;
         ELSE
             INSERT INTO clientes(nombre, direccion, telefono, idusuarios, activo)
-            VALUES (p_nombre, p_direccion, p_telefono, p_id, 1)
-            RETURNING id INTO v_idcliente;
+            VALUES (p_nombre, p_direccion, p_telefono, p_id, 1);
         END IF;
 
         IF v_idvendedor IS NOT NULL THEN
-            UPDATE vendedors
-            SET activo = 0
-            WHERE id = v_idvendedor;
+            UPDATE vendedors SET activo = 0 WHERE id = v_idvendedor;
         END IF;
-
     ELSE
         IF v_idvendedor IS NOT NULL THEN
-            UPDATE vendedors
-            SET nombre = p_nombre, direccion = p_direccion, telefono = p_telefono,
-                email = p_email, activo = 1
+            UPDATE vendedors SET
+                nombre = p_nombre,
+                direccion = p_direccion,
+                telefono = p_telefono,
+                email = p_email,
+                activo = 1
             WHERE id = v_idvendedor;
         ELSE
             INSERT INTO vendedors(nombre, direccion, telefono, email, idusuarios, activo)
-            VALUES (p_nombre, p_direccion, p_telefono, p_email, p_id, 1)
-            RETURNING id INTO v_idvendedor;
+            VALUES (p_nombre, p_direccion, p_telefono, p_email, p_id, 1);
         END IF;
 
         IF v_idcliente IS NOT NULL THEN
             UPDATE clientes SET activo = 0 WHERE id = v_idcliente;
         END IF;
-
     END IF;
 
     UPDATE usuarios
@@ -360,13 +367,11 @@ BEGIN
     WHERE id = p_id;
 END;
 $$;
-        ");
+");
 
-        // =============================
-        // PROCEDURE sp_pedidos_cliente
-        // =============================
+        // sp_pedidos_cliente
         DB::unprepared("
-CREATE PROCEDURE public.sp_pedidos_cliente(IN p_idcliente integer)
+CREATE PROCEDURE public.sp_pedidos_cliente(p_idcliente integer)
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -375,7 +380,7 @@ BEGIN
     OPEN cur_pedidos;
 END;
 $$;
-        ");
+");
     }
 
     public function down()

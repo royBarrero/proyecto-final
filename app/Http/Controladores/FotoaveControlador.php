@@ -96,7 +96,7 @@ class FotoaveControlador extends Controlador
             'nombrefoto' => $nombreArchivo
         ]);
 
-        return redirect()->route('fotoaves.index')->with('success', 'Foto actualizada correctamente.');
+        return redirect()->route('fotoaves.index')->with('info', 'Foto actualizada correctamente.');
     }
 
     // 🗑 Eliminar una foto
