@@ -150,8 +150,18 @@ public function crearNuevoUsuario(Request $request)
 public function eliminarUsuario($id)
 {
     $usuario = Usuario::findOrFail($id);
+
+    // Borrar cliente si existe
+    Cliente::where('idusuarios', $id)->delete();
+
+    // Borrar vendedor si existe
+    Vendedor::where('idusuarios', $id)->delete();
+
+    // Ahora sí se puede borrar el usuario
     $usuario->delete();
 
-    return redirect()->route('mostrarDatosDeTodosLosUsuarios')->with('error', 'Usuario eliminado correctamente.');
+    return redirect()->route('mostrarDatosDeTodosLosUsuarios')
+        ->with('error', 'Usuario eliminado correctamente.');
 }
+
 }

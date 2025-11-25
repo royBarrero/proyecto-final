@@ -1,7 +1,60 @@
-node_modules
+# Git
 .git
-vendor
-dist
-build
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# Documentation
+README.md
+CHANGELOG.md
+LICENSE
+
+# Environment files (will be mounted as volume)
 .env
-*.log
+.env.example
+.env.local
+.env.backup
+
+# Dependencies (will be installed via composer)
+/vendor
+/node_modules
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build artifacts
+/public/hot
+/public/storage
+/storage/*.key
+
+# Cache
+/bootstrap/cache/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
+
+# Testing
+.phpunit.result.cache
+phpunit.xml
+
+# NPM
+npm-debug.log
+yarn-error.log
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Scripts
+install.sh
+install.bat

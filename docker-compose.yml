@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  # Servicio de Laravel (PHP)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    networks:
+      - app_network
+    depends_on:
+      - postgres
+
+  # Servidor web Nginx
+  nginx:
+    image: nginx:alpine
+    container_name: laravel_nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - app_network
+    depends_on:
+      - app
+
+  # Servicio de PostgreSQL
+  postgres:
+    image: postgres:17-alpine
+    container_name: laravel_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: si1_db
+      POSTGRES_USER: laravel_user
+      POSTGRES_PASSWORD: laravel_password
+    ports:
+      - "5433:5432"  # Puerto externo 5433 para evitar conflicto
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  # Cliente pgAdmin
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: laravel_pgadmin
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: 'False'
+      PGADMIN_CONFIG_WTF_CSRF_CHECK_DEFAULT: 'False'
+      PGADMIN_CONFIG_WTF_CSRF_ENABLED: 'False'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - app_network
+    depends_on:
+      - postgres
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local

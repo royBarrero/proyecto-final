@@ -56,12 +56,12 @@ class DetalleaveControlador extends Controlador
         $detalleave = Detalleave::findOrFail($id);
         $detalleave->update($request->all());
 
-        return redirect()->route('detalleaves.index')->with('success', 'Detalle actualizado correctamente.');
+        return redirect()->route('detalleaves.index')->with('info', 'Detalle actualizado correctamente.');
     }
 
     public function destroy($id)
     {
         Detalleave::findOrFail($id)->delete();
-        return redirect()->route('detalleaves.index')->with('success', 'Detalle eliminado correctamente.');
+        return redirect()->route('detalleaves.index')->with('warning', 'Detalle eliminado correctamente.');
     }
 }

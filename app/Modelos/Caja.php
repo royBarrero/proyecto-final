@@ -32,4 +32,13 @@ class Caja extends Model
     {
         return $this->hasMany(Pago::class, 'idcaja', 'id');
     }
+
+    /**
+     * Relación: Una caja tiene muchos movimientos
+     */
+    public function movimientos(): HasMany
+    {
+        return $this->hasMany(MovimientoCaja::class, 'idcaja');
+    }
+
 }
