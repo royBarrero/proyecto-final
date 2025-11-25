@@ -2,6 +2,16 @@
 @section('h1','Abrir Caja')
 
 @section('contenido')
+<div class="container">
+    @if(!auth()->user()->tienePermiso('abrir_caja'))
+        <div class="alert alert-danger">
+            <strong>Acceso Denegado:</strong> No tienes permisos para acceder a esta sección.
+        </div>
+        @php
+            abort(403, 'No tienes permisos suficientes');
+        @endphp
+    @endif
+    
 <div class="form-box">
     <form action="{{ route('caja.abrir') }}" method="POST">
         @csrf
