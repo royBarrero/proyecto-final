@@ -73,6 +73,17 @@ Route::resource('categorias', CategoriaControlador::class)->middleware('auth');
 
 Route::resource('rols', RolControlador::class)->middleware('auth');
 
+// Después de: Route::resource('rols', RolControlador::class)->middleware('auth');
+
+// Agregar estas líneas para gestión de permisos:
+Route::middleware('auth')->group(function () {
+    Route::get('rols/{rol}/permisos', [RolControlador::class, 'gestionarPermisos'])
+        ->name('rols.gestionarPermisos');
+    
+    Route::post('rols/{rol}/permisos', [RolControlador::class, 'actualizarPermisos'])
+        ->name('rols.actualizarPermisos');
+});
+
 Route::resource('productoaves', ProductoAveControlador::class)->middleware('auth');
 
 Route::resource('fotoaves', FotoaveControlador::class)->middleware('auth');
