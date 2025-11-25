@@ -4,6 +4,16 @@
 
 @section('contenido')
 <div class="container">
+    @if(!auth()->user()->tienePermiso('ver_detalle_compras'))
+        <div class="alert alert-danger">
+            <strong>Acceso Denegado:</strong> No tienes permisos para acceder a esta sección.
+        </div>
+        @php
+            abort(403, 'No tienes permisos suficientes');
+        @endphp
+    @endif
+    
+<div class="container">
 
     <div style="margin-bottom:20px;">
         <a href="{{ route('compras.index') }}" style="padding:8px 15px; background:#ef8504; color:white; border-radius:5px; text-decoration:none; font-weight:bold;">← Volver a compras</a>

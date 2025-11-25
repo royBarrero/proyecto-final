@@ -4,6 +4,17 @@
 
 @section('contenido')
 <div class="container">
+    {-- Validar permiso --}
+    @if(!auth()->user()->tienePermiso('crear_compras'))
+        <div class="alert alert-danger">
+            <strong>Acceso Denegado:</strong> No tienes permisos para realizar esta acción.
+        </div>
+        @php
+            abort(403, 'No tienes permisos suficientes');
+        @endphp
+    @endif
+    
+<div class="container">
 
     @if($errors->any())
         <div style="padding:10px; background:#f8d7da; color:#721c24; border-radius:5px; margin-bottom:15px;">

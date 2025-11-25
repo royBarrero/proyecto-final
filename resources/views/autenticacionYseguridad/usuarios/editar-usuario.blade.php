@@ -5,6 +5,17 @@
 @section('h1', 'Editar Usuario')
 
 @section('contenido')
+<div class="container">
+    {-- Validar permiso --}
+    @if(!auth()->user()->tienePermiso('editar_usuarios'))
+        <div class="alert alert-danger">
+            <strong>Acceso Denegado:</strong> No tienes permisos para realizar esta acción.
+        </div>
+        @php
+            abort(403, 'No tienes permisos suficientes');
+        @endphp
+    @endif
+    
 <div class="form-box">
     <h2>Editar Usuario</h2>
 
