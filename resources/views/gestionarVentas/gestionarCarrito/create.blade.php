@@ -2,6 +2,16 @@
 @section('h1', 'Nueva Venta')
 
 @section('contenido')
+<div class="container">
+    @if(!auth()->user()->tienePermiso('ver_carrito'))
+        <div class="alert alert-danger">
+            <strong>Acceso Denegado:</strong> No tienes permisos para acceder a esta sección.
+        </div>
+        @php
+            abort(403, 'No tienes permisos suficientes');
+        @endphp
+    @endif
+    
     <div class="form-box">
         <form id="ventaForm" action="{{ route('ventas.store') }}" method="POST">
             @csrf

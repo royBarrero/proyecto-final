@@ -10,8 +10,10 @@
             <tr>
                 <th>ID</th>
                 <th>Descripción</th>
-                @if(auth()->user()->tieneAlgunPermiso(['editar_roles', 'eliminar_roles', 'gestionar_permisos']))
+                @if(auth()->user()->tieneAlgunPermiso(['editar_roles', 'eliminar_roles']))
+
                     <th>Acciones</th>
+
                 @endif
             </tr>
         </thead>
@@ -23,37 +25,23 @@
             <tr>
                 <td data-label="ID">{{++$i }}</td>
                 <td data-label="Descripcion">{{ $rol->descripcion }}</td>
-                
-                @if(auth()->user()->tieneAlgunPermiso(['editar_roles', 'eliminar_roles', 'gestionar_permisos']))
-                <td data-label="Acciones">
+                <td data-label="Aciones">
                     <div class="div-botones">
-                        {{-- Gestionar Permisos: Solo Admin --}}
-                        @if(auth()->user()->tienePermiso('gestionar_permisos'))
-                            <a href="{{ route('rols.gestionarPermisos', $rol) }}" class="btn-editar">Permisos</a>
-                        @endif
-                        
-                        {{-- Editar: Solo Admin --}}
                         @if(auth()->user()->tienePermiso('editar_roles'))
                             <a href="{{ route('rols.edit',$rol->id) }}" class="btn-editar">Editar</a>
                         @endif
-                        
-                        {{-- Eliminar: Solo Admin --}}
-                        @if(auth()->user()->tienePermiso('eliminar_roles'))
-                            <form action="{{ route('rols.destroy',$rol->id) }}" method="POST" style="display: inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn-eliminar" onclick="return confirm('¿Eliminar este rol?\nTipo de Rol: {{ $rol->descripcion }}')">Eliminar</button>
-                            </form>
-                        @endif
+                        <form action="{{ route('rols.destroy',$rol->id) }}" method="POST" style="display: inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn-eliminar" onclick="return confirm('¿Eliminar este rol?\nTipo de Rol: {{ $rol->descripcion }}')">Eliminar</button>
+                        </form>
                     </div>
                 </td>
-                @endif
             </tr>
         @endforeach
         </tbody>
     </table>
     <div class="div-botones2">
-        {{-- Nuevo Rol: Solo Admin --}}
         @if(auth()->user()->tienePermiso('crear_roles'))
             <a href="{{ route('rols.create') }}" class="btn-editar">Nuevo Rol</a>
         @endif

@@ -2,6 +2,16 @@ mostrar detalladamente@extends('plantillas.inicio')
 @section('h1','Detalle del Ave')
 
 @section('contenido')
+<div class="container">
+    @if(!auth()->user()->tienePermiso('ver_detalle_aves'))
+        <div class="alert alert-danger">
+            <strong>Acceso Denegado:</strong> No tienes permisos para acceder a esta sección.
+        </div>
+        @php
+            abort(403, 'No tienes permisos suficientes');
+        @endphp
+    @endif
+    
 <div class="form-box">
     <div class="form-group">
         <label><strong>ID:</strong></label>

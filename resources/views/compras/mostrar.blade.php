@@ -1,76 +1,55 @@
 @extends('plantillas.inicio')
-@section('h1', 'Gestión de Compras')
+
+@section('h1', 'Compras registradas')
 
 @section('contenido')
 <div class="container">
-    <h2>Lista de Compras a Proveedores</h2>
-    <x-alerta />
-    
-    <table class="styled-table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Fecha</th>
-                <th>Proveedor</th>
-                <th>Total (Bs)</th>
-                <th>Estado</th>
-                @if(auth()->user()->tieneAlgunPermiso(['ver_detalle_compras', 'editar_compras', 'eliminar_compras']))
-                    <th>Acciones</th>
-                @endif
-            </tr>
-        </thead>
-        <tbody>
-            @php $i=0; @endphp
-            @foreach($compras ?? [] as $compra)
-            <tr>
-                <td data-label="ID">{{ ++$i }}</td>
-                <td data-label="Fecha">{{ \Carbon\Carbon::parse($compra->fecha)->format('d/m/Y') }}</td>
-                <td data-label="Proveedor">{{ $compra->proveedor->nombre ?? 'N/A' }}</td>
-                <td data-label="Total">Bs {{ number_format($compra->total, 2) }}</td>
-                <td data-label="Estado">
-                    @if($compra->estado == 1)
-                        <span class="badge badge-success">Pagado</span>
-                    @else
-                        <span class="badge badge-warning">Pendiente</span>
-                    @endif
-                </td>
-                
-                @if(auth()->user()->tieneAlgunPermiso(['ver_detalle_compras', 'editar_compras', 'eliminar_compras']))
-                <td data-label="Acciones">
-                    <div class="div-botones">
-                        @if(auth()->user()->tienePermiso('ver_detalle_compras'))
-                            <a href="{{ route('compras.show', $compra->id) }}" class="btn-editar">Ver</a>
-                        @endif
-                        
-                        @if(auth()->user()->tienePermiso('editar_compras'))
-                            <a href="{{ route('compras.edit', $compra->id) }}" class="btn-editar">Editar</a>
-                        @endif
-                        
-                        @if(auth()->user()->tienePermiso('eliminar_compras'))
+
+    @if(session('success'))
+        <div style="padding:10px; background:#d4edda; color:#155724; border-radius:5px; margin-bottom:15px;">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if($compras->isEmpty())
+        <p>No hay compras registradas.</p>
+    @else
+        <table style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr style="background:#ef8504; color:white;">
+                    <th style="padding:10px; border:1px solid #ddd;">ID</th>
+                    <th style="padding:10px; border:1px solid #ddd;">Fecha</th>
+                    <th style="padding:10px; border:1px solid #ddd;">Proveedor</th>
+                    <th style="padding:10px; border:1px solid #ddd;">Total</th>
+                    <th style="padding:10px; border:1px solid #ddd;">Estado</th>
+                    <th style="padding:10px; border:1px solid #ddd;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($compras as $compra)
+                    <tr>
+                        <td style="padding:10px; border:1px solid #ddd;">{{ $compra->id }}</td>
+                        <td style="padding:10px; border:1px solid #ddd;">{{ $compra->fecha }}</td>
+                        <td style="padding:10px; border:1px solid #ddd;">{{ $compra->proveedor->nombre }}</td>
+                        <td style="padding:10px; border:1px solid #ddd;">Bs {{ number_format($compra->total, 2) }}</td>
+                        <td style="padding:10px; border:1px solid #ddd;">{{ $compra->estado }}</td>
+                        <td style="padding:10px; border:1px solid #ddd;">
+                            <a href="{{ route('compras.show', $compra->id) }}" style="margin-right:5px; color:#ef8504; font-weight:bold;">Ver</a>
                             <form action="{{ route('compras.destroy', $compra->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn-eliminar" onclick="return confirm('¿Eliminar compra #{{ $compra->id }}?')">Eliminar</button>
+                                <button type="submit" style="background:none; border:none; color:red; cursor:pointer;" onclick="return confirm('¿Eliminar compra ID {{ $compra->id }}?')">Eliminar</button>
                             </form>
-                        @endif
-                    </div>
-                </td>
-                @endif
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
 
-    <div class="div-botones2">
-        @if(auth()->user()->tienePermiso('crear_compras'))
-            <a href="{{ route('compras.create') }}" class="btn-editar">Nueva Compra</a>
-        @endif
-        
-        @if(auth()->user()->tienePermiso('generar_reporte_compras'))
-            <a href="{{ route('reporte.compras') }}" class="btn btn-secondary">Ver Reportes</a>
-        @endif
-        
-        <a href="{{ route('bienvenido.usuarios.vendedor') }}" class="btn-eliminar">Volver</a>
+    <div style="margin-top:15px;">
+        <a href="{{ route('compras.create') }}" style="padding:8px 15px; background:#ef8504; color:white; border-radius:5px; text-decoration:none; font-weight:bold;">Registrar nueva compra</a>
     </div>
+
 </div>
 @endsection

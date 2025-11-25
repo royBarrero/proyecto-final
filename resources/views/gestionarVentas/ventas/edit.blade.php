@@ -2,6 +2,17 @@
 @section('h1','Editar Venta')
 
 @section('contenido')
+<div class="container">
+    {-- Validar permiso --}
+    @if(!auth()->user()->tienePermiso('editar_ventas'))
+        <div class="alert alert-danger">
+            <strong>Acceso Denegado:</strong> No tienes permisos para realizar esta acción.
+        </div>
+        @php
+            abort(403, 'No tienes permisos suficientes');
+        @endphp
+    @endif
+    
 <div class="form-box">
     <form id="ventaForm" action="{{ route('ventas.update',$venta->id) }}" method="POST">
         @csrf
