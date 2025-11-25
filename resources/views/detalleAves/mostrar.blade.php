@@ -1,54 +1,59 @@
 @extends('plantillas.inicio')
-@section('h1', 'Detalles de Aves')
+@section('h1', 'Detalle de Aves')
 
 @section('contenido')
 <div class="container">
-    <h2>Lista de Detalles de Aves</h2>
+    <h2>Detalle de Aves - Razas y Edades</h2>
     <x-alerta />
-
+    
     <table class="styled-table">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Descripción</th>
+                <th>Raza / Especie</th>
                 <th>Edad (días)</th>
-                <th>Acciones</th>
+                @if(auth()->user()->tieneAlgunPermiso(['editar_detalle_aves', 'eliminar_detalle_aves']))
+                    <th>Acciones</th>
+                @endif
             </tr>
         </thead>
         <tbody>
-            @php
-                $i=0;
-            @endphp
-        @forelse($detalleaves ?? [] as $detalle)
+            @php $i=0; @endphp
+            @foreach($detalleAves ?? [] as $detalle)
             <tr>
                 <td data-label="ID">{{ ++$i }}</td>
-                <td data-label="Descripción">{{ $detalle->descripcion }}</td>
+                <td data-label="Raza">{{ $detalle->descripcion }}</td>
                 <td data-label="Edad">{{ $detalle->edad }}</td>
+                
+                @if(auth()->user()->tieneAlgunPermiso(['editar_detalle_aves', 'eliminar_detalle_aves']))
                 <td data-label="Acciones">
                     <div class="div-botones">
+                        <a href="{{ route('detalleAves.show', $detalle->id) }}" class="btn-editar">Ver</a>
                         
-                        <a href="{{ route('detalleaves.edit', $detalle->id) }}" class="btn-editar">Editar</a>
-                        <form action="{{ route('detalleaves.destroy', $detalle->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn-eliminar" onclick="return confirm('¿Eliminar este detalle?\n{{ $detalle->descripcion }}')">Eliminar</button>
-                        </form>
+                        @if(auth()->user()->tienePermiso('editar_detalle_aves'))
+                            <a href="{{ route('detalleAves.edit', $detalle->id) }}" class="btn-editar">Editar</a>
+                        @endif
+                        
+                        @if(auth()->user()->tienePermiso('eliminar_detalle_aves'))
+                            <form action="{{ route('detalleAves.destroy', $detalle->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-eliminar" onclick="return confirm('¿Eliminar {{ $detalle->descripcion }}?')">Eliminar</button>
+                            </form>
+                        @endif
                     </div>
                 </td>
+                @endif
             </tr>
-        @empty
-            <tr>
-                <td colspan="4" style="text-align:center;">No hay registros disponibles.</td>
-            </tr>
-        @endforelse
+            @endforeach
         </tbody>
     </table>
 
     <div class="div-botones2">
-        <a href="{{ route('detalleaves.create') }}" class="btn-editar">Nuevo Detalle</a>
+        @if(auth()->user()->tienePermiso('crear_detalle_aves'))
+            <a href="{{ route('detalleAves.create') }}" class="btn-editar">Nuevo Detalle</a>
+        @endif
         <a href="{{ route('bienvenido.usuarios.vendedor') }}" class="btn-eliminar">Volver</a>
     </div>
 </div>
 @endsection
-
-
