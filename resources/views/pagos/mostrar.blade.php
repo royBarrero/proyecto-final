@@ -14,7 +14,11 @@
                 <th>Estado</th>
                 <th>Pedido</th>
                 <th>Método</th>
-                <th>Acciones</th>
+                @if(auth()->user()->tieneAlgunPermiso(['editar_pagos', 'eliminar_pagos']))
+
+                    <th>Acciones</th>
+
+                @endif
             </tr>
         </thead>
         <tbody>
@@ -29,7 +33,9 @@
                 <td>{{ $pago->metodoPago->descripcion ?? '-' }}</td>
                 <td>
                     <div class="div-botones">
-                        <a href="{{ route('pagos.edit',$pago->id) }}" class="btn-editar">Editar</a>
+                        @if(auth()->user()->tienePermiso('editar_pagos'))
+                            <a href="{{ route('pagos.edit',$pago->id) }}" class="btn-editar">Editar</a>
+                        @endif
                         <form action="{{ route('pagos.destroy',$pago->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
@@ -42,7 +48,9 @@
         </tbody>
     </table>
     <div class="div-botones2">
-        <a href="{{ route('pagos.create') }}" class="btn-editar">Nuevo Pago</a>
+        @if(auth()->user()->tienePermiso('crear_pagos'))
+            <a href="{{ route('pagos.create') }}" class="btn-editar">Nuevo Pago</a>
+        @endif
         <a href="{{ route('bienvenido.usuarios.vendedor') }}" class="btn-eliminar">Volver</a>
     </div>
 </div>

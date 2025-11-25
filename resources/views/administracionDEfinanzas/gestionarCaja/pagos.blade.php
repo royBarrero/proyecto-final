@@ -2,6 +2,16 @@
 @section('h1','Registrar Pago')
 
 @section('contenido')
+<div class="container">
+    @if(!auth()->user()->tienePermiso('registrar_pagos'))
+        <div class="alert alert-danger">
+            <strong>Acceso Denegado:</strong> No tienes permisos para acceder a esta sección.
+        </div>
+        @php
+            abort(403, 'No tienes permisos suficientes');
+        @endphp
+    @endif
+    
 <div class="form-box">
     <form action="{{ route('caja.pagos.store') }}" method="POST">
         @csrf

@@ -2,6 +2,17 @@
 @section('h1','Nuevo Proveedor')
 
 @section('contenido')
+<div class="container">
+    {-- Validar permiso --}
+    @if(!auth()->user()->tienePermiso('crear_proveedores'))
+        <div class="alert alert-danger">
+            <strong>Acceso Denegado:</strong> No tienes permisos para realizar esta acción.
+        </div>
+        @php
+            abort(403, 'No tienes permisos suficientes');
+        @endphp
+    @endif
+    
 <div class="form-box">
     <form action="{{ route('proveedores.store') }}" method="POST">
         @csrf

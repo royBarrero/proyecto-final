@@ -4,6 +4,16 @@
 
 @section('contenido')
 <div class="container">
+    @if(!auth()->user()->tienePermiso('ver_historial_ventas'))
+        <div class="alert alert-danger">
+            <strong>Acceso Denegado:</strong> No tienes permisos para acceder a esta sección.
+        </div>
+        @php
+            abort(403, 'No tienes permisos suficientes');
+        @endphp
+    @endif
+    
+<div class="container">
 
     <h2>Filtrar historial de ventas</h2>
     <form action="{{ route('reportes.historial.index') }}" method="GET" style="margin-bottom:20px;">

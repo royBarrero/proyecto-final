@@ -2,6 +2,17 @@
 @section('h1', 'Nuevo Producto de Ave')
 
 @section('contenido')
+<div class="container">
+    {-- Validar permiso --}
+    @if(!auth()->user()->tienePermiso('crear_productos'))
+        <div class="alert alert-danger">
+            <strong>Acceso Denegado:</strong> No tienes permisos para realizar esta acción.
+        </div>
+        @php
+            abort(403, 'No tienes permisos suficientes');
+        @endphp
+    @endif
+    
 <div class="form-box">
     <form action="{{ route('productoaves.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
