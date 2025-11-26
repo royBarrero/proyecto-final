@@ -27,61 +27,68 @@ class CompraControlador extends Controlador
         return view('compras.crear', compact('proveedores', 'productos'));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'idproveedors' => 'required|exists:proveedors,id',
-            'productos' => 'required|array|min:1',
-            'productos.*.idproductoalimentos' => 'required|exists:productoalimentos,id',
-            'productos.*.cantidad' => 'required|numeric|min:1',
-            'productos.*.preciounitario' => 'required|numeric|min:0',
+  public function store(Request $request)
+{
+    $request->validate([
+        'idproveedors' => 'required|exists:proveedors,id',
+        'productos' => 'required|array|min:1',
+        'productos.*.idproductoalimentos' => 'required|exists:productoalimentos,id',
+        'productos.*.cantidad' => 'required|numeric|min:1',
+        'productos.*.preciounitario' => 'required|numeric|min:0',
+    ], [
+        'idproveedors.required' => 'Debe seleccionar un proveedor.',
+        'productos.required' => 'Debe agregar al menos un producto.',
+        'productos.*.cantidad.min' => 'La cantidad debe ser mayor a 0.',
+    ]);
+
+    DB::beginTransaction();
+      $vendedor = \App\Modelos\Vendedor::where('idusuarios', auth()->id())->first();
+    try {
+        $total = 0;
+
+        // Calcular total
+        foreach ($request->productos as $detalle) {
+            $total += $detalle['cantidad'] * $detalle['preciounitario'];
+        }
+
+        // Crear la compra
+        $compra = Compra::create([
+            'fecha' => now(),
+            'estado' => 'Completado', // 👈 Ahora es texto
+            'total' => $total,
+            'idproveedors' => $request->idproveedors,
+                'idvendedors' => $vendedor->id 
         ]);
 
-        DB::beginTransaction();
-
-        try {
-            $total = 0;
-
-            // Calcular total
-            foreach ($request->productos as $detalle) {
-                $total += $detalle['cantidad'] * $detalle['preciounitario'];
-            }
-
-            // Crear la compra
-            $compra = Compra::create([
-                'fecha' => now(),
-                'estado' => 'ACTIVA',
-                'total' => $total,
-                'idproveedors' => $request->idproveedors,
-                'idvendedors' => auth()->id() ?? 1 // Temporal si aún no manejas usuarios autenticados
+        // Guardar detalles e incrementar stock
+        foreach ($request->productos as $detalle) {
+            DetalleCompra::create([
+                'idcompras' => $compra->id,
+                'idproductoalimentos' => $detalle['idproductoalimentos'],
+                'cantidad' => $detalle['cantidad'],
+                'preciounitario' => $detalle['preciounitario'],
+                'subtotal' => $detalle['cantidad'] * $detalle['preciounitario'],
             ]);
 
-            // Guardar detalles e incrementar stock
-            foreach ($request->productos as $detalle) {
-                DetalleCompra::create([
-                    'idcompras' => $compra->id,
-                    'idproductoalimentos' => $detalle['idproductoalimentos'],
-                    'cantidad' => $detalle['cantidad'],
-                    'preciounitario' => $detalle['preciounitario'],
-                    'subtotal' => $detalle['cantidad'] * $detalle['preciounitario'],
-                ]);
-
-                // Actualizar stock del producto
-                $producto = ProductoAlimento::find($detalle['idproductoalimentos']);
-                if ($producto) {
-                    $producto->stock = ($producto->stock ?? 0) + $detalle['cantidad'];
-                    $producto->save();
-                }
+            // Actualizar stock del producto
+           $producto = ProductoAlimento::find($detalle['idproductoalimentos']);
+            if ($producto) {
+            $producto->stock = ($producto->stock ?? 0) + $detalle['cantidad'];
+                $producto->save();
             }
-
-            DB::commit();
-            return redirect()->route('compras.index')->with('success', 'Compra registrada correctamente.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withErrors(['error' => 'Error al registrar la compra: ' . $e->getMessage()]);
         }
-    }
 
+        DB::commit();
+        return redirect()->route('compras.index')
+            ->with('success', '✓ Compra registrada correctamente.');
+            
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return back()
+            ->withInput()
+            ->withErrors(['error' => 'Error al registrar la compra: ' . $e->getMessage()]);
+    }
+}
     public function show($id)
     {
         $compra = Compra::with(['proveedor', 'detalles.producto'])->findOrFail($id);
@@ -104,6 +111,15 @@ public function exportarPDF()
     $compras = Compra::with('proveedor')->get();
     $pdf = Pdf::loadView('compras.pdf', compact('compras'));
     return $pdf->download('compras_' . date('Y-m-d') . '.pdf');
+}
+/**
+ * Exportar detalle de compra a PDF
+ */
+public function exportarDetallePDF($id)
+{
+    $compra = Compra::with(['proveedor', 'detalles.producto'])->findOrFail($id);
+    $pdf = Pdf::loadView('compras.detalle-pdf', compact('compra'));
+    return $pdf->download('compra_' . $compra->id . '_' . date('Y-m-d') . '.pdf');
 }
     public function destroy($id)
     {

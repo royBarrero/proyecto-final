@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('compras', function (Blueprint $table) {
             $table->id();
             $table->date('fecha');
-            $table->integer('estado');
+          $table->string('estado', 50)->default('Pendiente');
             $table->decimal('total', 12, 2);
             $table->foreignId('idproveedors')->constrained('proveedors');
             $table->foreignId('idvendedors')->constrained('vendedors');
