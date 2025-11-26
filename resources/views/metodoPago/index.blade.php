@@ -62,10 +62,24 @@
         background: #5a6268;
     }
 
+    /* === FIX: BOTONES COMPACTOS Y SIN ANCHO COMPLETO === */
+    .div-botones {
+        display: flex;
+        gap: 6px;
+        justify-content: flex-start;
+    }
+
+    .div-botones a,
+    .div-botones button {
+        width: auto !important;
+        display: inline-flex !important;
+        white-space: nowrap;
+    }
+
     .btn-editar {
         background: #007bff;
         color: white;
-        padding: 6px 12px;
+        padding: 4px 10px;
         font-size: 12px;
         border-radius: 4px;
     }
@@ -77,7 +91,7 @@
     .btn-eliminar {
         background: #dc3545;
         color: white;
-        padding: 6px 12px;
+        padding: 4px 10px;
         font-size: 12px;
         border-radius: 4px;
         border: none;
@@ -120,11 +134,6 @@
         background: #f8f9fa;
     }
 
-    .div-botones {
-        display: flex;
-        gap: 8px;
-    }
-
     .alert {
         padding: 15px 20px;
         border-radius: 6px;
@@ -161,13 +170,15 @@
     }
 
     @media (max-width: 768px) {
-        .header-section {
-            flex-direction: column;
-            align-items: stretch;
-        }
+      .header-section .btn-primary {
+    width: auto !important;
+    display: inline-flex !important;
+    white-space: nowrap;
+}
+
 
         .btn {
-            width: 100%;
+            width: 70%;
             justify-content: center;
         }
 
@@ -185,6 +196,7 @@
         }
     }
 </style>
+
 
 <div class="metodos-container">
     <!-- Header -->

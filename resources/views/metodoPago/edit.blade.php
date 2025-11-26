@@ -136,7 +136,7 @@
         }
 
         .btn {
-            width: 100%;
+            width: 80%;
             justify-content: center;
         }
     }
