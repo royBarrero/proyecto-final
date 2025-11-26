@@ -21,6 +21,8 @@ use App\Http\Controladores\ReporteCompraControlador;
 use App\Http\Controladores\ReporteVentaControlador;
 use App\Http\Controladores\ReporteHistorialVentaControlador;
 use App\Http\Controladores\ProductoDisponibleControlador;
+use App\Http\Controladores\MetodoPagoControlador;
+
 
 Route::get('/', [FotoaveControlador::class, 'index'])->name("inicio");
 
@@ -145,4 +147,7 @@ Route::middleware(['auth'])->group(function() {
     Route::delete('/pagos/{id}', [CajaControlador::class, 'eliminarPago'])->name('pagos.destroy');
 
 });
-
+// Métodos de Pago (Administrador y Vendedor)
+Route::middleware(['auth'])->group(function () {
+    Route::resource('metodopagos', MetodoPagoControlador::class);
+});
