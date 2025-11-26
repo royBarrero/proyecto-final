@@ -8,6 +8,9 @@ use App\Modelos\MetodoPago;
 use App\Modelos\Cliente;
 use App\Modelos\Vendedor;
 use App\Modelos\ProductoAve;
+use App\Exports\VentasExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class VentaControlador extends Controlador
 {
@@ -52,15 +55,38 @@ class VentaControlador extends Controlador
         $detalle = Venta::detalleVenta($id);
         return view('ventas.show', compact('detalle'));
     }
-
-    public function edit($id)
-    {
-        $venta = Venta::listarVentas()[$id - 1] ?? null;
-        $metodos = MetodoPago::all();
-        if (!$venta) abort(404);
-        return view('gestionarVentas.ventas.edit', compact('venta', 'metodos'));
-    }
-
+public function edit($id)
+{
+    $ventaRaw = Venta::listarVentas()[$id - 1] ?? null;
+    
+    if (!$ventaRaw) abort(404);
+    
+    // Obtener detalles de la venta
+    $detalles = Venta::detalleVenta($id);
+    
+    // Normalizar nombres de columnas para la vista
+    $venta = (object) [
+        'id' => $ventaRaw->id ?? $ventaRaw->idventa ?? $id,
+        'id_cliente' => $ventaRaw->id_cliente ?? $ventaRaw->idcliente ?? null,
+        'id_vendedor' => $ventaRaw->id_vendedor ?? $ventaRaw->idvendedor ?? null,
+        'metodo_pago' => $ventaRaw->metodo_pago ?? $ventaRaw->metodopago ?? null,
+        'total' => $ventaRaw->total ?? 0,
+        'detalles' => $detalles // Agregar detalles
+    ];
+    
+    $clientes = Cliente::all();
+    $vendedores = Vendedor::all();
+    $metodos = MetodoPago::all();
+    $productos = ProductoAve::all();
+    
+    return view('gestionarVentas.ventas.edit', compact(
+        'venta', 
+        'clientes', 
+        'vendedores', 
+        'metodos', 
+        'productos'
+    ));
+}
     public function update(Request $request, $id)
     {
         $data = $request->validate([
@@ -72,10 +98,24 @@ class VentaControlador extends Controlador
 
         return redirect()->route('ventas.index')->with('success', 'Venta actualizada correctamente.');
     }
+    // Método para exportar a Excel
+public function exportarExcel()
+{
+    $ventas = Venta::listarVentas();
+    return Excel::download(new VentasExport($ventas), 'ventas_' . date('Y-m-d') . '.xlsx');
+}
 
+// Método para exportar a PDF
+public function exportarPDF()
+{
+    $ventas = Venta::listarVentas();
+    $pdf = Pdf::loadView('gestionarVentas.ventas.pdf', compact('ventas'));
+    return $pdf->download('ventas_' . date('Y-m-d') . '.pdf');
+}
     public function destroy($id)
     {
         Venta::eliminarVenta($id);
         return redirect()->route('ventas.index')->with('success', 'Venta eliminada correctamente.');
     }
 }
+ 

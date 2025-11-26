@@ -21,6 +21,8 @@ use App\Http\Controladores\ReporteCompraControlador;
 use App\Http\Controladores\ReporteVentaControlador;
 use App\Http\Controladores\ReporteHistorialVentaControlador;
 use App\Http\Controladores\ProductoDisponibleControlador;
+use App\Http\Controladores\MetodoPagoControlador;
+
 
 Route::get('/', [FotoaveControlador::class, 'index'])->name("inicio");
 
@@ -98,11 +100,17 @@ Route::resource('proveedores', ProveedorControlador::class);
 Route::resource('pagos', PagoControlador::class);
 
 Route::resource('ventas', VentaControlador::class);
+// Después de: Route::resource('ventas', VentaControlador::class);
+Route::get('ventas/exportar/pdf', [VentaControlador::class, 'exportarPDF'])->name('ventas.exportar.pdf');
+Route::get('ventas/exportar/excel', [VentaControlador::class, 'exportarExcel'])->name('ventas.exportar.excel');
 Route::resource('compras', CompraControlador::class);
 Route::get('/compras', [App\Http\Controladores\CompraControlador::class, 'index'])->name('compras.index');
 
-
-
+// Exportar compras
+Route::get('compras/exportar/pdf', [CompraControlador::class, 'exportarPDF'])->name('compras.exportar.pdf');
+Route::get('compras/exportar/excel', [CompraControlador::class, 'exportarExcel'])->name('compras.exportar.excel');
+// Exportar detalle de compra a PDF
+Route::get('compras/{id}/exportar/pdf', [CompraControlador::class, 'exportarDetallePDF'])->name('compras.exportar.detalle.pdf');
 //RUTA DE REPORTE DE COMPRAS 
 Route::middleware('auth')->group(function () {
     Route::get('/reporte-compras', [ReporteCompraControlador::class, 'index'])->name('reporte.compras');
@@ -142,4 +150,7 @@ Route::middleware(['auth'])->group(function() {
     Route::delete('/pagos/{id}', [CajaControlador::class, 'eliminarPago'])->name('pagos.destroy');
 
 });
-
+// Métodos de Pago (Administrador y Vendedor)
+Route::middleware(['auth'])->group(function () {
+    Route::resource('metodopagos', MetodoPagoControlador::class);
+});
