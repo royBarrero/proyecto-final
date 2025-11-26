@@ -106,7 +106,9 @@ Route::get('ventas/exportar/excel', [VentaControlador::class, 'exportarExcel'])-
 Route::resource('compras', CompraControlador::class);
 Route::get('/compras', [App\Http\Controladores\CompraControlador::class, 'index'])->name('compras.index');
 
-
+// Exportar compras
+Route::get('compras/exportar/pdf', [CompraControlador::class, 'exportarPDF'])->name('compras.exportar.pdf');
+Route::get('compras/exportar/excel', [CompraControlador::class, 'exportarExcel'])->name('compras.exportar.excel');
 
 //RUTA DE REPORTE DE COMPRAS 
 Route::middleware('auth')->group(function () {

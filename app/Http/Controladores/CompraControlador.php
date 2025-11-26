@@ -8,6 +8,9 @@ use App\Modelos\Compra;
 use App\Modelos\DetalleCompra;
 use App\Modelos\Proveedor;
 use App\Modelos\ProductoAlimento;
+use App\Exports\ComprasExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CompraControlador extends Controlador
 {
@@ -84,7 +87,24 @@ class CompraControlador extends Controlador
         $compra = Compra::with(['proveedor', 'detalles.producto'])->findOrFail($id);
         return view('compras.detalle', compact('compra'));
     }
+    /**
+ * Exportar a Excel
+ */
+public function exportarExcel()
+{
+    $compras = Compra::with('proveedor')->get();
+    return Excel::download(new ComprasExport($compras), 'compras_' . date('Y-m-d') . '.xlsx');
+}
 
+/**
+ * Exportar a PDF
+ */
+public function exportarPDF()
+{
+    $compras = Compra::with('proveedor')->get();
+    $pdf = Pdf::loadView('compras.pdf', compact('compras'));
+    return $pdf->download('compras_' . date('Y-m-d') . '.pdf');
+}
     public function destroy($id)
     {
         $compra = Compra::findOrFail($id);
