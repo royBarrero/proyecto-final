@@ -22,7 +22,7 @@ use App\Http\Controladores\ReporteVentaControlador;
 use App\Http\Controladores\ReporteHistorialVentaControlador;
 use App\Http\Controladores\ProductoDisponibleControlador;
 use App\Http\Controladores\MetodoPagoControlador;
-
+use App\Modelos\Detalleave;
 
 Route::get('/', [FotoaveControlador::class, 'index'])->name("inicio");
 

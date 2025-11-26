@@ -51,7 +51,7 @@
 
     <div class="div-botones2">
         @if(auth()->user()->tienePermiso('crear_detalle_aves'))
-            <a href="{{ route('detalleAves.create') }}" class="btn-editar">Nuevo Detalle</a>
+            <a href="{{ route('detalleaves.create') }}" class="btn-editar">Nuevo Detalle</a>
         @endif
         <a href="{{ route('bienvenido.usuarios.vendedor') }}" class="btn-eliminar">Volver</a>
     </div>
