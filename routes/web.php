@@ -98,6 +98,9 @@ Route::resource('proveedores', ProveedorControlador::class);
 Route::resource('pagos', PagoControlador::class);
 
 Route::resource('ventas', VentaControlador::class);
+// Después de: Route::resource('ventas', VentaControlador::class);
+Route::get('ventas/exportar/pdf', [VentaControlador::class, 'exportarPDF'])->name('ventas.exportar.pdf');
+Route::get('ventas/exportar/excel', [VentaControlador::class, 'exportarExcel'])->name('ventas.exportar.excel');
 Route::resource('compras', CompraControlador::class);
 Route::get('/compras', [App\Http\Controladores\CompraControlador::class, 'index'])->name('compras.index');
 

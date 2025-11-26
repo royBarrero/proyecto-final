@@ -117,14 +117,14 @@
             background:white;
             color:#333;
             list-style:none;
-            padding:0;
+            padding:0; 
             margin:0;
             border-radius:5px;
             box-shadow:0 2px 10px rgba(0,0,0,0.1);
             min-width:150px;
             z-index:1000;">
             <li style="border-bottom:1px solid #eee;">
-                <a href="{{ route('ventas.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar venta')}}</a>
+                <a href="{{ route('ventas.create') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar venta')}}</a>
             </li>
             <li style="border-bottom:1px solid #eee;">
                 <a href="{{ route('ventas.create') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar carrito de compra')}}</a>
