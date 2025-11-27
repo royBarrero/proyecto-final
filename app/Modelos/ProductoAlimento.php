@@ -10,10 +10,10 @@ class ProductoAlimento extends Model
     protected $primaryKey = 'id';
     public $timestamps = false;
 
-    protected $fillable = ['nombre','precio'];
+    protected $fillable = ['nombre','precio','stock',];
 
     public function detalles()
     {
-        return $this->hasMany(DetalleCompra::class, 'idproductoalimentos');
+        return $this->hasMany(DetalleCompra::class, 'idproductoalimentos','id');
     }
 }

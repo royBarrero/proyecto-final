@@ -2,6 +2,17 @@
 @section('h1','Editar Categoría')
 
 @section('contenido')
+<div class="container">
+    {-- Validar permiso --}
+    @if(!auth()->user()->tienePermiso('editar_categorias'))
+        <div class="alert alert-danger">
+            <strong>Acceso Denegado:</strong> No tienes permisos para realizar esta acción.
+        </div>
+        @php
+            abort(403, 'No tienes permisos suficientes');
+        @endphp
+    @endif
+    
 <div class="form-box">
     <form action="{{ route('categorias.update',$categoria->id) }}" method="POST">
         @csrf

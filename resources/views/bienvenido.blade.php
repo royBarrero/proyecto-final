@@ -14,16 +14,7 @@
             @endauth
         </button>
     </div>
-       <div style="position:relative; display:inline-block;">
-        <button 
-            id="createBTN"
-            onclick="window.location.href='{{ route('pagos.index') }}'"
-            style="color:#ef8504; background:white; padding:8px 15px; border-radius:5px; font-weight:bold; border:none; cursor:pointer; transition: all 0.2s ease-in-out;">
-            @auth
-                {{__('Lista de pagos')}}
-            @endauth
-        </button>
-    </div>
+       
     {{----------------------------------------------------------------------------------------------------------------------}}
     <div style="position:relative; display:inline-block;">
         <button id="reporteAnalisisBtn" style="color:#ef8504; background:white; padding:8px 15px; border-radius:5px; font-weight:bold; border:none; cursor:pointer;">
@@ -103,13 +94,11 @@
     </div>
     {{----------------------------------------------------------------------------------------------------------------------}}
     
-    <div style="position:relative; display:inline-block;">
-        <button id="gestionarVentasBtn" style="color:#ef8504; background:white; padding:8px 15px; border-radius:5px; font-weight:bold; border:none; cursor:pointer;">
-            @Auth
-                {{__('Compras y ventas')}} ▼
-            @endAuth
-        </button>
-
+    @if(auth()->user()->esAdministrador() || auth()->user()->esVendedor())
+<div style="position:relative; display:inline-block;">
+    <button id="gestionarVentasBtn" style="...">
+        {{__('Compras y ventas')}} ▼
+    </button>
         <ul id="gestionarVentasMenu" style="
             display:none;
             position:absolute;
@@ -117,22 +106,24 @@
             background:white;
             color:#333;
             list-style:none;
-            padding:0;
+            padding:0; 
             margin:0;
             border-radius:5px;
             box-shadow:0 2px 10px rgba(0,0,0,0.1);
             min-width:150px;
             z-index:1000;">
             <li style="border-bottom:1px solid #eee;">
-                <a href="{{ route('ventas.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar venta')}}</a>
+                <a href="{{ route('ventas.create') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar venta')}}</a>
             </li>
             <li style="border-bottom:1px solid #eee;">
                 <a href="{{ route('ventas.create') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar carrito de compra')}}</a>
                 {{--<a href="{{ route('ventas.create') }}" class="btn-editar">Nueva Venta</a>--}}
             </li>
-            <li style="border-bottom:1px solid #eee;">
-                <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar métodos de pagos')}}</a>
-            </li>
+             <li style="border-bottom:1px solid #eee;">
+            <a href="{{ route('metodopagos.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">
+                {{__('Gestionar métodos de pagos')}}
+            </a>
+        </li>
             <li style="border-bottom:1px solid #eee;">
                <a href="{{ route('compras.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar compras de productos')}}</a>
 
@@ -142,6 +133,7 @@
             </li>
         </ul>
     </div>
+    @endif
     {{-----------------------------------------------------------------------------------------------------------------}}
     <div style="position:relative; display:inline-block;">
         <button id="gestionarProductosBtn" style="color:#ef8504; background:white; padding:8px 15px; border-radius:5px; font-weight:bold; border:none; cursor:pointer;">
@@ -164,7 +156,7 @@
             min-width:150px;
             z-index:1000;">
             <li style="border-bottom:1px solid #eee;">
-                <a href="{{ route('productoaves.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar Categorías de Productos')}}</a>
+                <a href="{{ route('categorias.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar Categorías de Productos')}}</a>
             </li>
             <li style="border-bottom:1px solid #eee;">
                 <a href="{{ route('detalleaves.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar productos')}}</a>

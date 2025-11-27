@@ -12,10 +12,23 @@
         <p><strong>Detalle del Ave:</strong> {{ $productoAve->detalleAve->descripcion ?? 'Sin detalle' }} ({{ $productoAve->detalleAve->edad ?? 'N/A' }} días)</p>
         <p><strong>Cantidad:</strong> {{ $productoAve->cantidad }}</p>
     </div>
+    
     <div class="div-botones2" style="margin-top:20px;">
-        <a href="{{ route('productoaves.edit', $productoAve->id) }}" class="btn-editar">Editar</a>
+        {{-- Editar: Solo Vendedor y Admin --}}
+        @if(auth()->user()->tienePermiso('editar_productos'))
+            <a href="{{ route('productoaves.edit', $productoAve->id) }}" class="btn-editar">Editar</a>
+        @endif
+        
+        {{-- Eliminar: Solo Admin --}}
+        @if(auth()->user()->tienePermiso('eliminar_productos'))
+            <form action="{{ route('productoaves.destroy', $productoAve->id) }}" method="POST" style="display:inline;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn-eliminar" onclick="return confirm('¿Eliminar {{ $productoAve->nombre }}?')">Eliminar</button>
+            </form>
+        @endif
+        
         <a href="{{ url()->previous() }}" class="btn btn-cerrar">Volver</a>
     </div>
 </div>
 @endsection
-

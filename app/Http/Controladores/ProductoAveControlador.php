@@ -16,7 +16,7 @@ class ProductoAveControlador extends Controlador
             ->header('Pragma', 'no-cache')
             ->header('Expires', '0');
     }
-
+ 
     public function create()
     {
         $categorias = Categoria::all();

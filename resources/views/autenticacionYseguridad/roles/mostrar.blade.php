@@ -10,7 +10,11 @@
             <tr>
                 <th>ID</th>
                 <th>Descripción</th>
-                <th>Acciones</th>
+                @if(auth()->user()->tieneAlgunPermiso(['editar_roles', 'eliminar_roles']))
+
+                    <th>Acciones</th>
+
+                @endif
             </tr>
         </thead>
         <tbody>
@@ -23,7 +27,9 @@
                 <td data-label="Descripcion">{{ $rol->descripcion }}</td>
                 <td data-label="Aciones">
                     <div class="div-botones">
-                        <a href="{{ route('rols.edit',$rol->id) }}" class="btn-editar">Editar</a>
+                        @if(auth()->user()->tienePermiso('editar_roles'))
+                            <a href="{{ route('rols.edit',$rol->id) }}" class="btn-editar">Editar</a>
+                        @endif
                         <form action="{{ route('rols.destroy',$rol->id) }}" method="POST" style="display: inline;">
                             @csrf
                             @method('DELETE')
@@ -36,7 +42,9 @@
         </tbody>
     </table>
     <div class="div-botones2">
-        <a href="{{ route('rols.create') }}" class="btn-editar">Nuevo Rol</a>
+        @if(auth()->user()->tienePermiso('crear_roles'))
+            <a href="{{ route('rols.create') }}" class="btn-editar">Nuevo Rol</a>
+        @endif
         <a href="{{ route('bienvenido.usuarios.vendedor') }}" class="btn-eliminar">Volver</a>
     </div>
 </div>
