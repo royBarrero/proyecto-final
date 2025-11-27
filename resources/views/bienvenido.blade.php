@@ -156,7 +156,7 @@
             min-width:150px;
             z-index:1000;">
             <li style="border-bottom:1px solid #eee;">
-                <a href="{{ route('productoaves.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar Categorías de Productos')}}</a>
+                <a href="{{ route('categorias.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar Categorías de Productos')}}</a>
             </li>
             <li style="border-bottom:1px solid #eee;">
                 <a href="{{ route('detalleaves.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar productos')}}</a>
