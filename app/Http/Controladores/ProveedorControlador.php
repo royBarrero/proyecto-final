@@ -4,7 +4,9 @@ namespace App\Http\Controladores;
 
 use Illuminate\Http\Request;
 use App\Modelos\Proveedor;
-
+use App\Exports\ProveedoresExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 class ProveedorControlador extends Controlador
 {
     public function index()
@@ -56,7 +58,24 @@ class ProveedorControlador extends Controlador
 
         return redirect()->route('proveedores.index')->with('success', 'Proveedor actualizado correctamente.');
     }
+    /**
+ * Exportar a Excel
+ */
+public function exportarExcel()
+{
+    $proveedores = Proveedor::all();
+    return Excel::download(new ProveedoresExport($proveedores), 'proveedores_' . date('Y-m-d') . '.xlsx');
+}
 
+/**
+ * Exportar a PDF
+ */
+public function exportarPDF()
+{
+    $proveedores = Proveedor::all();
+    $pdf = Pdf::loadView('proveedores.pdf', compact('proveedores'));
+    return $pdf->download('proveedores_' . date('Y-m-d') . '.pdf');
+}
     public function destroy($id)
     {
         $proveedor = Proveedor::findOrFail($id);

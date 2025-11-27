@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Modelos\Detalleave;
 use App\Modelos\Categoria;
-
+use App\Modelos\Fotoave;
+use App\Modelos\DetallePedido;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Modelos\DetalleCotizacion;
+use App\Modelos\Stock; 
 class ProductoAve extends Model
 {
     protected $table = 'productoaves';   // 👈 tu tabla 

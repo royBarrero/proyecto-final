@@ -105,7 +105,9 @@ Route::get('ventas/exportar/pdf', [VentaControlador::class, 'exportarPDF'])->nam
 Route::get('ventas/exportar/excel', [VentaControlador::class, 'exportarExcel'])->name('ventas.exportar.excel');
 Route::resource('compras', CompraControlador::class);
 Route::get('/compras', [App\Http\Controladores\CompraControlador::class, 'index'])->name('compras.index');
-
+// Exportar proveedores
+Route::get('proveedores/exportar/pdf', [ProveedorControlador::class, 'exportarPDF'])->name('proveedores.exportar.pdf');
+Route::get('proveedores/exportar/excel', [ProveedorControlador::class, 'exportarExcel'])->name('proveedores.exportar.excel');
 // Exportar compras
 Route::get('compras/exportar/pdf', [CompraControlador::class, 'exportarPDF'])->name('compras.exportar.pdf');
 Route::get('compras/exportar/excel', [CompraControlador::class, 'exportarExcel'])->name('compras.exportar.excel');
