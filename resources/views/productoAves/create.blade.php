@@ -5,6 +5,22 @@
 <div class="container">
     {-- Validar permiso --}
     @if(!auth()->user()->tienePermiso('crear_productos'))
+    @if($errors->any())
+    <div class="alert alert-danger">
+        <strong>⚠️ Errores:</strong>
+        <ul>
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger">
+        <strong>Error:</strong> {{ session('error') }}
+    </div>
+@endif
         <div class="alert alert-danger">
             <strong>Acceso Denegado:</strong> No tienes permisos para realizar esta acción.
         </div>
@@ -58,8 +74,7 @@
 
         <div class="form-group" style="display:flex; gap:10px;">
             <button type="submit" class="btn">Guardar</button>
-            <a href="{{ url()->previous() }}" class="btn btn-cerrar">Volver</a>
-        </div>
+<a href="{{ route('productos.index', ['tab' => 'aves']) }}" class="btn btn-cerrar">Volver</a>        </div>
     </form>
 </div>
 @endsection

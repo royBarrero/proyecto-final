@@ -159,7 +159,7 @@
                 <a href="{{ route('categorias.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar Categorías de Productos')}}</a>
             </li>
             <li style="border-bottom:1px solid #eee;">
-                <a href="{{ route('detalleaves.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar productos')}}</a>
+                <a href="{{ route('productos.index') }}" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Gestionar productos')}}</a>
             </li>
             <li style="border-bottom:1px solid #eee;">
                 <a href="" style="display:block; padding:10px; text-decoration:none; color:#333;">{{__('Consultar historial de movimiento de inventario')}}</a>

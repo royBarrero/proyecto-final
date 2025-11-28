@@ -22,6 +22,8 @@ use App\Http\Controladores\ReporteVentaControlador;
 use App\Http\Controladores\ReporteHistorialVentaControlador;
 use App\Http\Controladores\ProductoDisponibleControlador;
 use App\Http\Controladores\MetodoPagoControlador;
+use App\Http\Controladores\ProductoControlador;
+use App\Http\Controladores\ProductoAlimentoControlador;
 use App\Modelos\Detalleave;
 
 Route::get('/', [FotoaveControlador::class, 'index'])->name("inicio");
@@ -134,6 +136,33 @@ Route::prefix('reportes')->middleware('auth')->group(function() {
     // Lista de productos disponibles
     Route::get('productos-disponibles', [ProductoDisponibleControlador::class, 'index'])
         ->name('reportes.productos.disponibles');
+});
+// ========================================
+// GESTIÓN DE PRODUCTOS (Unificado)
+// ========================================
+Route::middleware(['auth'])->group(function () {
+    // Ruta principal unificada (con tabs)
+    Route::get('productos', [ProductoControlador::class, 'index'])->name('productos.index');
+    // Exportaciones Alimentos
+    Route::get('productos/alimentos/excel', [ProductoControlador::class, 'exportarAlimentosExcel'])->name('productos.alimentos.excel');
+    Route::get('productos/alimentos/pdf', [ProductoControlador::class, 'exportarAlimentosPDF'])->name('productos.alimentos.pdf');
+    
+    // Exportaciones Aves
+    Route::get('productos/aves/excel', [ProductoControlador::class, 'exportarAvesExcel'])->name('productos.aves.excel');
+    Route::get('productos/aves/pdf', [ProductoControlador::class, 'exportarAvesPDF'])->name('productos.aves.pdf');
+    
+    // CRUD Producto Alimento
+    Route::resource('productoalimentos', ProductoAlimentoControlador::class)->except(['index', 'show']);
+    
+    // CRUD Producto Ave (mantener rutas existentes)
+    Route::get('productoaves', [ProductoAveControlador::class, 'index'])->name('productoaves.index');
+    Route::get('productoaves/principal', [ProductoAveControlador::class, 'index'])->name('productoaves.principal');
+    Route::get('productoaves/create', [ProductoAveControlador::class, 'create'])->name('productoaves.create');
+    Route::post('productoaves', [ProductoAveControlador::class, 'store'])->name('productoaves.store');
+    Route::get('productoaves/{id}', [ProductoAveControlador::class, 'show'])->name('productoaves.show');
+    Route::get('productoaves/{id}/edit', [ProductoAveControlador::class, 'edit'])->name('productoaves.edit');
+    Route::put('productoaves/{id}', [ProductoAveControlador::class, 'update'])->name('productoaves.update');
+    Route::delete('productoaves/{id}', [ProductoAveControlador::class, 'destroy'])->name('productoaves.destroy');
 });
 Route::middleware(['auth'])->group(function() {
     Route::get('/caja', [CajaControlador::class,'index'])->name('caja.index');
